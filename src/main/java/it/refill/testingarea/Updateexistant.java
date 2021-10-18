@@ -99,8 +99,8 @@ public class Updateexistant {
         db1.closeDB();
     }
 
-    public static void main(String[] args) {
-        new Updateexistant(false).update_domande_fase1();
-    }
+//    public static void main(String[] args) {
+//        new Updateexistant(false).update_domande_fase1();
+//    }
 
 }

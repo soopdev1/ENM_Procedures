@@ -30,25 +30,15 @@ import org.joda.time.format.DateTimeFormatter;
  * @author rcosco
  */
 public class Create {
-    
-    public static final boolean neet = false;
-    
-    public static Logger log = Constant.createLog("FADReport_", "/mnt/mcn/test/log/");
 
-    public static void main(String[] args) {
+    public static Logger log = Constant.createLog("FADReport_", "/mnt/mcn/test/log/", true);
 
-        boolean testing;
-        try {
-            testing = args[0].trim().equalsIgnoreCase("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-
+    public static void crea(boolean neet, boolean testing) {
         boolean print = false;
         boolean save = true;
 
-        Create.log.log(Level.INFO, "PRINT: {0}", print);
-        Create.log.log(Level.INFO, "SAVE: {0}", save);
+        log.log(Level.INFO, "PRINT: {0}", print);
+        log.log(Level.INFO, "SAVE: {0}", save);
 
         List<Integer> list_id = new ArrayList<>();
 
@@ -122,9 +112,97 @@ public class Create {
         } catch (Exception e) {
             log.severe(estraiEccezione(e));
         }
-
     }
 
+//    public static void main(String[] args) {
+//
+//        boolean testing;
+//        try {
+//            testing = args[0].trim().equalsIgnoreCase("test");
+//        } catch (Exception e) {
+//            testing = false;
+//        }
+//
+//        boolean print = false;
+//        boolean save = true;
+//
+//        Create.log.log(Level.INFO, "PRINT: {0}", print);
+//        Create.log.log(Level.INFO, "SAVE: {0}", save);
+//
+//        List<Integer> list_id = new ArrayList<>();
+//
+//        try {
+//            FaseA FA = new FaseA(testing, neet);
+//            Db_Bando db0 = new Db_Bando(FA.getHost());
+////            String sql0 = "SELECT pf.idprogetti_formativi from progetti_formativi pf WHERE stato IN ('ATA','ATB','DVA','DVB')";
+//
+//            String sql0 = "SELECT DISTINCT(mp.id_progettoformativo) "
+//                    + "FROM lezioni_modelli lm, modelli_progetti mp "
+//                    + "WHERE mp.id_modello=lm.id_modelli_progetto "
+//                    + "AND lm.giorno = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+//
+//            try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {
+//                while (rs0.next()) {
+//                    list_id.add(rs0.getInt(1));
+//                }
+//            }
+//            db0.closeDB();
+//
+//            FaseB FB = new FaseB(testing, neet);
+//
+//            list_id.forEach(idpr -> {
+//
+//                //  FASE A
+//                try {
+//                    log.log(Level.INFO, "REPORT FASE A - IDPR {0}", idpr);
+//                    List<Lezione> calendar1 = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), print, save, false);
+//                    FA.registro_aula_FaseA(idpr, FA.getHost(), save, calendar1);
+//                    log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
+//                } catch (Exception e1) {
+//                    log.severe(estraiEccezione(e1));
+//                }
+//                //  FASE B
+//                try {
+//                    log.log(Level.INFO, "REPORT FASE B - IDPR {0}", idpr);
+//                    List<Lezione> calendar2 = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), print, save, false);
+//                    FB.registro_aula_FaseB(idpr, FA.getHost(), save, calendar2);
+//                    log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
+//                } catch (Exception e1) {
+//                    log.severe(estraiEccezione(e1));
+//                }
+//
+//            });
+//
+//            List<Integer> list_id_conclusi = new ArrayList<>();
+//
+//            //COMPLESSIVO
+//            Db_Bando dbA0 = new Db_Bando(FA.getHost());
+//            String sqlA0 = "SELECT idprogetti_formativi FROM progetti_formativi WHERE END < CURDATE() "
+//                    + "AND idprogetti_formativi NOT IN (SELECT idprogetto FROM documenti_progetti WHERE tipo=33)";
+//            try (Statement st0 = dbA0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sqlA0)) {
+//                while (rs0.next()) {
+//                    list_id_conclusi.add(rs0.getInt(1));
+//                }
+//            }
+//            dbA0.closeDB();
+//
+//            Complessivo c1 = new Complessivo(FA.getHost());
+//            list_id_conclusi.forEach(idpr -> {
+//                try {
+//                    log.log(Level.INFO, "REPORT COMPLESSIVO - IDPR {0}", idpr);
+//                    List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, c1.getHost(), false, false, false);
+//                    List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, c1.getHost(), false, false, false);
+//                    c1.registro_complessivo(idpr, c1.getHost(), ca, cb, save);
+//                    log.log(Level.INFO, "COMPLETATO REPORT COMPLESSIVO - IDPR {0}", idpr);
+//                } catch (Exception e1) {
+//                    log.severe(estraiEccezione(e1));
+//                }
+//            });
+//        } catch (Exception e) {
+//            log.severe(estraiEccezione(e));
+//        }
+//
+//    }
     public static void gestisciorerendicontabili(LinkedList<Presenti> report, long ore) {
 
         try {

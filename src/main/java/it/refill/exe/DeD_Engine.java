@@ -51,7 +51,7 @@ public class DeD_Engine {
 //        System.out.println("HOST: " + this.host);
     }
 
-    private void crea_report(boolean test) {
+    public void crea_report(boolean test) {
         try {
             DateTime dt1 = new DateTime();
 
@@ -211,7 +211,7 @@ public class DeD_Engine {
         }
     }
 
-    private void aggiorna_dataconvenzione_fase1() {
+    public void aggiorna_dataconvenzione_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT a.username FROM bando_dd_mcn a WHERE a.stato_domanda = 'A' AND a.dataupconvenzionefinale = '-'";
@@ -243,7 +243,7 @@ public class DeD_Engine {
         db1.closeDB();
     }
 
-    private void elenco_domande_fase1() {
+    public void elenco_domande_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT * FROM domandecomplete WHERE stato = '1' AND id NOT IN (SELECT DISTINCT(coddomanda) FROM bando_dd_mcn) GROUP BY id";
@@ -350,7 +350,7 @@ public class DeD_Engine {
         db1.closeDB();
     }
 
-    private void update_domande_fase1() {
+    public void update_domande_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT username FROM bando_dd_mcn a WHERE stato_domanda = 'A' AND decreto <> '-'";
@@ -427,7 +427,7 @@ public class DeD_Engine {
         db1.closeDB();
     }
 
-    private void aggiorna_reportistica() {
+    public void aggiorna_reportistica() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
 
@@ -467,57 +467,8 @@ public class DeD_Engine {
         db1.closeDB();
     }
 
-    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/");
+    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/", false);
 
-    public static void main(String[] args) {
-
-        boolean testing;
-        try {
-            testing = args[0].equals("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-
-        DeD_Engine ne = new DeD_Engine(testing);
-        try {
-            log.info("START ELENCO DOMANDE");
-            ne.elenco_domande_fase1();
-            log.info("FINE ELENCO DOMANDE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START UPDATE DOMANDE");
-            ne.update_domande_fase1();
-            log.info("FINE UPDATE DOMANDE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START AGGIORNA DATA CONVENZIONE");
-            ne.aggiorna_dataconvenzione_fase1();
-            log.info("FINE AGGIORNA DATA CONVENZIONE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START AGGIORNA REPORTISTICA");
-            ne.aggiorna_reportistica();
-            log.info("FINE AGGIORNA REPORTISTICA");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-        try {
-            log.info("START CREA REPORT");
-            ne.crea_report(testing);
-            log.info("FINE CREA REPORT");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-    }
+    
 
 }

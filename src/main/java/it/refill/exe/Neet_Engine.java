@@ -54,7 +54,7 @@ public class Neet_Engine {
         System.out.println("HOST: " + this.host);
     }
 
-    private void crea_report() {
+    public void crea_report() {
         try {
             DateTime dt1 = new DateTime();
 
@@ -196,7 +196,7 @@ public class Neet_Engine {
         }
     }
 
-    private void aggiorna_dataconvenzione_fase1() {
+    public void aggiorna_dataconvenzione_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT a.username FROM bando_neet_mcn a WHERE a.dataupconvenzionefinale ='-'";
@@ -228,7 +228,7 @@ public class Neet_Engine {
         db1.closeDB();
     }
 
-    private void elenco_domande_fase1() {
+    public void elenco_domande_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
 
@@ -338,7 +338,7 @@ public class Neet_Engine {
         db1.closeDB();
     }
 
-    private void aggiorna_reportistica() {
+    public void aggiorna_reportistica() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
 
@@ -377,7 +377,7 @@ public class Neet_Engine {
         db1.closeDB();
     }
 
-    private void update_domande_fase1() {
+    public void update_domande_fase1() {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT username FROM bando_neet_mcn a WHERE decreto <> '-'";
@@ -450,58 +450,6 @@ public class Neet_Engine {
         db1.closeDB();
     }
 
-    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/");
-
-    public static void main(String[] args) {
-
-        boolean testing;
-        try {
-            testing = args[0].equals("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-
-        Neet_Engine ne = new Neet_Engine(testing);
-
-        try {
-            log.info("START ELENCO DOMANDE");
-            ne.elenco_domande_fase1();
-            log.info("FINE ELENCO DOMANDE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START UPDATE DOMANDE");
-            ne.update_domande_fase1();
-            log.info("FINE UPDATE DOMANDE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START AGGIORNA DATA CONVENZIONE");
-            ne.aggiorna_dataconvenzione_fase1();
-            log.info("FINE AGGIORNA DATA CONVENZIONE");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-        try {
-            log.info("START AGGIORNA REPORTISTICA");
-            ne.aggiorna_reportistica();
-            log.info("FINE AGGIORNA REPORTISTICA");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-        try {
-            log.info("START CREA REPORT");
-            ne.crea_report();
-            log.info("FINE CREA REPORT");
-        } catch (Exception e) {
-            log.severe(estraiEccezione(e));
-        }
-
-    }
+    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/",true);
 
 }

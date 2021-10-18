@@ -9,7 +9,6 @@ import com.google.common.base.Splitter;
 import static it.refill.exe.Constant.bando_SE;
 import static it.refill.exe.Constant.bando_SUD;
 import static it.refill.exe.Constant.calcoladurata;
-import static it.refill.exe.Constant.checkPDF;
 import static it.refill.exe.Constant.estraiEccezione;
 import static it.refill.exe.Constant.formatStatoDocente;
 import static it.refill.exe.Constant.getCell;
@@ -21,32 +20,25 @@ import static it.refill.exe.Constant.patternSql;
 import static it.refill.exe.Constant.setCell;
 import static it.refill.exe.Constant.timestamp;
 import static it.refill.otp.SendMailJet.sendMail;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.remove;
 import static org.apache.commons.lang3.StringUtils.removeEnd;
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -59,7 +51,7 @@ public class Neet_gestione {
     private static final String startroom = "FADMCN_";
     public String host;
     boolean test;
-    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/");
+    private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/", true);
 
     ////////////////////////////////////////////////////////////////////////////
     public Neet_gestione(boolean test) {
@@ -609,7 +601,7 @@ public class Neet_gestione {
                             String iduser = rs2.getString(2);
                             long millis = rs2.getLong(1);
                             if (millis >= 129600000) {
-                                String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE stato='A' AND idallievi = " + iduser + " AND idprogetti_formativi = " + idpr;
+                                String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idallievi = " + iduser + " AND idprogetti_formativi = " + idpr;
                                 try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
                                     while (rs3.next()) {
                                         String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
@@ -685,7 +677,7 @@ public class Neet_gestione {
                 String idpr = value.split(";")[0];
                 try {
                     //ELENCO ALLIEVI
-                    String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE stato='A' AND idprogetti_formativi = " + idpr;
+                    String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idpr;
                     try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
@@ -1690,60 +1682,6 @@ public class Neet_gestione {
             log.severe(estraiEccezione(e));
         }
 
-    }
-    ////////////////////////////////////////////////////////////////////////////
-
-    public static void main(String[] args) {
-        boolean testing;
-        try {
-            testing = args[0].equals("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-
-        Neet_gestione ne = new Neet_gestione(testing);
-
-        //COMUNICAZIONI
-//        try {
-//            log.warning("MAIL REMIND 1 GIORNO... INIZIO");
-//            ne.mail_remind(1);
-//            log.warning("MAIL REMIND 1 GIORNO... FINE");
-//        } catch (Exception e) {}
-//        try {
-//            log.warning("MAIL REMIND QUESTIONARI INGRESSO... INIZIO");
-//            ne.mail_questionario_INGRESSO();
-//            log.warning("MAIL REMIND QUESTIONARI INGRESSO... FINE");
-//        } catch (Exception e) {}
-//        try {
-//            log.warning("MAIL REMIND QUESTIONARI USCITA... INIZIO");
-//            ne.mail_questionario_USCITA();
-//            log.warning("MAIL REMIND QUESTIONARI USCITA... FINE");
-//        } catch (Exception e) {}
-        //ESTRAZIONI
-//        try {
-//            log.warning("GENERAZIONE FILE REPORT DOCENTI... INIZIO");
-//            ne.report_docenti();
-//            log.warning("GENERAZIONE FILE REPORT DOCENTI... FINE");
-//        } catch (Exception e) {
-//        }
-//        try {
-//            log.warning("GENERAZIONE FILE REPORT ALLIEVI... INIZIO");
-//            ne.report_allievi();
-//            log.warning("GENERAZIONE FILE REPORT ALLIEVI... FINE");
-//        } catch (Exception e) {
-//        }
-//        try {
-//            log.warning("GENERAZIONE FILE REPORT PROGETTI... FINE");
-//            ne.report_pf();
-//            log.warning("GENERAZIONE FILE REPORT PROGETTI... FINE");
-//        } catch (Exception e) {
-//        }
-//        ne.crea_pdf_unico_ANPAL();
-//FAD
-//        try {
-//            ne.fad_gestione();
-//        } catch (Exception e) {}
-//        
     }
 
 }

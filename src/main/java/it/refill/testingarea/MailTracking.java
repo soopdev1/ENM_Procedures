@@ -33,12 +33,12 @@ import org.json.JSONObject;
  */
 public class MailTracking {
 
-    public static void main(String[] args) {
-        Db_Bando bando = new Db_Bando("clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod");
-        String mailsender = bando.getPath("mailsender");
-        boolean es = sendMail(mailsender, new String[]{"raffaele.cosco@faultless.it"}, new String[]{}, new String[]{}, "testing", "testing", bando);
-        bando.closeDB();
-    }
+//    public static void main(String[] args) {
+//        Db_Bando bando = new Db_Bando("clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod");
+//        String mailsender = bando.getPath("mailsender");
+//        boolean es = sendMail(mailsender, new String[]{"raffaele.cosco@faultless.it"}, new String[]{}, new String[]{}, "testing", "testing", bando);
+//        bando.closeDB();
+//    }
 
     public static boolean sendMail(String name, String[] to, String[] cc, String[] bcc, String txt, String subject, Db_Bando dbb) {
         MailjetClient client;

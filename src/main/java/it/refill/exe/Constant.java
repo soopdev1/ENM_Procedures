@@ -19,7 +19,6 @@ import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.property.TextAlignment;
-import static it.refill.report.Create.neet;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -125,7 +124,7 @@ public class Constant {
 
     public static final String pathICC = "/home/tomcat/jar/sRGB.icc";
 
-    public static Logger createLog(String nameapp, String logpath) {
+    public static Logger createLog(String nameapp, String logpath, boolean neet) {
         try {
             File dir1 = new File(logpath);
             createDir(logpath);
@@ -282,7 +281,7 @@ public class Constant {
 
     public static String convertTS_Italy(String ts1) {
         TimeZone tz1 = TimeZone.getTimeZone("Europe/Berlin");
-        TimeZone tz2 = TimeZone.getTimeZone("GMT");        
+        TimeZone tz2 = TimeZone.getTimeZone("GMT");
         long timeDifference = tz1.getRawOffset() - tz2.getRawOffset() + tz1.getDSTSavings() - tz2.getDSTSavings();
         String dt1 = StringUtils.substring(ts1, 0, 26);
         try {
@@ -292,7 +291,7 @@ public class Constant {
                 }
             }
         } catch (Exception e) {
-        }        
+        }
         DateTime start = new DateTime(dtfad.parseDateTime(dt1));
         DateTime dateTimeIT = start.plus(timeDifference);
         return dateTimeIT.toString(timestampSQL);

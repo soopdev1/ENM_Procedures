@@ -14,6 +14,7 @@ import static it.refill.exe.Constant.formatStatoDocente;
 import static it.refill.exe.Constant.getCell;
 import static it.refill.exe.Constant.getRow;
 import static it.refill.exe.Constant.no_agenvolazione;
+import static it.refill.exe.Constant.parseIntR;
 import static it.refill.exe.Constant.patternITA;
 import static it.refill.exe.Constant.patternSql;
 import static it.refill.exe.Constant.setCell;
@@ -47,10 +48,10 @@ import org.joda.time.Years;
 public class DeD_gestione {
 
     ////////////////////////////////////////////////////////////////////////////
-    private static String startroom = "FADMCNDD_";
+    private static final String startroom = "FADMCNDD_";
     public String host;
-    private boolean test;
-    private static Logger log = Constant.createLog("ProceduraFAD_DD", "/mnt/mcn/test/log/");
+    boolean test;
+    private static final Logger log = Constant.createLog("ProceduraFAD_DD", "/mnt/mcn/test/log/", false);
 
     ////////////////////////////////////////////////////////////////////////////
     public DeD_gestione(boolean test) {
@@ -555,7 +556,7 @@ public class DeD_gestione {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    private void mail_questionario_USCITA() {
+    public void mail_questionario_USCITA() {
 
         try {
             Db_Bando db0 = new Db_Bando(this.host);
@@ -605,7 +606,7 @@ public class DeD_gestione {
                             String iduser = rs2.getString(2);
                             long millis = rs2.getLong(1);
                             if (millis >= 129600000) {
-                                String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE stato='A' AND idallievi = " + iduser + " AND idprogetti_formativi = " + idpr;
+                                String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idallievi = " + iduser + " AND idprogetti_formativi = " + idpr;
                                 try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
                                     while (rs3.next()) {
                                         String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
@@ -644,7 +645,7 @@ public class DeD_gestione {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    private void mail_questionario_INGRESSO() {
+    public void mail_questionario_INGRESSO() {
 
         try {
 
@@ -683,7 +684,7 @@ public class DeD_gestione {
                 String idpr = value.split(";")[0];
                 try {
                     //ELENCO ALLIEVI
-                    String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE stato='A' AND idprogetti_formativi = " + idpr;
+                    String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idpr;
                     try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
@@ -717,7 +718,7 @@ public class DeD_gestione {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    private void mail_remind(int day) {
+    public void mail_remind(int day) {
 
         try {
             Db_Bando db0 = new Db_Bando(this.host);
@@ -813,7 +814,6 @@ public class DeD_gestione {
     }
 
     ////////////////////////////////////////////////////////////////////////////    
-    
     public int get_allievi_conformi(int idpr, Db_Bando db1) {
         int out = 0;
         try {
@@ -866,7 +866,7 @@ public class DeD_gestione {
 
         return out;
     }
-    
+
     public void report_pf() {
         try {
             Long hh36 = new Long(129600000);
@@ -1144,7 +1144,7 @@ public class DeD_gestione {
             log.severe(estraiEccezione(e));
         }
     }
-    
+
     public void report_docenti() {
 
         try {
@@ -1157,62 +1157,63 @@ public class DeD_gestione {
             Db_Bando db1 = new Db_Bando(this.host);
 //            String sql0 = "SELECT s.ragionesociale,s.piva,s.protocollo,d.nome,d.cognome,d.codicefiscale,d.fascia,d.stato FROM docenti d, soggetti_attuatori s WHERE d.idsoggetti_attuatori=s.idsoggetti_attuatori";
             String sql0 = "SELECT s.ragionesociale,s.piva,s.protocollo,d.nome,d.cognome,d.codicefiscale,d.fascia,d.stato,d.tipo_inserimento,d.datawebinair,d.motivo FROM docenti d, soggetti_attuatori s WHERE d.idsoggetti_attuatori=s.idsoggetti_attuatori";
-            XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_ded/estrazioni/TEMPLATE DOCENTI.xlsx")));
-            XSSFSheet sh1 = wb.getSheetAt(0);
-            AtomicInteger indice = new AtomicInteger(1);
-            try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
-                while (rs0.next()) {
-                    XSSFRow row = getRow(sh1, indice.get());
-                    setCell(getCell(row, 0), rs0.getString("s.ragionesociale").toUpperCase());
-                    setCell(getCell(row, 1), rs0.getString("s.piva").toUpperCase());
-                    setCell(getCell(row, 2), rs0.getString("s.protocollo").toUpperCase());
-                    setCell(getCell(row, 3), rs0.getString("d.nome").toUpperCase());
-                    setCell(getCell(row, 4), rs0.getString("d.cognome").toUpperCase());
-                    setCell(getCell(row, 5), rs0.getString("d.codicefiscale").toUpperCase());
+            String fileout;
+            FileOutputStream outputStream;
+            try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_ded/estrazioni/TEMPLATE DOCENTI.xlsx")))) {
+                XSSFSheet sh1 = wb.getSheetAt(0);
+                AtomicInteger indice = new AtomicInteger(1);
+                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
+                    while (rs0.next()) {
+                        XSSFRow row = getRow(sh1, indice.get());
+                        setCell(getCell(row, 0), rs0.getString("s.ragionesociale").toUpperCase());
+                        setCell(getCell(row, 1), rs0.getString("s.piva").toUpperCase());
+                        setCell(getCell(row, 2), rs0.getString("s.protocollo").toUpperCase());
+                        setCell(getCell(row, 3), rs0.getString("d.nome").toUpperCase());
+                        setCell(getCell(row, 4), rs0.getString("d.cognome").toUpperCase());
+                        setCell(getCell(row, 5), rs0.getString("d.codicefiscale").toUpperCase());
 
-                    setCell(getCell(row, 7), rs0.getString("d.fascia").toUpperCase());
-                    if (rs0.getString("d.datawebinair") == null) {
-                        setCell(getCell(row, 8), "");
-                    } else {
-                        setCell(getCell(row, 8), sdita.format(rs0.getDate("d.datawebinair")));
-                    }
-                    setCell(getCell(row, 9), formatStatoDocente(rs0.getString("d.stato").toUpperCase()));
-                    if (rs0.getString("d.tipo_inserimento") == null || rs0.getString("d.tipo_inserimento").trim().equals("") || rs0.getString("d.tipo_inserimento").trim().equals("-")) {
-                        setCell(getCell(row, 10), "ACCREDITAMENTO");
-                        Db_Bando db2 = new Db_Bando(hostdd);
-                        String sql2 = "SELECT CONCAT('F',fascia) "
-                                + " FROM allegato_b a , bando_dd_mcn b WHERE a.username=b.username "
-                                + " AND b.protocollo = '" + rs0.getString("s.protocollo") + "' AND a.cf = '" + rs0.getString("d.codicefiscale") + "'";
-                        try (ResultSet rs2 = db2.getConnection().createStatement().executeQuery(sql2)) {
-                            if (rs2.next()) {
-                                setCell(getCell(row, 6), rs2.getString(1));
-                            } else {
-                                setCell(getCell(row, 6), rs0.getString("d.fascia").toUpperCase());
-                            }
+                        setCell(getCell(row, 7), rs0.getString("d.fascia").toUpperCase());
+                        if (rs0.getString("d.datawebinair") == null) {
+                            setCell(getCell(row, 8), "");
+                        } else {
+                            setCell(getCell(row, 8), sdita.format(rs0.getDate("d.datawebinair")));
                         }
-                        db2.closeDB();
-                    } else {
-                        setCell(getCell(row, 10), rs0.getString("d.tipo_inserimento").toUpperCase());
-                        setCell(getCell(row, 6), rs0.getString("d.fascia").toUpperCase());
-                    }
+                        setCell(getCell(row, 9), formatStatoDocente(rs0.getString("d.stato").toUpperCase()));
+                        if (rs0.getString("d.tipo_inserimento") == null || rs0.getString("d.tipo_inserimento").trim().equals("") || rs0.getString("d.tipo_inserimento").trim().equals("-")) {
+                            setCell(getCell(row, 10), "ACCREDITAMENTO");
+                            Db_Bando db2 = new Db_Bando(hostdd);
+                            String sql2 = "SELECT CONCAT('F',fascia) "
+                                    + " FROM allegato_b a , bando_dd_mcn b WHERE a.username=b.username "
+                                    + " AND b.protocollo = '" + rs0.getString("s.protocollo") + "' AND a.cf = '" + rs0.getString("d.codicefiscale") + "'";
+                            try (ResultSet rs2 = db2.getConnection().createStatement().executeQuery(sql2)) {
+                                if (rs2.next()) {
+                                    setCell(getCell(row, 6), rs2.getString(1));
+                                } else {
+                                    setCell(getCell(row, 6), rs0.getString("d.fascia").toUpperCase());
+                                }
+                            }
+                            db2.closeDB();
+                        } else {
+                            setCell(getCell(row, 10), rs0.getString("d.tipo_inserimento").toUpperCase());
+                            setCell(getCell(row, 6), rs0.getString("d.fascia").toUpperCase());
+                        }
 
-                    if (rs0.getString("d.motivo") == null) {
-                        setCell(getCell(row, 11), "");
-                    } else {
-                        setCell(getCell(row, 11), rs0.getString("d.motivo").toUpperCase());
-                    }
+                        if (rs0.getString("d.motivo") == null) {
+                            setCell(getCell(row, 11), "");
+                        } else {
+                            setCell(getCell(row, 11), rs0.getString("d.motivo").toUpperCase());
+                        }
 
-                    indice.addAndGet(1);
+                        indice.addAndGet(1);
+                    }
                 }
+                for (int i = 0; i < 12; i++) {
+                    sh1.autoSizeColumn(i);
+                }
+                fileout = "/mnt/mcn/yisu_ded/estrazioni/Report_docenti_" + new DateTime().toString(timestamp) + ".xlsx";
+                outputStream = new FileOutputStream(new File(fileout));
+                wb.write(outputStream);
             }
-            for (int i = 0; i < 12; i++) {
-                sh1.autoSizeColumn(i);
-            }
-
-            String fileout = "/mnt/mcn/yisu_ded/estrazioni/Report_docenti_" + new DateTime().toString(timestamp) + ".xlsx";
-            FileOutputStream outputStream = new FileOutputStream(new File(fileout));
-            wb.write(outputStream);
-            wb.close();
             outputStream.close();
             log.log(Level.WARNING, "{0} RILASCIATO CORRETTAMENTE.", fileout);
 
@@ -1224,7 +1225,6 @@ public class DeD_gestione {
         }
     }
 
-   
     public void report_allievi() {
 
         try {
@@ -1237,439 +1237,442 @@ public class DeD_gestione {
                     + "a.sesso,a.cittadinanza,a.target,a.titolo_studio,a.idcondizione_lavorativa,"
                     + "a.idcanale,a.motivazione,a.privacy2,a.privacy3,a.id_statopartecipazione,a.idprogetti_formativi FROM allievi a;";
 
-            XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_ded/estrazioni/TEMPLATE ALLIEVI.xlsx")));
-            XSSFSheet sh1 = wb.getSheetAt(0);
-
-            AtomicInteger indice = new AtomicInteger(1);
-
-            HashMap<Integer, String> lista_istat = new HashMap<>();
-            HashMap<String, String> lista_cittadinanza = new HashMap<>();
-
-            try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
-                while (rs0.next()) {
-                    int idallievo = rs0.getInt("a.idallievi");
-                    int idsa = rs0.getInt("a.idsoggetto_attuatore");
-                    String sa = "";
-
-                    String sql01 = "SELECT ragionesociale FROM soggetti_attuatori WHERE idsoggetti_attuatori = " + idsa;
-                    try (ResultSet rs01 = db1.getConnection().createStatement().executeQuery(sql01)) {
-                        if (rs01.next()) {
-                            sa = rs01.getString(1).toUpperCase();
-                        }
-                    }
-
-                    int idpr = rs0.getInt("a.idprogetti_formativi");
-                    String nome = rs0.getString("a.nome").toUpperCase();
-                    String cognome = rs0.getString("a.cognome").toUpperCase();
-
-                    String eta = String.valueOf(Years.yearsBetween(new DateTime(rs0.getDate("a.datanascita").getTime()), new DateTime()).getYears());
-                    String datanascita = sdita.format(rs0.getDate("a.datanascita"));
-
-                    String statonascita = rs0.getString("a.stato_nascita");
-                    if (statonascita.equals("100")) {
-                        statonascita = "ITALIA";
-                    } else {
-                        String sql1 = "SELECT nome FROM nazioni_rc WHERE codicefiscale = '" + statonascita + "'";
-                        try (ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1)) {
-                            if (rs1.next()) {
-                                statonascita = rs1.getString(1).toUpperCase();
+            String fileout;
+            FileOutputStream outputStream;
+            try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_ded/estrazioni/TEMPLATE ALLIEVI.xlsx")))) {
+                XSSFSheet sh1 = wb.getSheetAt(0);
+                AtomicInteger indice = new AtomicInteger(1);
+                HashMap<Integer, String> lista_istat = new HashMap<>();
+//                HashMap<String, String> lista_cittadinanza = new HashMap<>();
+                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
+                    while (rs0.next()) {
+                        int idallievo = rs0.getInt("a.idallievi");
+                        int idsa = rs0.getInt("a.idsoggetto_attuatore");
+                        String sa = "";
+                        String sql01 = "SELECT ragionesociale FROM soggetti_attuatori WHERE idsoggetti_attuatori = " + idsa;
+                        try (ResultSet rs01 = db1.getConnection().createStatement().executeQuery(sql01)) {
+                            if (rs01.next()) {
+                                sa = rs01.getString(1).toUpperCase();
                             }
                         }
-                    }
 
-                    String comune_nascita = "";
-                    String provincia_nascita = "";
-                    String comune_residenza = "";
-                    String regione_residenza = "";
-                    String provincia_residenza = "";
-                    String codice_istat_residenza = "";
+                        int idpr = rs0.getInt("a.idprogetti_formativi");
+                        String nome = rs0.getString("a.nome").toUpperCase();
+                        String cognome = rs0.getString("a.cognome").toUpperCase();
 
-                    String comune_domicilio = "";
-                    String provincia_domicilio = "";
-                    String regione_domicilio = "";
-                    String codice_istat_domicilio = "";
+                        String eta = String.valueOf(Years.yearsBetween(new DateTime(rs0.getDate("a.datanascita").getTime()), new DateTime()).getYears());
+                        String datanascita = sdita.format(rs0.getDate("a.datanascita"));
 
-                    String sql2 = "SELECT nome,idcomune,nome_provincia,regione FROM comuni WHERE idcomune IN (" + rs0.getInt("a.comune_nascita") + "," + rs0.getInt("a.comune_residenza") + "," + rs0.getInt("a.comune_domicilio") + ")";
-                    try (ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2)) {
-                        while (rs2.next()) {
-                            if (rs2.getInt(2) == rs0.getInt("a.comune_nascita")) {
-                                comune_nascita = rs2.getString(1).toUpperCase();
-                                provincia_nascita = rs2.getString(3).toUpperCase();
-                            }
-                            if (rs2.getInt(2) == rs0.getInt("a.comune_residenza")) {
-                                comune_residenza = rs2.getString(1).toUpperCase();
-                                provincia_residenza = rs2.getString(3).toUpperCase();
-                                regione_residenza = rs2.getString(4).toUpperCase();
-
-                                if (lista_istat.get(rs2.getInt(2)) == null) {
-                                    String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
-                                    try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
-                                        if (rs2A.next()) {
-                                            codice_istat_residenza = rs2A.getString(1);
-                                            lista_istat.put(rs2.getInt(2), rs2A.getString(1));
-                                        }
-                                    }
-                                } else {
-                                    codice_istat_residenza = lista_istat.get(rs2.getInt(2));
+                        String statonascita = rs0.getString("a.stato_nascita");
+                        if (statonascita.equals("100")) {
+                            statonascita = "ITALIA";
+                        } else {
+                            String sql1 = "SELECT nome FROM nazioni_rc WHERE codicefiscale = '" + statonascita + "'";
+                            try (ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1)) {
+                                if (rs1.next()) {
+                                    statonascita = rs1.getString(1).toUpperCase();
                                 }
                             }
-                            if (rs2.getInt(2) == rs0.getInt("a.comune_domicilio")) {
-                                comune_domicilio = rs2.getString(1).toUpperCase();
-                                provincia_domicilio = rs2.getString(3).toUpperCase();
-                                regione_domicilio = rs2.getString(4).toUpperCase();
+                        }
 
-                                if (lista_istat.get(rs2.getInt(2)) == null) {
-                                    String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
-                                    try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
-                                        if (rs2A.next()) {
-                                            codice_istat_domicilio = rs2A.getString(1);
-                                            lista_istat.put(rs2.getInt(2), rs2A.getString(1));
-                                        }
-                                    }
-                                } else {
-                                    codice_istat_domicilio = lista_istat.get(rs2.getInt(2));
+                        String comune_nascita = "";
+                        String provincia_nascita = "";
+                        String comune_residenza = "";
+                        String regione_residenza = "";
+                        String provincia_residenza = "";
+                        String codice_istat_residenza = "";
+
+                        String comune_domicilio = "";
+                        String provincia_domicilio = "";
+                        String regione_domicilio = "";
+                        String codice_istat_domicilio = "";
+
+                        String sql2 = "SELECT nome,idcomune,nome_provincia,regione FROM comuni WHERE idcomune IN (" + rs0.getInt("a.comune_nascita") + "," + rs0.getInt("a.comune_residenza") + "," + rs0.getInt("a.comune_domicilio") + ")";
+                        try (ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2)) {
+                            while (rs2.next()) {
+                                if (rs2.getInt(2) == rs0.getInt("a.comune_nascita")) {
+                                    comune_nascita = rs2.getString(1).toUpperCase();
+                                    provincia_nascita = rs2.getString(3).toUpperCase();
                                 }
+                                if (rs2.getInt(2) == rs0.getInt("a.comune_residenza")) {
+                                    comune_residenza = rs2.getString(1).toUpperCase();
+                                    provincia_residenza = rs2.getString(3).toUpperCase();
+                                    regione_residenza = rs2.getString(4).toUpperCase();
 
+                                    if (lista_istat.get(rs2.getInt(2)) == null) {
+                                        String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
+                                        try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
+                                            if (rs2A.next()) {
+                                                codice_istat_residenza = rs2A.getString(1);
+                                                lista_istat.put(rs2.getInt(2), rs2A.getString(1));
+                                            }
+                                        }
+                                    } else {
+                                        codice_istat_residenza = lista_istat.get(rs2.getInt(2));
+                                    }
+                                }
+                                if (rs2.getInt(2) == rs0.getInt("a.comune_domicilio")) {
+                                    comune_domicilio = rs2.getString(1).toUpperCase();
+                                    provincia_domicilio = rs2.getString(3).toUpperCase();
+                                    regione_domicilio = rs2.getString(4).toUpperCase();
+
+                                    if (lista_istat.get(rs2.getInt(2)) == null) {
+                                        String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
+                                        try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
+                                            if (rs2A.next()) {
+                                                codice_istat_domicilio = rs2A.getString(1);
+                                                lista_istat.put(rs2.getInt(2), rs2A.getString(1));
+                                            }
+                                        }
+                                    } else {
+                                        codice_istat_domicilio = lista_istat.get(rs2.getInt(2));
+                                    }
+
+                                }
                             }
                         }
-                    }
 
-                    String codicefiscale = rs0.getString("a.codicefiscale").toUpperCase();
-                    String telefono = rs0.getString("a.telefono").toUpperCase();
-                    String email = rs0.getString("a.email").toLowerCase();
+                        String codicefiscale = rs0.getString("a.codicefiscale").toUpperCase();
+                        String telefono = rs0.getString("a.telefono").toUpperCase();
+                        String email = rs0.getString("a.email").toLowerCase();
 
-                    String indirizzoresidenza = rs0.getString("a.indirizzoresidenza").toUpperCase();
-                    String civicoresidenza = rs0.getString("a.civicoresidenza").toUpperCase();
-                    String capresidenza = rs0.getString("a.capresidenza").toUpperCase();
+                        String indirizzoresidenza = rs0.getString("a.indirizzoresidenza").toUpperCase();
+                        String civicoresidenza = rs0.getString("a.civicoresidenza").toUpperCase();
+                        String capresidenza = rs0.getString("a.capresidenza").toUpperCase();
 
-                    String indirizzodomicilio = rs0.getString("a.indirizzodomicilio").toUpperCase();
-                    String civicodomicilio = rs0.getString("a.civicodomicilio").toUpperCase();
+                        String indirizzodomicilio = rs0.getString("a.indirizzodomicilio").toUpperCase();
+                        String civicodomicilio = rs0.getString("a.civicodomicilio").toUpperCase();
 //                    String capdomicilio = rs0.getString("a.capdomicilio").toUpperCase();
 
-                    String domiciliouguale = "NO";
-                    boolean checkdomiciliouguale = rs0.getString("a.indirizzodomicilio").equalsIgnoreCase(rs0.getString("a.indirizzoresidenza"))
-                            && rs0.getString("a.civicodomicilio").equalsIgnoreCase(rs0.getString("a.civicoresidenza"))
-                            && rs0.getInt("a.comune_domicilio") == rs0.getInt("a.comune_residenza");
+                        String domiciliouguale = "NO";
+                        boolean checkdomiciliouguale = rs0.getString("a.indirizzodomicilio").equalsIgnoreCase(rs0.getString("a.indirizzoresidenza"))
+                                && rs0.getString("a.civicodomicilio").equalsIgnoreCase(rs0.getString("a.civicoresidenza"))
+                                && rs0.getInt("a.comune_domicilio") == rs0.getInt("a.comune_residenza");
 
-                    if (checkdomiciliouguale) {
-                        domiciliouguale = "SI";
-                    }
-
-                    String sesso = rs0.getString("a.sesso").toUpperCase();
-                    if (sesso.equals("M")) {
-                        sesso = "UOMO";
-                    } else if (sesso.equals("F")) {
-                        sesso = "DONNA";
-                    }
-                    String cittadinanza = rs0.getString("a.cittadinanza").toUpperCase();
-                    String istat_cittadinanza = rs0.getString("a.cittadinanza").toUpperCase();
-
-                    String sql3 = "SELECT nome,istat FROM nazioni_rc WHERE idnazione = " + cittadinanza;
-                    try (ResultSet rs3 = db1.getConnection().createStatement().executeQuery(sql3)) {
-                        if (rs3.next()) {
-                            cittadinanza = rs3.getString(1).toUpperCase();
-                            istat_cittadinanza = rs3.getString(2).toUpperCase();
+                        if (checkdomiciliouguale) {
+                            domiciliouguale = "SI";
                         }
-                    }
 
-                    String target = rs0.getString("a.target");
-                    if (target.equals("D1")) {
-                        target = "Donna inattiva";
-                    } else if (target.equals("D2")) {
-                        target = "Disoccupato/a di lunga durata";
-                    }
-
-                    String titolo_studio = rs0.getString("a.titolo_studio");
-                    String sql5 = "SELECT descrizione FROM titoli_studio WHERE codice = '" + titolo_studio + "'";
-                    try (ResultSet rs5 = db1.getConnection().createStatement().executeQuery(sql5)) {
-                        if (rs5.next()) {
-                            titolo_studio = rs5.getString(1).toUpperCase();
+                        String sesso = rs0.getString("a.sesso").toUpperCase();
+                        if (sesso.equals("M")) {
+                            sesso = "UOMO";
+                        } else if (sesso.equals("F")) {
+                            sesso = "DONNA";
                         }
-                    }
-                    String condizione_lavorativa = rs0.getString("a.idcondizione_lavorativa");
-                    String sql6 = "SELECT descrizione FROM condizione_lavorativa WHERE idcondizione_lavorativa = '" + condizione_lavorativa + "'";
-                    try (ResultSet rs6 = db1.getConnection().createStatement().executeQuery(sql6)) {
-                        if (rs6.next()) {
-                            condizione_lavorativa = rs6.getString(1).toUpperCase();
-                        }
-                    }
+                        String cittadinanza = rs0.getString("a.cittadinanza").toUpperCase();
+                        String istat_cittadinanza = rs0.getString("a.cittadinanza").toUpperCase();
 
-                    String canale = rs0.getString("a.idcanale");
-                    String sql7 = "SELECT descrizione FROM canale WHERE idcanale = '" + canale + "'";
-                    try (ResultSet rs7 = db1.getConnection().createStatement().executeQuery(sql7)) {
-                        if (rs7.next()) {
-                            canale = rs7.getString(1).toUpperCase();
-                        }
-                    }
-
-                    String motivazione = rs0.getString("a.motivazione");
-                    String sql8 = "SELECT descrizione FROM motivazione WHERE idmotivazione = '" + motivazione + "'";
-                    try (ResultSet rs8 = db1.getConnection().createStatement().executeQuery(sql8)) {
-                        if (rs8.next()) {
-                            motivazione = rs8.getString(1).toUpperCase();
-                        }
-                    }
-
-                    String privacy1 = "SI";
-                    String privacy2 = rs0.getString("a.privacy2");
-                    String privacy3 = rs0.getString("a.privacy3");
-
-                    String statopartecipazione = rs0.getString("a.id_statopartecipazione");
-                    String sql9 = "SELECT descrizione FROM stato_partecipazione WHERE codice = '" + statopartecipazione + "'";
-                    try (ResultSet rs9 = db1.getConnection().createStatement().executeQuery(sql9)) {
-                        if (rs9.next()) {
-                            statopartecipazione = rs9.getString(1).toUpperCase();
-                        }
-                    }
-
-                    String cip = "";
-                    String dataavvio = "";
-                    String datachiusura = "";
-                    String sql10 = "SELECT cip,start,end FROM progetti_formativi WHERE idprogetti_formativi=" + idpr;
-                    try (ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
-                        if (rs10.next()) {
-                            if (rs10.getString(1) != null) {
-                                cip = rs10.getString(1).toUpperCase();
+                        String sql3 = "SELECT nome,istat FROM nazioni_rc WHERE idnazione = " + cittadinanza;
+                        try (ResultSet rs3 = db1.getConnection().createStatement().executeQuery(sql3)) {
+                            if (rs3.next()) {
+                                cittadinanza = rs3.getString(1).toUpperCase();
+                                istat_cittadinanza = rs3.getString(2).toUpperCase();
                             }
-                            if (rs10.getDate(2) != null) {
-                                dataavvio = sdita.format(rs10.getDate(2));
+                        }
+
+                        String target = rs0.getString("a.target");
+                        if (target.equals("D1")) {
+                            target = "Donna inattiva";
+                        } else if (target.equals("D2")) {
+                            target = "Disoccupato/a di lunga durata";
+                        }
+
+                        String titolo_studio = rs0.getString("a.titolo_studio");
+                        String sql5 = "SELECT descrizione FROM titoli_studio WHERE codice = '" + titolo_studio + "'";
+                        try (ResultSet rs5 = db1.getConnection().createStatement().executeQuery(sql5)) {
+                            if (rs5.next()) {
+                                titolo_studio = rs5.getString(1).toUpperCase();
                             }
-                            if (rs10.getDate(3) != null) {
-                                if (new DateTime().withMillisOfDay(0).isAfter(new DateTime(rs10.getDate(3).getTime()))) {
-                                    datachiusura = sdita.format(rs10.getDate(3));
+                        }
+                        String condizione_lavorativa = rs0.getString("a.idcondizione_lavorativa");
+                        String sql6 = "SELECT descrizione FROM condizione_lavorativa WHERE idcondizione_lavorativa = '" + condizione_lavorativa + "'";
+                        try (ResultSet rs6 = db1.getConnection().createStatement().executeQuery(sql6)) {
+                            if (rs6.next()) {
+                                condizione_lavorativa = rs6.getString(1).toUpperCase();
+                            }
+                        }
+
+                        String canale = rs0.getString("a.idcanale");
+                        String sql7 = "SELECT descrizione FROM canale WHERE idcanale = '" + canale + "'";
+                        try (ResultSet rs7 = db1.getConnection().createStatement().executeQuery(sql7)) {
+                            if (rs7.next()) {
+                                canale = rs7.getString(1).toUpperCase();
+                            }
+                        }
+
+                        String motivazione = rs0.getString("a.motivazione");
+                        String sql8 = "SELECT descrizione FROM motivazione WHERE idmotivazione = '" + motivazione + "'";
+                        try (ResultSet rs8 = db1.getConnection().createStatement().executeQuery(sql8)) {
+                            if (rs8.next()) {
+                                motivazione = rs8.getString(1).toUpperCase();
+                            }
+                        }
+
+                        String privacy1 = "SI";
+                        String privacy2 = rs0.getString("a.privacy2");
+                        String privacy3 = rs0.getString("a.privacy3");
+
+                        String statopartecipazione = rs0.getString("a.id_statopartecipazione");
+                        String sql9 = "SELECT descrizione FROM stato_partecipazione WHERE codice = '" + statopartecipazione + "'";
+                        try (ResultSet rs9 = db1.getConnection().createStatement().executeQuery(sql9)) {
+                            if (rs9.next()) {
+                                statopartecipazione = rs9.getString(1).toUpperCase();
+                            }
+                        }
+
+                        String cip = "";
+                        String dataavvio = "";
+                        String datachiusura = "";
+                        String sql10 = "SELECT cip,start,end FROM progetti_formativi WHERE idprogetti_formativi=" + idpr;
+                        try (ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
+                            if (rs10.next()) {
+                                if (rs10.getString(1) != null) {
+                                    cip = rs10.getString(1).toUpperCase();
                                 }
-                            }
-                        }
-                    }
-
-                    AtomicLong of = new AtomicLong(0L);
-                    String sql11 = "SELECT totaleorerendicontabili FROM registro_completo "
-                            + "WHERE idutente = " + idallievo + " AND idprogetti_formativi = " + idpr + " AND idsoggetti_attuatori = " + idsa
-                            + " AND ruolo LIKE 'ALLIEVO%' ORDER BY data";
-
-                    try (ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
-                        while (rs11.next()) {
-//                            datachiusura = sdita.format(rs11.getDate("data"));
-                            of.addAndGet(rs11.getLong("totaleorerendicontabili"));
-                        }
-                    }
-
-                    String orefrequenza = calcoladurata(of.get());
-
-                    String formagiuridica = "";
-                    String sedeindividuata = "";
-                    String dispocolloquio = "";
-                    String ideaimpresa = "";
-                    String ateco = "";
-                    String comunelocalizzazione = "";
-                    String regionelocalizzazione = "";
-                    String motivazioneatti = "";
-                    String fabbisognofinanz = "";
-                    String finanzrich = "";
-                    String bandose = "";
-                    String tipomc = "";
-                    String bandorestosud = "";
-                    String motivazrestosud = "";
-                    String bandoreg = "";
-                    String nomebandoreg = "";
-                    String motivnobando = "";
-                    String punteggio1 = "";
-                    String punteggio1_P = "";
-                    String punteggio2 = "";
-                    String punteggio2_P = "";
-                    String punteggio3 = "";
-                    String punteggio3_P = "";
-                    String punteggio4 = "";
-                    String punteggio4_P = "";
-                    String punteggioATTR = "";
-                    String premialita = "";
-
-                    String sql13 = "SELECT * FROM maschera_m5 where allievo = " + idallievo + " AND progetto_formativo=" + idpr;
-                    try (ResultSet rs13 = db1.getConnection().createStatement().executeQuery(sql13)) {
-                        if (rs13.next()) {
-                            String sql13A = "SELECT descrizione FROM formagiuridica WHERE idformagiuridica=" + rs13.getInt("forma_giuridica");
-                            try (ResultSet rs13A = db1.getConnection().createStatement().executeQuery(sql13A)) {
-                                if (rs13A.next()) {
-                                    formagiuridica = rs13A.getString(1).toUpperCase();
+                                if (rs10.getDate(2) != null) {
+                                    dataavvio = sdita.format(rs10.getDate(2));
                                 }
-                            }
-
-                            if (rs13.getInt("sede") == 1) {
-                                sedeindividuata = "SI";
-                            } else {
-                                sedeindividuata = "NO";
-                            }
-
-                            if (rs13.getInt("colloquio") == 1) {
-                                dispocolloquio = "SI";
-                            } else {
-                                dispocolloquio = "NO";
-                            }
-
-                            ideaimpresa = rs13.getString("idea_impresa").toUpperCase();
-                            ateco = rs13.getString("ateco").toUpperCase();
-
-                            String sql13B = "SELECT nome,regione FROM comuni WHERE idcomune = " + rs13.getString("comune_localizzazione");
-
-                            try (ResultSet rs13B = db1.getConnection().createStatement().executeQuery(sql13B)) {
-                                if (rs13B.next()) {
-                                    comunelocalizzazione = rs13B.getString(1).toUpperCase();
-                                    regionelocalizzazione = rs13B.getString(2).toUpperCase();
-                                }
-                            }
-
-                            motivazioneatti = rs13.getString("motivazione").toUpperCase();
-                            fabbisognofinanz = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("fabbisogno_finanziario"));
-                            finanzrich = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("finanziamento_richiesto_agevolazione"));
-
-                            if (rs13.getInt("bando_se") == 1) {
-                                bandose = "SI";
-                                if (rs13.getString("bando_se_opzione") != null) {
-                                    if (bando_SE().get(rs13.getInt("bando_se_opzione")) != null) {
-                                        tipomc = bando_SE().get(rs13.getInt("bando_se_opzione")).toUpperCase();
+                                if (rs10.getDate(3) != null) {
+                                    if (new DateTime().withMillisOfDay(0).isAfter(new DateTime(rs10.getDate(3).getTime()))) {
+                                        datachiusura = sdita.format(rs10.getDate(3));
                                     }
                                 }
-                            } else if (rs13.getInt("bando_sud") == 1) {
-                                bandorestosud = "SI";
-                                if (rs13.getString("bando_sud_opzione") != null) {
+                            }
+                        }
 
-                                    String bandosudOpzione = rs13.getString("bando_sud_opzione");
-                                    List<String> bandosudOpzioneValori = Splitter.on(";").splitToList(bandosudOpzione);
-                                    for (int x = 0; x < bandosudOpzioneValori.size(); x++) {
-                                        if (bando_SUD().get(bandosudOpzioneValori) != null) {
-                                            motivazrestosud += bando_SUD().get(bandosudOpzioneValori).toUpperCase() + "; ";
+                        AtomicLong of = new AtomicLong(0L);
+                        String sql11 = "SELECT totaleorerendicontabili FROM registro_completo "
+                                + "WHERE idutente = " + idallievo + " AND idprogetti_formativi = " + idpr + " AND idsoggetti_attuatori = " + idsa
+                                + " AND ruolo LIKE 'ALLIEVO%' ORDER BY data";
+
+                        try (ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
+                            while (rs11.next()) {
+//                            datachiusura = sdita.format(rs11.getDate("data"));
+                                of.addAndGet(rs11.getLong("totaleorerendicontabili"));
+                            }
+                        }
+
+                        String orefrequenza = calcoladurata(of.get());
+
+                        String formagiuridica = "";
+                        String sedeindividuata = "";
+                        String dispocolloquio = "";
+                        String ideaimpresa = "";
+                        String ateco = "";
+                        String comunelocalizzazione = "";
+                        String regionelocalizzazione = "";
+                        String motivazioneatti = "";
+                        String fabbisognofinanz = "";
+                        String finanzrich = "";
+                        String bandose = "";
+                        String tipomc = "";
+                        String bandorestosud = "";
+                        String motivazrestosud = "";
+                        String bandoreg = "";
+                        String nomebandoreg = "";
+                        String motivnobando = "";
+                        String punteggio1 = "";
+                        String punteggio1_P = "";
+                        String punteggio2 = "";
+                        String punteggio2_P = "";
+                        String punteggio3 = "";
+                        String punteggio3_P = "";
+                        String punteggio4 = "";
+                        String punteggio4_P = "";
+                        String punteggioATTR = "";
+                        String premialita = "";
+
+                        String sql13 = "SELECT * FROM maschera_m5 where allievo = " + idallievo + " AND progetto_formativo=" + idpr;
+                        try (ResultSet rs13 = db1.getConnection().createStatement().executeQuery(sql13)) {
+                            if (rs13.next()) {
+                                String sql13A = "SELECT descrizione FROM formagiuridica WHERE idformagiuridica=" + rs13.getInt("forma_giuridica");
+                                try (ResultSet rs13A = db1.getConnection().createStatement().executeQuery(sql13A)) {
+                                    if (rs13A.next()) {
+                                        formagiuridica = rs13A.getString(1).toUpperCase();
+                                    }
+                                }
+
+                                if (rs13.getInt("sede") == 1) {
+                                    sedeindividuata = "SI";
+                                } else {
+                                    sedeindividuata = "NO";
+                                }
+
+                                if (rs13.getInt("colloquio") == 1) {
+                                    dispocolloquio = "SI";
+                                } else {
+                                    dispocolloquio = "NO";
+                                }
+
+                                ideaimpresa = rs13.getString("idea_impresa").toUpperCase();
+                                ateco = rs13.getString("ateco").toUpperCase();
+
+                                String sql13B = "SELECT nome,regione FROM comuni WHERE idcomune = " + rs13.getString("comune_localizzazione");
+
+                                try (ResultSet rs13B = db1.getConnection().createStatement().executeQuery(sql13B)) {
+                                    if (rs13B.next()) {
+                                        comunelocalizzazione = rs13B.getString(1).toUpperCase();
+                                        regionelocalizzazione = rs13B.getString(2).toUpperCase();
+                                    }
+                                }
+
+                                motivazioneatti = rs13.getString("motivazione").toUpperCase();
+                                fabbisognofinanz = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("fabbisogno_finanziario"));
+                                finanzrich = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("finanziamento_richiesto_agevolazione"));
+
+                                if (rs13.getInt("bando_se") == 1) {
+                                    bandose = "SI";
+                                    if (rs13.getString("bando_se_opzione") != null) {
+                                        if (bando_SE().get(rs13.getInt("bando_se_opzione")) != null) {
+                                            tipomc = bando_SE().get(rs13.getInt("bando_se_opzione")).toUpperCase();
+                                        }
+                                    }
+                                } else if (rs13.getInt("bando_sud") == 1) {
+                                    bandorestosud = "SI";
+                                    if (rs13.getString("bando_sud_opzione") != null) {
+                                        String bandosudOpzione = rs13.getString("bando_sud_opzione");
+                                        List<String> bandosudOpzioneValori = Splitter.on(";").splitToList(bandosudOpzione);
+                                        for (int x = 0; x < bandosudOpzioneValori.size(); x++) {
+                                            if (bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())) != null) {
+                                                motivazrestosud += bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())).toUpperCase() + "; ";
+                                            }
+                                        }
+                                    }
+                                } else if (rs13.getInt("bando_reg") == 1) {
+                                    bandoreg = "SI";
+                                    nomebandoreg = rs13.getString("bando_reg_nome");
+                                } else if (rs13.getInt("no_agevolazione") == 1) {
+                                    if (rs13.getString("no_agevolazione_opzione") != null) {
+                                        if (no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")) != null) {
+                                            motivnobando = no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")).toUpperCase();
                                         }
                                     }
                                 }
-                            } else if (rs13.getInt("bando_reg") == 1) {
-                                bandoreg = "SI";
-                                nomebandoreg = rs13.getString("bando_reg_nome");
-                            } else if (rs13.getInt("no_agevolazione") == 1) {
-                                if (rs13.getString("no_agevolazione_opzione") != null) {
-                                    if (no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")) != null) {
-                                        motivnobando = no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")).toUpperCase();
+
+                                try {
+                                    List<String> riepilogopunteggi = Splitter.on(";").splitToList(rs13.getString("tabella_valutazionefinale_val"));
+                                    for (String compl : riepilogopunteggi) {
+                                        List<String> valoriinterni = Splitter.on("=").splitToList(compl);
+                                        switch (valoriinterni.get(0)) {
+                                            case "1":
+                                                punteggio1 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                punteggio1_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                break;
+                                            case "2":
+                                                punteggio2 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                punteggio2_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                break;
+                                            case "3":
+                                                punteggio3 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                punteggio3_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                break;
+                                            case "4":
+                                                punteggio4 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                punteggio4_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     }
-                                }
-                            }
 
-                            try {
-                                List<String> riepilogopunteggi = Splitter.on(";").splitToList(rs13.getString("tabella_valutazionefinale_val"));
-                                for (String compl : riepilogopunteggi) {
-                                    List<String> valoriinterni = Splitter.on("=").splitToList(compl);
-                                    if (valoriinterni.get(0).equals("1")) {
-                                        punteggio1 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                        punteggio1_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                    } else if (valoriinterni.get(0).equals("2")) {
-                                        punteggio2 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                        punteggio2_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                    } else if (valoriinterni.get(0).equals("3")) {
-                                        punteggio3 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                        punteggio3_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                    } else if (valoriinterni.get(0).equals("4")) {
-                                        punteggio4 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                        punteggio4_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                    punteggioATTR = Constant.roundDoubleAndFormat(rs13.getDouble("tabella_valutazionefinale_punteggio"));
+
+                                    if (rs13.getInt("tabella_premialita") == 1) {
+                                        premialita = "SI";
+                                    } else {
+                                        premialita = "NO";
                                     }
+
+                                } catch (Exception e) {
+
                                 }
-
-                                punteggioATTR = Constant.roundDoubleAndFormat(rs13.getDouble("tabella_valutazionefinale_punteggio"));
-
-                                if (rs13.getInt("tabella_premialita") == 1) {
-                                    premialita = "SI";
-                                } else {
-                                    premialita = "NO";
-                                }
-
-                            } catch (Exception e) {
 
                             }
-
                         }
+
+                        XSSFRow row = getRow(sh1, indice.get());
+
+                        setCell(getCell(row, 0), String.valueOf(idallievo));
+                        setCell(getCell(row, 1), sa);
+                        setCell(getCell(row, 2), nome);
+                        setCell(getCell(row, 3), cognome);
+                        setCell(getCell(row, 4), datanascita);
+                        setCell(getCell(row, 5), eta);
+                        setCell(getCell(row, 6), statonascita);
+                        setCell(getCell(row, 7), comune_nascita);
+                        setCell(getCell(row, 8), provincia_nascita);
+                        setCell(getCell(row, 9), codicefiscale);
+                        setCell(getCell(row, 10), telefono);
+                        setCell(getCell(row, 11), email);
+                        setCell(getCell(row, 12), indirizzoresidenza);
+                        setCell(getCell(row, 13), civicoresidenza);
+                        setCell(getCell(row, 14), comune_residenza);
+                        setCell(getCell(row, 15), codice_istat_residenza);
+                        setCell(getCell(row, 16), capresidenza);
+                        setCell(getCell(row, 17), provincia_residenza);
+                        setCell(getCell(row, 18), regione_residenza);
+                        setCell(getCell(row, 19), domiciliouguale);
+                        setCell(getCell(row, 20), indirizzodomicilio);
+                        setCell(getCell(row, 21), civicodomicilio);
+                        setCell(getCell(row, 22), comune_domicilio);
+                        setCell(getCell(row, 23), codice_istat_domicilio);
+                        setCell(getCell(row, 24), provincia_domicilio);
+                        setCell(getCell(row, 25), regione_domicilio);
+                        setCell(getCell(row, 26), sesso);
+                        setCell(getCell(row, 27), cittadinanza);
+                        setCell(getCell(row, 28), istat_cittadinanza);
+                        setCell(getCell(row, 29), target);
+                        setCell(getCell(row, 30), titolo_studio);
+                        setCell(getCell(row, 31), condizione_lavorativa);
+                        setCell(getCell(row, 32), canale);
+                        setCell(getCell(row, 33), motivazione);
+                        setCell(getCell(row, 34), privacy1);
+                        setCell(getCell(row, 35), privacy2);
+                        setCell(getCell(row, 36), privacy3);
+                        setCell(getCell(row, 37), statopartecipazione);
+                        setCell(getCell(row, 38), cip);
+                        setCell(getCell(row, 39), dataavvio);
+                        setCell(getCell(row, 40), datachiusura);
+                        setCell(getCell(row, 41), orefrequenza);
+                        setCell(getCell(row, 42), formagiuridica);
+                        setCell(getCell(row, 43), sedeindividuata);
+                        setCell(getCell(row, 44), dispocolloquio);
+                        setCell(getCell(row, 45), ideaimpresa);
+                        setCell(getCell(row, 46), ateco);
+                        setCell(getCell(row, 47), comunelocalizzazione);
+                        setCell(getCell(row, 48), regionelocalizzazione);
+                        setCell(getCell(row, 49), motivazioneatti);
+                        setCell(getCell(row, 50), fabbisognofinanz);
+                        setCell(getCell(row, 51), finanzrich);
+                        setCell(getCell(row, 52), bandose);
+                        setCell(getCell(row, 53), tipomc);
+                        setCell(getCell(row, 54), bandorestosud);
+                        setCell(getCell(row, 55), motivazrestosud.trim());
+                        setCell(getCell(row, 56), bandoreg);
+                        setCell(getCell(row, 57), nomebandoreg);
+                        setCell(getCell(row, 58), motivnobando);
+                        setCell(getCell(row, 59), punteggio1);
+                        setCell(getCell(row, 60), punteggio1_P);
+                        setCell(getCell(row, 61), punteggio2);
+                        setCell(getCell(row, 62), punteggio2_P);
+                        setCell(getCell(row, 63), punteggio3);
+                        setCell(getCell(row, 64), punteggio3_P);
+                        setCell(getCell(row, 65), punteggio4);
+                        setCell(getCell(row, 66), punteggio4_P);
+                        setCell(getCell(row, 67), punteggioATTR);
+                        setCell(getCell(row, 68), premialita);
+
+                        indice.addAndGet(1);
+
                     }
-
-                    XSSFRow row = getRow(sh1, indice.get());
-
-                    setCell(getCell(row, 0), String.valueOf(idallievo));
-                    setCell(getCell(row, 1), sa);
-                    setCell(getCell(row, 2), nome);
-                    setCell(getCell(row, 3), cognome);
-                    setCell(getCell(row, 4), datanascita);
-                    setCell(getCell(row, 5), eta);
-                    setCell(getCell(row, 6), statonascita);
-                    setCell(getCell(row, 7), comune_nascita);
-                    setCell(getCell(row, 8), provincia_nascita);
-                    setCell(getCell(row, 9), codicefiscale);
-                    setCell(getCell(row, 10), telefono);
-                    setCell(getCell(row, 11), email);
-                    setCell(getCell(row, 12), indirizzoresidenza);
-                    setCell(getCell(row, 13), civicoresidenza);
-                    setCell(getCell(row, 14), comune_residenza);
-                    setCell(getCell(row, 15), codice_istat_residenza);
-                    setCell(getCell(row, 16), capresidenza);
-                    setCell(getCell(row, 17), provincia_residenza);
-                    setCell(getCell(row, 18), regione_residenza);
-                    setCell(getCell(row, 19), domiciliouguale);
-                    setCell(getCell(row, 20), indirizzodomicilio);
-                    setCell(getCell(row, 21), civicodomicilio);
-                    setCell(getCell(row, 22), comune_domicilio);
-                    setCell(getCell(row, 23), codice_istat_domicilio);
-                    setCell(getCell(row, 24), provincia_domicilio);
-                    setCell(getCell(row, 25), regione_domicilio);
-                    setCell(getCell(row, 26), sesso);
-                    setCell(getCell(row, 27), cittadinanza);
-                    setCell(getCell(row, 28), istat_cittadinanza);
-                    setCell(getCell(row, 29), target);
-                    setCell(getCell(row, 30), titolo_studio);
-                    setCell(getCell(row, 31), condizione_lavorativa);
-                    setCell(getCell(row, 32), canale);
-                    setCell(getCell(row, 33), motivazione);
-                    setCell(getCell(row, 34), privacy1);
-                    setCell(getCell(row, 35), privacy2);
-                    setCell(getCell(row, 36), privacy3);
-                    setCell(getCell(row, 37), statopartecipazione);
-                    setCell(getCell(row, 38), cip);
-                    setCell(getCell(row, 39), dataavvio);
-                    setCell(getCell(row, 40), datachiusura);
-                    setCell(getCell(row, 41), orefrequenza);
-                    setCell(getCell(row, 42), formagiuridica);
-                    setCell(getCell(row, 43), sedeindividuata);
-                    setCell(getCell(row, 44), dispocolloquio);
-                    setCell(getCell(row, 45), ideaimpresa);
-                    setCell(getCell(row, 46), ateco);
-                    setCell(getCell(row, 47), comunelocalizzazione);
-                    setCell(getCell(row, 48), regionelocalizzazione);
-                    setCell(getCell(row, 49), motivazioneatti);
-                    setCell(getCell(row, 50), fabbisognofinanz);
-                    setCell(getCell(row, 51), finanzrich);
-                    setCell(getCell(row, 52), bandose);
-                    setCell(getCell(row, 53), tipomc);
-                    setCell(getCell(row, 54), bandorestosud);
-                    setCell(getCell(row, 55), motivazrestosud.trim());
-                    setCell(getCell(row, 56), bandoreg);
-                    setCell(getCell(row, 57), nomebandoreg);
-                    setCell(getCell(row, 58), motivnobando);
-                    setCell(getCell(row, 59), punteggio1);
-                    setCell(getCell(row, 60), punteggio1_P);
-                    setCell(getCell(row, 61), punteggio2);
-                    setCell(getCell(row, 62), punteggio2_P);
-                    setCell(getCell(row, 63), punteggio3);
-                    setCell(getCell(row, 64), punteggio3_P);
-                    setCell(getCell(row, 65), punteggio4);
-                    setCell(getCell(row, 66), punteggio4_P);
-                    setCell(getCell(row, 67), punteggioATTR);
-                    setCell(getCell(row, 68), premialita);
-
-                    indice.addAndGet(1);
-
                 }
+                for (int i = 0; i < 69; i++) {
+                    sh1.autoSizeColumn(i);
+                }
+                fileout = "/mnt/mcn/yisu_ded/estrazioni/Report_allievi_" + new DateTime().toString(timestamp) + ".xlsx";
+                outputStream = new FileOutputStream(new File(fileout));
+                wb.write(outputStream);
             }
-
-            for (int i = 0; i < 69; i++) {
-                sh1.autoSizeColumn(i);
-            }
-            String fileout = "/mnt/mcn/yisu_ded/estrazioni/Report_allievi_" + new DateTime().toString(timestamp) + ".xlsx";
-            FileOutputStream outputStream = new FileOutputStream(new File(fileout));
-            wb.write(outputStream);
-            wb.close();
             outputStream.close();
             log.log(Level.WARNING, "{0} RILASCIATO CORRETTAMENTE.", fileout);
             String upd = "UPDATE estrazioni SET path = '" + fileout + "' WHERE idestrazione=2";
@@ -1679,55 +1682,6 @@ public class DeD_gestione {
             log.severe(estraiEccezione(e));
         }
 
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    
-    public static void main(String[] args) {
-        boolean testing = true;
-        try {
-            testing = args[0].equals("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-
-        DeD_gestione ne = new DeD_gestione(testing);
-
-//        //FAD
-//        try {
-//            ne.fad_gestione();
-//        } catch (Exception e) {
-//        }
-
-        //COMUNICAZIONI
-//        try {
-//            log.warning("MAIL REMIND 1 GIORNO... INIZIO");
-//            ne.mail_remind(1);
-//            log.warning("MAIL REMIND 1 GIORNO... FINE");
-//        } catch (Exception e) {}
-//        try {
-//            log.warning("MAIL REMIND QUESTIONARI INGRESSO... INIZIO");
-//            ne.mail_questionario_INGRESSO();
-//            log.warning("MAIL REMIND QUESTIONARI INGRESSO... FINE");
-//        } catch (Exception e) {}
-//        try {
-//            log.warning("MAIL REMIND QUESTIONARI USCITA... INIZIO");
-//            ne.mail_questionario_USCITA();
-//            log.warning("MAIL REMIND QUESTIONARI USCITA... FINE");
-//        } catch (Exception e) {}
-
-        //ESTRAZIONI
-//        try {
-//            log.warning("GENERAZIONE FILE REPORT... INIZIO");
-//            ne.report_docenti();
-//            ne.report_allievi();
-//            ne.report_pf();
-//            log.warning("GENERAZIONE FILE REPORT... FINE");
-//        } catch (Exception e) {
-//        }
-    
-
-           
     }
 
 }

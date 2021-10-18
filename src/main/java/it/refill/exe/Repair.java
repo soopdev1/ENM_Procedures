@@ -31,7 +31,7 @@ public class Repair {
 
     public String host;
     private boolean test;
-    private static Logger log = Constant.createLog("ProceduraMCN", "/mnt/mcn/test/log/");
+    private static Logger log = Constant.createLog("ProceduraMCN", "/mnt/mcn/test/log/", true);
 
     ////////////////////////////////////////////////////////////////////////////
     public Repair(boolean test, boolean neet) {
@@ -400,44 +400,6 @@ public class Repair {
             });
         } catch (Exception e) {
             log.severe(estraiEccezione(e));
-        }
-    }
-
-    public static void main(String[] args) {
-        boolean testing;
-        try {
-            testing = args[0].equals("test");
-        } catch (Exception e) {
-            testing = false;
-        }
-        //NEET
-        Repair neet = new Repair(testing, true);
-        try {
-            neet.imposta_progetti_finettivita();
-        } catch (Exception e) {
-        }
-        try {
-            neet.copiadocumentidocenti();
-        } catch (Exception e) {
-        }
-        try {
-            neet.crea_pdf_unico_ANPAL(true);
-        } catch (Exception e) {
-        }
-
-        //DED
-        Repair ded = new Repair(testing, false);
-        try {
-            ded.imposta_progetti_finettivita();
-        } catch (Exception e) {
-        }
-        try {
-            ded.copiadocumentidocenti();
-        } catch (Exception e) {
-        }
-        try {
-            ded.crea_pdf_unico_ANPAL(false);
-        } catch (Exception e) {
         }
     }
 
