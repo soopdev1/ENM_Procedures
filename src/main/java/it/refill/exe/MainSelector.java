@@ -31,25 +31,25 @@ public class MainSelector {
         //////////////////////////////
         boolean testing;
         try {
-            testing = args[0].equals("test");
+            testing = args[0].trim().equals("test");
         } catch (Exception e) {
             testing = false;
         }
 
         int select_action;
         try {
-            select_action = Integer.parseInt(args[1]);
+            select_action = Integer.parseInt(args[1].trim());
         } catch (Exception e) {
             select_action = 0;
         }
 
         boolean neet;
         try {
-            neet = Boolean.valueOf(args[2]);
+            neet = args[2].trim().equals("true");
         } catch (Exception e) {
             neet = false;
         }
-
+        
         if (neet) { //NEET
             Neet_gestione ne = new Neet_gestione(testing);
             switch (select_action) {
@@ -265,7 +265,6 @@ public class MainSelector {
                         log.severe(estraiEccezione(e));
                     }
                     break;
-
                 case 6:
                     log.warning("REPAIR D&D");
                     Repair ded = new Repair(testing, false);

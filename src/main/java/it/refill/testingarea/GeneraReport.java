@@ -28,14 +28,14 @@ public class GeneraReport {
 
             boolean neet = false;
             boolean testing = false;
-            int idpr = 174;
+            int idpr = 118;
 //            
 //            
             FaseA FA = new FaseA(testing, neet);
 //            FaseB FB = new FaseB(testing, neet);
 //
 //            //  FASE A
-            List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), false, true, false);
+            List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), false, false, false);
             FA.registro_aula_FaseA(idpr, FA.getHost(), false, false);
 //
 ////            FASE B

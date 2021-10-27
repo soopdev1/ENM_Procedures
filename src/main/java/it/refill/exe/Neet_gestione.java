@@ -281,15 +281,14 @@ public class Neet_gestione {
                     + " AND mp.id_progettoformativo=" + idprogetti_formativi
                     + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso)"
                     + " AND pf.idprogetti_formativi=f.idprogetti_formativi AND ((pf.stato='ATA' AND ud.fase='Fase A') OR (pf.stato='ATB' AND ud.fase='Fase B'))"
-                    + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.nomestanza";
+                    + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.id_docente";
             if (manual) {
                 sql1 = "SELECT ud.fase,lm.gruppo_faseB,f.nomestanza,ud.codice,lm.id_docente FROM lezioni_modelli lm, modelli_progetti mp, lezione_calendario lc, unita_didattiche ud, fad_multi f"
                         + " WHERE mp.id_modello=lm.id_modelli_progetto AND lc.id_lezionecalendario=lm.id_lezionecalendario AND ud.codice=lc.codice_ud"
                         + " AND mp.id_progettoformativo=" + idprogetti_formativi
                         + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso)"
-                        + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.nomestanza";
+                        + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.id_docente";
             }
-
             try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
 
@@ -302,7 +301,7 @@ public class Neet_gestione {
                             + " AND mp.id_progettoformativo=" + idprogetti_formativi
                             + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso) "
                             + " AND f.nomestanza = '" + nomestanza + "'"
-                            + " AND lm.giorno = '" + dataoggi + "' ORDER BY lm.orario_start";
+                            + " AND lm.giorno = '" + dataoggi + "' AND lm.id_docente = " + id_docente + " ORDER BY lm.orario_start";
                     StringBuilder orainvitosb = new StringBuilder("");
                     try (Statement st1A = db1.getConnection().createStatement(); ResultSet rs1A = st1A.executeQuery(sql1A)) {
                         while (rs1A.next()) {
@@ -1417,9 +1416,12 @@ public class Neet_gestione {
                         }
 
                         String cip = "";
+                        String statopr = "";
                         String dataavvio = "";
                         String datachiusura = "";
-                        String sql10 = "SELECT cip,start,end FROM progetti_formativi WHERE idprogetti_formativi=" + idpr;
+//                        String sql10 = "SELECT cip,start,end,stato FROM progetti_formativi WHERE idprogetti_formativi=" + idpr;
+                        String sql10 = "SELECT p.cip,p.start,p.END,s.descrizione FROM progetti_formativi p, stati_progetto s WHERE p.stato=s.idstati_progetto AND idprogetti_formativi=" + idpr;
+
                         try (ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
                             if (rs10.next()) {
                                 if (rs10.getString(1) != null) {
@@ -1432,6 +1434,9 @@ public class Neet_gestione {
                                     if (new DateTime().withMillisOfDay(0).isAfter(new DateTime(rs10.getDate(3).getTime()))) {
                                         datachiusura = sdita.format(rs10.getDate(3));
                                     }
+                                }
+                                if (rs10.getString(4) != null) {
+                                    statopr = rs10.getString(4).toUpperCase();
                                 }
                             }
                         }
@@ -1631,42 +1636,44 @@ public class Neet_gestione {
                         setCell(getCell(row, 39), privacy3);
                         setCell(getCell(row, 40), statopartecipazione);
                         setCell(getCell(row, 41), cip);
-                        setCell(getCell(row, 42), dataavvio);
-                        setCell(getCell(row, 43), datachiusura);
-                        setCell(getCell(row, 44), orefrequenza);
-                        setCell(getCell(row, 45), formagiuridica);
-                        setCell(getCell(row, 46), sedeindividuata);
-                        setCell(getCell(row, 47), dispocolloquio);
-                        setCell(getCell(row, 48), ideaimpresa);
-                        setCell(getCell(row, 49), ateco);
-                        setCell(getCell(row, 50), comunelocalizzazione);
-                        setCell(getCell(row, 51), regionelocalizzazione);
-                        setCell(getCell(row, 52), motivazioneatti);
-                        setCell(getCell(row, 53), fabbisognofinanz);
-                        setCell(getCell(row, 54), finanzrich);
-                        setCell(getCell(row, 55), bandose);
-                        setCell(getCell(row, 56), tipomc);
-                        setCell(getCell(row, 57), bandorestosud);
-                        setCell(getCell(row, 58), motivazrestosud.trim());
-                        setCell(getCell(row, 59), bandoreg);
-                        setCell(getCell(row, 60), nomebandoreg);
-                        setCell(getCell(row, 61), motivnobando);
-                        setCell(getCell(row, 62), punteggio1);
-                        setCell(getCell(row, 63), punteggio1_P);
-                        setCell(getCell(row, 64), punteggio2);
-                        setCell(getCell(row, 65), punteggio2_P);
-                        setCell(getCell(row, 66), punteggio3);
-                        setCell(getCell(row, 67), punteggio3_P);
-                        setCell(getCell(row, 68), punteggio4);
-                        setCell(getCell(row, 69), punteggio4_P);
-                        setCell(getCell(row, 70), punteggioATTR);
-                        setCell(getCell(row, 71), premialita);
+                        setCell(getCell(row, 42), statopr);
+
+                        setCell(getCell(row, 43), dataavvio);
+                        setCell(getCell(row, 44), datachiusura);
+                        setCell(getCell(row, 45), orefrequenza);
+                        setCell(getCell(row, 46), formagiuridica);
+                        setCell(getCell(row, 47), sedeindividuata);
+                        setCell(getCell(row, 48), dispocolloquio);
+                        setCell(getCell(row, 49), ideaimpresa);
+                        setCell(getCell(row, 50), ateco);
+                        setCell(getCell(row, 51), comunelocalizzazione);
+                        setCell(getCell(row, 52), regionelocalizzazione);
+                        setCell(getCell(row, 53), motivazioneatti);
+                        setCell(getCell(row, 54), fabbisognofinanz);
+                        setCell(getCell(row, 55), finanzrich);
+                        setCell(getCell(row, 56), bandose);
+                        setCell(getCell(row, 57), tipomc);
+                        setCell(getCell(row, 58), bandorestosud);
+                        setCell(getCell(row, 59), motivazrestosud.trim());
+                        setCell(getCell(row, 60), bandoreg);
+                        setCell(getCell(row, 61), nomebandoreg);
+                        setCell(getCell(row, 62), motivnobando);
+                        setCell(getCell(row, 63), punteggio1);
+                        setCell(getCell(row, 64), punteggio1_P);
+                        setCell(getCell(row, 65), punteggio2);
+                        setCell(getCell(row, 66), punteggio2_P);
+                        setCell(getCell(row, 67), punteggio3);
+                        setCell(getCell(row, 68), punteggio3_P);
+                        setCell(getCell(row, 69), punteggio4);
+                        setCell(getCell(row, 70), punteggio4_P);
+                        setCell(getCell(row, 71), punteggioATTR);
+                        setCell(getCell(row, 72), premialita);
 
                         indice.addAndGet(1);
 
                     }
                 }
-                for (int i = 0; i < 72; i++) {
+                for (int i = 0; i < 73; i++) {
                     sh1.autoSizeColumn(i);
                 }
                 fileout = "/mnt/mcn/yisu_neet/estrazioni/Report_allievi_" + new DateTime().toString(timestamp) + ".xlsx";
@@ -1683,5 +1690,10 @@ public class Neet_gestione {
         }
 
     }
+
+//    public static void main(String[] args) {
+//        Neet_gestione ne = new Neet_gestione(false);
+//        ne.report_allievi();
+//    }
 
 }
