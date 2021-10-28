@@ -614,7 +614,7 @@ public class Neet_gestione {
                                         boolean es = sendMail(mailsender,
                                                 new String[]{email},
                                                 new String[]{"lucia.cavola@microcredito.gov.it"},
-                                                new String[]{"raffaele.cosco@faultless.it"},
+                                                new String[]{},
                                                 emailtesto, emailoggetto.toString(), db1, log);
 
                                         if (es) {
@@ -689,8 +689,7 @@ public class Neet_gestione {
 
                             boolean es = sendMail(mailsender,
                                     new String[]{email},
-                                    new String[]{"lucia.cavola@microcredito.gov.it"},
-                                    new String[]{"raffaele.cosco@faultless.it"},
+                                    new String[]{"lucia.cavola@microcredito.gov.it"}, new String[]{},
                                     emailtesto, emailoggetto.toString(), db1, log);
                             if (es) {
                                 log.log(Level.INFO, "MAIL QUSTIONARIO INGRESSO INVIATA A : {0}", email);
@@ -1695,5 +1694,4 @@ public class Neet_gestione {
 //        Neet_gestione ne = new Neet_gestione(false);
 //        ne.report_allievi();
 //    }
-
 }
