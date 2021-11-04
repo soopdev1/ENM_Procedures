@@ -88,7 +88,7 @@ public class Create {
 
             //COMPLESSIVO
             Db_Bando dbA0 = new Db_Bando(FA.getHost());
-            String sqlA0 = "SELECT idprogetti_formativi FROM progetti_formativi WHERE END < CURDATE() "
+            String sqlA0 = "SELECT idprogetti_formativi FROM progetti_formativi WHERE END < CURDATE() AND stato NOT LIKE '%E' "
                     + "AND idprogetti_formativi NOT IN (SELECT idprogetto FROM documenti_progetti WHERE tipo=33)";
             try (Statement st0 = dbA0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sqlA0)) {
                 while (rs0.next()) {

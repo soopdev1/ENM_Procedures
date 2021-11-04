@@ -42,6 +42,9 @@ import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import static java.util.Calendar.getInstance;
 import java.util.Date;
@@ -279,10 +282,27 @@ public class Constant {
         return riga;
     }
 
+    public static long getTimeDiff() {
+        try {
+            TimeZone tz1 = TimeZone.getTimeZone("Europe/Rome");
+            TimeZone tz2 = TimeZone.getTimeZone("GMT");
+            TimeZone tz3 = TimeZone.getTimeZone("GMT+1");
+            ZoneId arrivingZone = ZoneId.of("Europe/Rome");
+            ZonedDateTime arrival = Instant.now().atZone(arrivingZone);
+            if (arrivingZone.getRules().isDaylightSavings(arrival.toInstant())) {
+                return tz1.getRawOffset() - tz2.getRawOffset() + tz1.getDSTSavings() - tz2.getDSTSavings();
+            } else {
+                return tz1.getRawOffset() - tz3.getRawOffset() + tz1.getDSTSavings() - tz3.getDSTSavings();
+            }
+        } catch (Exception e) {
+        }
+        return 0L;
+    }
+
     public static String convertTS_Italy(String ts1) {
-        TimeZone tz1 = TimeZone.getTimeZone("Europe/Berlin");
-        TimeZone tz2 = TimeZone.getTimeZone("GMT");
-        long timeDifference = tz1.getRawOffset() - tz2.getRawOffset() + tz1.getDSTSavings() - tz2.getDSTSavings();
+//        TimeZone tz1 = TimeZone.getTimeZone("Europe/Rome");
+//        TimeZone tz2 = TimeZone.getTimeZone("GMT");
+//        long timeDifference = tz1.getRawOffset() - tz2.getRawOffset() + tz1.getDSTSavings() - tz2.getDSTSavings();
         String dt1 = StringUtils.substring(ts1, 0, 26);
         try {
             if (dt1.length() != timestampFAD.length()) {
@@ -293,9 +313,13 @@ public class Constant {
         } catch (Exception e) {
         }
         DateTime start = new DateTime(dtfad.parseDateTime(dt1));
-        DateTime dateTimeIT = start.plus(timeDifference);
+        DateTime dateTimeIT = start.plus(getTimeDiff());
         return dateTimeIT.toString(timestampSQL);
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(convertTS_Italy("2021-11-02 15:38:36"));
+//    }
 
 //    public static String checkCalendar(String date, List<Lezione> calendar, Presenti pr1) {
 //        StringBuilder newdate = new StringBuilder();

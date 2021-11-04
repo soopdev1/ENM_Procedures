@@ -64,6 +64,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.stripAccents;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.joda.time.DateTime;
 
 /**
@@ -467,6 +469,8 @@ public class FaseA {
                 //dati pdf
                 Color lightgrey = new DeviceRgb(242, 242, 242);
                 PdfFont fontbold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+                PDFont font = PDType1Font.HELVETICA_BOLD;
+               
                 Style bold = new Style();
                 bold.setFont(fontbold).setFontSize(11);
                 PdfFont fontnormal = PdfFontFactory.createFont(StandardFonts.HELVETICA);
@@ -475,7 +479,7 @@ public class FaseA {
 
                 //CREA PDF REPORT
                 File out0 = new File(pathtemp + now0 + "reportfaseA_" + idpr + ".pdf");
-                System.out.println(out0.getAbsolutePath());
+//                System.out.println(out0.getAbsolutePath());
                 PdfWriter pw0 = new PdfWriter(out0);
                 PdfDocument pdfDoc = new PdfDocument(pw0);
                 pdfDoc.setDefaultPageSize(PageSize.A4.rotate());

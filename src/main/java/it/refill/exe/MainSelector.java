@@ -17,6 +17,13 @@ public class MainSelector {
     private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/", true);
 
     public static void main(String[] args) {
+
+        try {
+            System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+            java.util.logging.Logger.getLogger("org.apache.pdfbox").setLevel(java.util.logging.Level.SEVERE);
+        } catch (Exception e) {
+        }
+
         //ARGS[0] TEST
         //////////////////////////////
         //ARGS[1] OPERAZIONE 1 - 3
@@ -49,7 +56,7 @@ public class MainSelector {
         } catch (Exception e) {
             neet = false;
         }
-        
+
         if (neet) { //NEET
             Neet_gestione ne = new Neet_gestione(testing);
             switch (select_action) {
@@ -220,7 +227,7 @@ public class MainSelector {
                     break;
                 case 4:
                     log.warning("GESTIONE D&D - REPORT FAD");
-                    Create.crea(true, testing);
+                    Create.crea(false, testing);
                     break;
                 case 5:
                     log.warning("ACCREDITAMENTO D&D");
