@@ -770,7 +770,7 @@ public class Neet_gestione {
                             emailtesto = StringUtils.replace(emailtesto, "@nomecognome", nomecognome);
                             emailtesto = StringUtils.replace(emailtesto, "@datainvito", datainvito.toString());
                             String email = rs3.getString("email").toLowerCase();
-                            boolean es = sendMail(mailsender, new String[]{email}, new String[]{mailsa}, new String[]{mailmcn, "raffaele.cosco@faultless.it"},
+                            boolean es = sendMail(mailsender, new String[]{email}, new String[]{mailsa}, new String[]{mailmcn},
                                     emailtesto, emailoggetto.toString(), db1, log);
                             if (es) {
                                 log.log(Level.INFO, "MAIL AVVISO {0} GIORNI PRIMA INVIATA A : {1}", new Object[]{day, email});

@@ -63,6 +63,7 @@ public class Repair {
                     try (Statement st = db1.getConnection().createStatement()) {
                         boolean es = st.executeUpdate(up0) > 0;
                         log.log(Level.WARNING, "{0} -- {1}", new Object[]{up0, es});
+
                     }
                 }
             }
@@ -402,5 +403,54 @@ public class Repair {
             log.severe(estraiEccezione(e));
         }
     }
+
+    public void impostaritiratounder36oreA() {
+        try {
+            Long hh36 = new Long(129600000);
+            Db_Bando db1 = new Db_Bando(this.host);
+
+            String sql1 = "SELECT a.idallievi,a.idprogetti_formativi,a.idsoggetto_attuatore,a.cognome,a.nome "
+                    + "FROM allievi a WHERE a.idprogetti_formativi IS NOT NULL AND a.id_statopartecipazione='01' "
+                    + "AND a.idprogetti_formativi IN(SELECT p.idprogetti_formativi FROM progetti_formativi p "
+                    + "WHERE p.stato IN (SELECT s.idstati_progetto FROM stati_progetto s "
+                    + "WHERE s.ordine_processo IS NOT NULL AND s.ordine_processo>4));";
+            try (Statement st1 = db1.getConnection().createStatement();
+                    ResultSet rs1 = st1.executeQuery(sql1)) {
+                while (rs1.next()) {
+                    long idallievi = rs1.getLong(1);
+                    long idprogetti_formativi = rs1.getLong(2);
+                    long idsoggetto_attuatore = rs1.getLong(3);
+
+                    String sql2 = "SELECT sum(totaleorerendicontabili) as totOre FROM registro_completo "
+                            + "WHERE fase = 'A' AND ruolo LIKE 'ALLIEVO%' "
+                            + "AND idprogetti_formativi = " + idprogetti_formativi + " AND idutente = " + idallievi + " AND idsoggetti_attuatori = " + idsoggetto_attuatore;
+
+                    try (Statement st2 = db1.getConnection().createStatement();
+                            ResultSet rs2 = st2.executeQuery(sql2)) {
+                        if (rs2.next()) {
+                            if (rs2.getLong(1) >= hh36) {
+//                                System.out.println(idallievi + " OK");
+                            } else {
+                                String upd1 = "UPDATE allievi SET id_statopartecipazione='02' WHERE idallievi=" + idallievi;
+                                try (Statement st3 = db1.getConnection().createStatement()) {
+                                    int x = st3.executeUpdate(upd1);
+                                    System.out.println(upd1 + " -- " + (x > 0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            db1.closeDB();
+        } catch (Exception e) {
+            log.severe(estraiEccezione(e));
+        }
+
+    }
+
+//    public static void main(String[] args) {
+//        new Repair(false, true).impostaritiratounder36oreA();
+//    }
 
 }

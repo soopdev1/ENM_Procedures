@@ -15,14 +15,14 @@ import it.refill.exe.Neet_gestione;
  */
 public class Manualmente {
 
-//    public static void main(String[] args) {
-//
-//        int pf = 172;
-//        DeD_gestione d = new DeD_gestione(false);
-//        d.verifica_stanze(pf);
-//        d.fad_allievi(pf, true);
-//        d.fad_docenti(pf, true);
-//        d.fad_ospiti(pf, true);
-//
-//    }
+    public static void main(String[] args) {
+
+        int pf = 172;
+        DeD_gestione d = new DeD_gestione(false);
+        d.verifica_stanze(pf);
+        d.fad_allievi(pf, true);
+        d.fad_docenti(pf, true);
+        d.fad_ospiti(pf, true);
+
+    }
 }

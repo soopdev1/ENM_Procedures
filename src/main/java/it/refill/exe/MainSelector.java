@@ -158,10 +158,16 @@ public class MainSelector {
                 case 6:
                     log.warning("REPAIR NEET");
                     Repair neetr = new Repair(testing, true);
+
                     try {
                         neetr.imposta_progetti_finettivita();
                     } catch (Exception e) {
                     }
+                    try {
+                        neetr.impostaritiratounder36oreA();
+                    } catch (Exception e) {
+                    }
+
                     try {
                         neetr.copiadocumentidocenti();
                     } catch (Exception e) {
@@ -277,6 +283,10 @@ public class MainSelector {
                     Repair ded = new Repair(testing, false);
                     try {
                         ded.imposta_progetti_finettivita();
+                    } catch (Exception e) {
+                    }
+                    try {
+                        ded.impostaritiratounder36oreA();
                     } catch (Exception e) {
                     }
                     try {

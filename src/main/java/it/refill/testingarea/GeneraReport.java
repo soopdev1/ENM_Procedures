@@ -1,6 +1,5 @@
 package it.refill.testingarea;
 
-
 import static it.refill.exe.Constant.estraiEccezione;
 import it.refill.exe.Db_Bando;
 import it.refill.report.Complessivo;
@@ -26,9 +25,9 @@ public class GeneraReport {
     public static void main(String[] args) {
         try {
 
-            boolean neet = false;
+            boolean neet = true;
             boolean testing = false;
-            int idpr = 207;
+            int idpr = 114;
 //            
 //            
             FaseA FA = new FaseA(testing, neet);
@@ -38,13 +37,13 @@ public class GeneraReport {
             List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), false, false, false);
             FA.registro_aula_FaseA(idpr, FA.getHost(), false, false);
 //
-////            FASE B
-//            List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), false, true, false);
-//            FB.registro_aula_FaseB(idpr, FA.getHost(), false, cb);
+//////            FASE B
+            List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), false, false, false);
+            FB.registro_aula_FaseB(idpr, FA.getHost(), false, cb);
 //            
 //
-//            Complessivo c1 = new Complessivo(FA.getHost());
-//            c1.registro_complessivo(idpr, c1.getHost(), ca, cb, false);
+            Complessivo c1 = new Complessivo(FA.getHost());
+            c1.registro_complessivo(idpr, c1.getHost(), ca, cb, false);
 //            
 
         } catch (Exception e) {

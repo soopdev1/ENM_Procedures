@@ -21,7 +21,7 @@ public class SostituisciModello {
     public static void main(String[] args) {
         try {
             //PARAMETRI
-            int idmodello = 37;
+            int idmodello = 36;
 
             boolean testing = false;
             boolean neet = false;
@@ -51,7 +51,7 @@ public class SostituisciModello {
 //            }
 
 ////            //UPDATE
-            File pdf = new File("C:\\mnt\\mcn\\test\\CheckList_DD.pdf");
+            File pdf = new File("C:\\Users\\Administrator\\Desktop\\da caricare\\DED_Modello_8_Esito_Valutazione.pdf");
             String update = "UPDATE tipo_documenti SET modello = '" + Base64.encodeBase64String(FileUtils.readFileToByteArray(pdf))
                     + "' WHERE idtipo_documenti=" + idmodello;
             if (neet) {
