@@ -7,12 +7,68 @@ package it.refill.exe;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  *
  * @author rcosco
  */
 public class Items {
+    
+    String fase, data, orainizio, orafine, gruppo;
+    
+    public Items(String fase, String data, String orainizio, String orafine, String gruppo) {
+        this.fase = fase;
+        this.data = data;
+        this.orainizio = orainizio;
+        this.orafine = orafine;
+        this.gruppo = gruppo;
+    }
+
+    public String getFase() {
+        return fase;
+    }
+
+    public void setFase(String fase) {
+        this.fase = fase;
+    }
+
+    
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getOrainizio() {
+        return orainizio;
+    }
+
+    public void setOrainizio(String orainizio) {
+        this.orainizio = orainizio;
+    }
+
+    public String getOrafine() {
+        return orafine;
+    }
+
+    public void setOrafine(String orafine) {
+        this.orafine = orafine;
+    }
+
+    public String getGruppo() {
+        return gruppo;
+    }
+
+    public void setGruppo(String gruppo) {
+        this.gruppo = gruppo;
+    }
+    
+    
     
     String cod;
     int codice;
@@ -64,6 +120,13 @@ public class Items {
 
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
+    }
+    
+    
+    
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 
 }

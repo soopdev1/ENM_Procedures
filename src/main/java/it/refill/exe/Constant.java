@@ -18,7 +18,7 @@ import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Text;
-import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.properties.TextAlignment;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -93,6 +93,7 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.tika.Tika;
 import org.apache.xmpbox.XMPMetadata;
 import static org.apache.xmpbox.XMPMetadata.createXMPMetadata;
@@ -126,6 +127,12 @@ public class Constant {
     public static final SimpleDateFormat sdfITA = new SimpleDateFormat(patternITA);
 
     public static final String pathICC = "/home/tomcat/jar/sRGB.icc";
+
+    //VARIABILI MS
+    public static final double coeff_faseA = 0.80;
+    public static final double coeff_faseB = 40.00;
+    public static final double coeff_docfasciaA = 146.25;
+    public static final double coeff_docfasciaB = 117.00;
 
     public static Logger createLog(String nameapp, String logpath, boolean neet) {
         try {
@@ -253,30 +260,52 @@ public class Constant {
         try {
             cella.setCellValue(valore);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setCell(XSSFCell cella, XSSFCellStyle style, String valore, boolean integervalue, boolean doublevalue) {
+        try {
+            cella.setCellStyle(style);
+
+            if (integervalue) {
+                cella.setCellValue(Integer.parseInt(valore));
+            } else if (doublevalue) {
+                cella.setCellValue(Double.parseDouble(valore));
+            } else {
+                cella.setCellValue(valore);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public static XSSFCell getCell(XSSFRow riga, int indice) {
-        XSSFCell cell1 = null;
+        XSSFCell cell1;
         try {
             cell1 = riga.getCell(indice);
             if (cell1 == null) {
                 cell1 = riga.createCell(indice);
+
             }
         } catch (Exception e) {
+            e.printStackTrace();
             cell1 = null;
         }
         return cell1;
     }
 
     public static XSSFRow getRow(XSSFSheet foglio, int indice) {
-        XSSFRow riga = null;
+        XSSFRow riga;
         try {
             riga = foglio.getRow(indice);
             if (riga == null) {
                 riga = foglio.createRow(indice);
             }
+            riga.setHeight((short) -1);
         } catch (Exception e) {
+            e.printStackTrace();
             riga = null;
         }
         return riga;
@@ -320,7 +349,6 @@ public class Constant {
 //    public static void main(String[] args) {
 //        System.out.println(convertTS_Italy("2021-11-02 15:38:36"));
 //    }
-
 //    public static String checkCalendar(String date, List<Lezione> calendar, Presenti pr1) {
 //        StringBuilder newdate = new StringBuilder();
 //        String solodata = date.split(" ")[0];

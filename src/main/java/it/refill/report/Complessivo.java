@@ -23,9 +23,9 @@ import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.AreaBreakType;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.layout.properties.AreaBreakType;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import it.refill.exe.Constant;
 import static it.refill.exe.Constant.calcoladurata;
 import static it.refill.exe.Constant.checkPDF;
@@ -63,7 +63,7 @@ public class Complessivo {
         Create.log.log(Level.INFO, "HOST: {0}", this.host);
     }
 
-    public File registro_complessivo(int idpr, String host, List<Lezione> fa, List<Lezione> fb, boolean save) {
+    public File registro_complessivo(int idpr, String host, List<Lezione> fa, List<Lezione> fb, boolean save, boolean neet) {
         try {
 
             Db_Bando db1 = new Db_Bando(host);
@@ -274,7 +274,13 @@ public class Complessivo {
                             cel3.add(new Paragraph(r1.getNome()).addStyle(normal));
                             table.addCell(cel3);
                             cel3 = new Cell();
-                            cel3.add(new Paragraph(r1.getRuolo()).addStyle(normal));
+
+                            String ruolo = r1.getRuolo();
+                            if (!neet) {
+                                ruolo = StringUtils.remove(ruolo, "NEET").trim();
+                            }
+
+                            cel3.add(new Paragraph(ruolo).addStyle(normal));
                             table.addCell(cel3);
                             cel3 = new Cell();
                             cel3.add(new Paragraph(r1.getEmail()).addStyle(normal));

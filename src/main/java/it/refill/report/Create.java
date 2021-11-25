@@ -31,7 +31,7 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class Create {
 
-    public static Logger log = Constant.createLog("FADReport_", "/mnt/mcn/test/log/", true);
+    public static final Logger log = Constant.createLog("FADReport_", "/mnt/mcn/test/log/", true);
 
     public static void crea(boolean neet, boolean testing) {
         boolean print = false;
@@ -67,7 +67,8 @@ public class Create {
                 try {
                     log.log(Level.INFO, "REPORT FASE A - IDPR {0}", idpr);
                     List<Lezione> calendar1 = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), print, save, false);
-                    FA.registro_aula_FaseA(idpr, FA.getHost(), save, calendar1);
+
+                    FA.registro_aula_FaseA(idpr, FA.getHost(), save, calendar1, neet);
                     log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
                 } catch (Exception e1) {
                     log.severe(estraiEccezione(e1));
@@ -76,7 +77,8 @@ public class Create {
                 try {
                     log.log(Level.INFO, "REPORT FASE B - IDPR {0}", idpr);
                     List<Lezione> calendar2 = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), print, save, false);
-                    FB.registro_aula_FaseB(idpr, FA.getHost(), save, calendar2);
+
+                    FB.registro_aula_FaseB(idpr, FA.getHost(), save, calendar2, neet);
                     log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
                 } catch (Exception e1) {
                     log.severe(estraiEccezione(e1));
@@ -103,7 +105,7 @@ public class Create {
                     log.log(Level.INFO, "REPORT COMPLESSIVO - IDPR {0}", idpr);
                     List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, c1.getHost(), false, false, false);
                     List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, c1.getHost(), false, false, false);
-                    c1.registro_complessivo(idpr, c1.getHost(), ca, cb, save);
+                    c1.registro_complessivo(idpr, c1.getHost(), ca, cb, save, neet);
                     log.log(Level.INFO, "COMPLETATO REPORT COMPLESSIVO - IDPR {0}", idpr);
                 } catch (Exception e1) {
                     log.severe(estraiEccezione(e1));

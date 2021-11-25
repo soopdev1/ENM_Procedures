@@ -24,9 +24,10 @@ import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.AreaBreakType;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.layout.properties.AreaBreakType;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+
 import it.refill.exe.Constant;
 import static it.refill.exe.Constant.calcoladurata;
 import static it.refill.exe.Constant.checkPDF;
@@ -99,7 +100,7 @@ public class FaseA {
 //        File f = fa.registro_aula_FaseA(82, fa.getHost(), false, l);
 //
 //    }
-    public File registro_aula_FaseA(int idpr, String host, boolean save, List<Lezione> calendar) {
+    public File registro_aula_FaseA(int idpr, String host, boolean save, List<Lezione> calendar, boolean neet) {
         try {
             Db_Bando db0 = new Db_Bando(host);
             String linkpiattaforma = db0.getPath("dominio");
@@ -315,7 +316,11 @@ public class FaseA {
                             cel3.add(new Paragraph(r1.getNome()).addStyle(normal));
                             table.addCell(cel3);
                             cel3 = new Cell();
-                            cel3.add(new Paragraph(r1.getRuolo()).addStyle(normal));
+                            String ruolo = r1.getRuolo();
+                            if (!neet) {
+                                ruolo = StringUtils.remove(ruolo, "NEET").trim();
+                            }
+                            cel3.add(new Paragraph(ruolo).addStyle(normal));
                             table.addCell(cel3);
                             cel3 = new Cell();
                             cel3.add(new Paragraph(r1.getEmail()).addStyle(normal));
@@ -420,7 +425,7 @@ public class FaseA {
         return null;
     }
 
-    public File registro_aula_FaseA(int idpr, String host, boolean save, boolean today) {
+    public File registro_aula_FaseA(int idpr, String host, boolean save, boolean today, boolean neet) {
         try {
             StringBuilder nomestanza = new StringBuilder();
             List<Lezione> calendar = new ArrayList<>();
@@ -470,7 +475,7 @@ public class FaseA {
                 Color lightgrey = new DeviceRgb(242, 242, 242);
                 PdfFont fontbold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
                 PDFont font = PDType1Font.HELVETICA_BOLD;
-               
+
                 Style bold = new Style();
                 bold.setFont(fontbold).setFontSize(11);
                 PdfFont fontnormal = PdfFontFactory.createFont(StandardFonts.HELVETICA);
@@ -668,7 +673,13 @@ public class FaseA {
                                 cel3.add(new Paragraph(r1.getNome()).addStyle(normal));
                                 table.addCell(cel3);
                                 cel3 = new Cell();
-                                cel3.add(new Paragraph(r1.getRuolo()).addStyle(normal));
+
+                                String ruolo = r1.getRuolo();
+                                if (!neet) {
+                                    ruolo = StringUtils.remove(ruolo, "NEET").trim();
+                                }
+
+                                cel3.add(new Paragraph(ruolo).addStyle(normal));
                                 table.addCell(cel3);
                                 cel3 = new Cell();
                                 cel3.add(new Paragraph(r1.getEmail()).addStyle(normal));
@@ -1100,8 +1111,7 @@ public class FaseA {
                                             }
                                             ind.addAndGet(1);
                                         });
-                                        
-                                        
+
                                         if ((userp_final.size() % 2) != 0) {
                                             if (userp_final.getLast().isLogout()) {
                                                 userp_final.removeLast();
@@ -1111,9 +1121,9 @@ public class FaseA {
                                                     DateTime ultimo = Constant.dtfsql.parseDateTime(userp_final.getLast().getDate());
                                                     DateTime finelezione = Constant.dtfsql.parseDateTime(cal.getGiorno() + " " + cal.getEnd());
                                                     if (ultimo.isAfter(finelezione)) {
-                                                        
+
                                                         userp_final.removeLast();
-                                                        
+
                                                     } else {
                                                         Presenti pr1 = new Presenti(userp_final.getLast().getNome(), userp_final.getLast().getCognome(),
                                                                 userp_final.getLast().getCf(), userp_final.getLast().getEmail(), userp_final.getLast().getRuolo());
