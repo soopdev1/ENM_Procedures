@@ -13,9 +13,11 @@ import static it.refill.exe.Constant.setCell;
 import it.refill.exe.Db_Bando;
 import it.refill.exe.ExcelDomande;
 import it.refill.exe.Items;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -314,6 +317,25 @@ public class Excel {
 
         String fileing = "C:\\mnt\\mcn\\yisu_neet\\estrazioni\\TEMPLATE PROSPETTO RIEPILOGO.xlsx";
         try {
+
+            String l_name = "L66_" + new DateTime().toString("ddMMyyyy");
+
+            File sd01 = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\SD01.txt");
+
+            BufferedWriter sd01_W = new BufferedWriter(new FileWriter(sd01));
+
+            File sd03 = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\SD03.txt");
+
+            BufferedWriter sd03_W = new BufferedWriter(new FileWriter(sd03));
+
+            File ddr = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\DDR.txt");
+
+            BufferedWriter ddr_W = new BufferedWriter(new FileWriter(ddr));
+
+            AtomicDouble total_rend = new AtomicDouble(0.0);
+            DateTime start_rend = null;
+            DateTime end_rend = null;
+
             Long hh36 = new Long(129600000);
             Db_Bando db1 = new Db_Bando("clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod");
             try (Connection conn = db1.getConnection()) {
@@ -464,6 +486,8 @@ public class Excel {
                         cstotal_int.setDataFormat(xssfDataFormat.getFormat(formatdataCellint));
                         cstotal_int.setFont(font_total);
 
+                        AtomicInteger indicitxt = new AtomicInteger(1);
+
                         AtomicInteger index_row = new AtomicInteger(9);
                         AtomicDouble oretotali = new AtomicDouble(0.0);
 
@@ -481,6 +505,13 @@ public class Excel {
                                 String regione = rs1.getString(4).toUpperCase();
                                 String start = sdfITA.format(rs1.getDate(5));
                                 String end = sdfITA.format(rs1.getDate(6));
+
+                                if (start_rend == null || start_rend.isAfter(new DateTime(rs1.getDate(5).getTime()))) {
+                                    start_rend = new DateTime(rs1.getDate(5).getTime());
+                                }
+                                if (end_rend == null || end_rend.isBefore(new DateTime(rs1.getDate(6).getTime()))) {
+                                    end_rend = new DateTime(rs1.getDate(6).getTime());
+                                }
 
                                 Map<Long, Long> oreRendicontabili_faseA = OreRendicontabiliAlunni_faseA(conn, idpr);
 //                                Map<Long, Long> oreRendicontabili_faseB = OreRendicontabiliAlunni_faseB(conn, idpr);
@@ -773,7 +804,7 @@ public class Excel {
 
 //                                System.out.println("it.refill.testingarea.Excel.main() "+elencogruppi_B.toString());
                                 AtomicInteger iniziofaseb = new AtomicInteger(29);
-                                int iniziofaseb_i = 29;
+                                int iniziofaseb_i;
 
                                 HashMap<String, Integer> indicifaseB = new HashMap<>();
 
@@ -1080,20 +1111,64 @@ public class Excel {
                                                     indice.addAndGet(1);
 
                                                     if (tot_ore_docenti_FA.get() > 0) {
-                                                        System.out.println(index_row.get() + separator + codicefiscale + separator + "91018" + separator
-                                                                + "MLPS-CLP-00024" + separator + getDoubleforTXT(tot_ore_docenti_FA.get()) + separator 
-                                                                + getDoubleforTXT(tot_docenti_FA.get()) + separator);
+                                                        String indice_dainserire = get_incremental(indicitxt.get());
+                                                        indicitxt.addAndGet(1);
+
+                                                        sd01_W.write(indice_dainserire + separator + codicefiscale + separator
+                                                                + "MLPS-CLP-00024" + separator + "91018" + separator + getDoubleforTXT(tot_ore_docenti_FA.get()) + separator
+                                                                + getDoubleforTXT(tot_docenti_FA.get()) + separator + "1" + separator + "1375" + separator
+                                                                + separator + l_name + separator + separator + "l'importo è quota parte della docenza rispetto al numero dei partecipanti_vedasi scheda allegata alla DDR");
+                                                        sd01_W.newLine();
+
+                                                        sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                                + separator + separator + separator + indice_dainserire + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
+                                                        sd03_W.newLine();
+
+                                                        total_rend.addAndGet(tot_ore_docenti_FA.get());
+
                                                     }
                                                     if (tot_ore_docenti_FB.get() > 0) {
-                                                        System.out.println(index_row.get() + separator + codicefiscale + separator + "91019" + separator
-                                                                + "MLPS-CLP-00024" + separator + getDoubleforTXT(tot_ore_docenti_FB.get()) + separator 
-                                                                + getDoubleforTXT(tot_docenti_FB.get()) + separator);
-                                                    }
-                                                    System.out.println(index_row.get() + separator + codicefiscale + separator + "91021" + separator
-                                                            + "MLPS-CLP-00024" + separator + getDoubleforTXT(tot_A) + separator + getDoubleforTXT(tot_single) + separator);
-                                                    System.out.println(index_row.get() + separator + codicefiscale + separator + "95149" + separator
-                                                            + "MLPS-CLP-00024" + separator + getDoubleforTXT(tot_B) + separator + getDoubleforTXT(tot_single_B) + separator);
+                                                        String indice_dainserire = get_incremental(indicitxt.get());
+                                                        indicitxt.addAndGet(1);
+                                                        sd01_W.write(indice_dainserire + separator + codicefiscale + separator
+                                                                + "MLPS-CLP-00024" + separator + "91019" + separator + getDoubleforTXT(tot_ore_docenti_FB.get()) + separator
+                                                                + getDoubleforTXT(tot_docenti_FB.get()) + separator + "1" + separator + "1375" + separator
+                                                                + separator + l_name + separator + separator + "l'importo è quota parte della docenza rispetto al numero dei partecipanti_vedasi scheda allegata alla DDR");
+                                                        sd01_W.newLine();
 
+                                                        sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                                + separator + separator + separator + indice_dainserire + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
+                                                        sd03_W.newLine();
+
+                                                        total_rend.addAndGet(tot_ore_docenti_FB.get());
+                                                    }
+                                                    String indice_dainserire1 = get_incremental(indicitxt.get());
+                                                    indicitxt.addAndGet(1);
+                                                    sd01_W.write(indice_dainserire1 + separator + codicefiscale + separator
+                                                            + "MLPS-CLP-00024" + separator + "91021" + separator + getDoubleforTXT(tot_A) + separator
+                                                            + getDoubleforTXT(tot_single) + separator + "1" + separator + "1375" + separator
+                                                            + separator + l_name + separator + separator);
+                                                    sd01_W.newLine();
+
+                                                    sd03_W.write(indice_dainserire1 + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                            + separator + separator + separator + indice_dainserire1 + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
+                                                    sd03_W.newLine();
+
+                                                    total_rend.addAndGet(tot_A);
+
+                                                    String indice_dainserire2 = get_incremental(indicitxt.get());
+                                                    indicitxt.addAndGet(1);
+                                                    sd01_W.write(indice_dainserire2 + separator + codicefiscale + separator
+                                                            + "MLPS-CLP-00024" + separator + "95149" + separator + getDoubleforTXT(tot_B) + separator
+                                                            + getDoubleforTXT(tot_single_B) + separator + "1" + separator + "1375" + separator
+                                                            + separator + l_name + separator + separator);
+                                                    sd01_W.newLine();
+
+                                                    sd03_W.write(indice_dainserire2 + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                            + separator + separator + separator + indice_dainserire2 + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
+                                                    sd03_W.newLine();
+
+                                                    total_rend.addAndGet(tot_B);
                                                 }
                                             }
                                         } catch (Exception ex2) {
@@ -1209,12 +1284,20 @@ public class Excel {
                             sh1.autoSizeColumn(i);
                         }
 
-                        output_xlsx = new File(
-                                "C:\\mnt\\mcn\\yisu_neet\\estrazioni\\Prospetto_Riepilogo_" + new DateTime().toString("yyyyMMdd") + ".xlsx");
+                        output_xlsx = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\Prospetto_Riepilogo_" + new DateTime().toString("yyyyMMdd") + ".xlsx");
 
                         try (FileOutputStream outputStream = new FileOutputStream(output_xlsx)) {
                             wb.write(outputStream);
                         }
+
+                        sd01_W.close();
+                        sd03_W.close();
+
+                        String def = l_name + separator + "MLPS-CLP-00024" + separator + "L66" + separator + new DateTime().toString("dd/MM/yyyy") + separator + start_rend.toString("dd/MM/yyyy")
+                                + separator + end_rend.toString("dd/MM/yyyy") + separator + getDoubleforTXT(total_rend.get()) + separator + getDoubleforTXT(total_rend.get()) + separator;
+
+                        ddr_W.write(def);
+                        ddr_W.close();
 
                     }
                 }
@@ -1224,6 +1307,20 @@ public class Excel {
             ex1.printStackTrace();
         }
         return output_xlsx;
+    }
+
+    public static String get_incremental(int index) {
+
+        try {
+
+            String end = String.valueOf(index);
+            String start = new DateTime().toString("YYMMdd");
+            int mancanti = 10 - end.length() - start.length();
+            String middle = StringUtils.leftPad("", mancanti, "0");
+            return start + middle + end;
+        } catch (Exception e) {
+        }
+        return "000000000";
     }
 
     public static String getDoubleforTXT(double ing) {
@@ -1241,7 +1338,6 @@ public class Excel {
     }
 
     public static void main(String[] args) {
-
 
         //creo i 3 txt
         prospetto_riepilogo(null);
