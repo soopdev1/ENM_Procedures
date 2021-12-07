@@ -33,6 +33,7 @@ public class MainSelector {
         //4 - GESTIONE - REPORT FAD
         //5 - ACCREDITAMENTO
         //6 - REPAIR
+        //7 - RENDICONTAZIONE
         //////////////////////////////
         //ARGS[2] NEET - DD
         //////////////////////////////
@@ -101,10 +102,12 @@ public class MainSelector {
                     try {
                         ne.report_allievi();
                     } catch (Exception e) {
+
                     }
                     try {
                         ne.report_pf();
                     } catch (Exception e) {
+
                     }
                     log.warning("GENERAZIONE FILE REPORT... FINE");
                     break;
@@ -163,20 +166,33 @@ public class MainSelector {
                         neetr.imposta_progetti_finettivita();
                     } catch (Exception e) {
                     }
+
                     try {
                         neetr.impostaritiratounder36oreA();
                     } catch (Exception e) {
+
                     }
 
                     try {
                         neetr.copiadocumentidocenti();
                     } catch (Exception e) {
+
                     }
                     try {
                         neetr.crea_pdf_unico_ANPAL(true);
                     } catch (Exception e) {
+
                     }
                     break;
+                case 7: 
+                    try {
+                    log.info("START RENDICONTAZIONE");
+                    Rendicontazione re = new Rendicontazione(false, true);
+                    re.generaRendicontazione();
+                    log.info("END RENDICONTAZIONE");
+                } catch (Exception e) {
+                }
+                break;
                 default:
                     break;
             }
@@ -298,6 +314,15 @@ public class MainSelector {
                     } catch (Exception e) {
                     }
                     break;
+                case 7: 
+                    try {
+                    log.info("START RENDICONTAZIONE");
+                    Rendicontazione re = new Rendicontazione(false, false);
+                    re.generaRendicontazione();
+                    log.info("END RENDICONTAZIONE");
+                } catch (Exception e) {
+                }
+                break;
                 default:
                     break;
             }

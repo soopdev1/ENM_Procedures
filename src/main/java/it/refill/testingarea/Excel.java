@@ -13,6 +13,7 @@ import static it.refill.exe.Constant.setCell;
 import it.refill.exe.Db_Bando;
 import it.refill.exe.ExcelDomande;
 import it.refill.exe.Items;
+import static it.refill.exe.Rendicontazione.zipListFiles;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +26,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -155,20 +155,6 @@ public class Excel {
         }
     }
 
-//    public static String formatStatoNascita(String stato_nascita, List<Nazioni_rc> nascitaconCF) {
-//        try {
-//            if (stato_nascita.equals("100")) {
-//                return "ITALIA";
-//            } else {
-//                Nazioni_rc nn = nascitaconCF.stream().filter(n1 -> n1.getCodicefiscale().equalsIgnoreCase(stato_nascita)).findAny().orElse(null);
-//                if (nn != null) {
-//                    return nn.getNome().toUpperCase();
-//                }
-//            }
-//        } catch (Exception e) {
-//        }
-//        return stato_nascita;
-//    }
     public static void ReportDocentiBANDO() {
         try {
 
@@ -311,24 +297,25 @@ public class Excel {
     public static final String formatdataCellRate = "#,#.00000000";
     public static final String formatdataCellint = "#,#";
 
-    public static File prospetto_riepilogo(List<Integer> list_idpr) {
+    public static File prospetto_riepilogo(int idestrazione, List<Integer> list_idpr, String pathdest, String pathtemp) {
+        List<File> output = new ArrayList<>();
 
         File output_xlsx = null;
 
-        String fileing = "C:\\mnt\\mcn\\yisu_neet\\estrazioni\\TEMPLATE PROSPETTO RIEPILOGO.xlsx";
+        String filezip = pathdest + "/REND_" + idestrazione + ".zip";
+        String fileing = pathdest + "/TEMPLATE PROSPETTO RIEPILOGO.xlsx";
+
+        File ddr = new File(pathtemp + "/DDR.txt");
+        File sd01 = new File(pathtemp + "/SD01.txt");
+        File sd03 = new File(pathtemp + "/SD03.txt");
+
         try {
 
             String l_name = "L66_" + new DateTime().toString("ddMMyyyy");
 
-            File sd01 = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\SD01.txt");
-
             BufferedWriter sd01_W = new BufferedWriter(new FileWriter(sd01));
 
-            File sd03 = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\SD03.txt");
-
             BufferedWriter sd03_W = new BufferedWriter(new FileWriter(sd03));
-
-            File ddr = new File("C:\\mnt\\mcn\\yisu_neet\\estrazioni\\DDR.txt");
 
             BufferedWriter ddr_W = new BufferedWriter(new FileWriter(ddr));
 
@@ -921,10 +908,10 @@ public class Excel {
                                                     setCell(getCell(row_allievo, 7), cs, cognome, false, false);
                                                     setCell(getCell(row_allievo, 8), cs, nome, false, false);
                                                     setCell(getCell(row_allievo, 9), cs, codicefiscale, false, false);
-                                                    OutputId output = Arrays.asList(new ObjectMapper().readValue(list_outputfaseA.toString(), OutputId[].class)).stream()
+                                                    OutputId output_a = Arrays.asList(new ObjectMapper().readValue(list_outputfaseA.toString(), OutputId[].class)).stream()
                                                             .filter(a1 -> a1.getId()
                                                             .equals(String.valueOf(idal))).findAny().orElse(null);
-                                                    if (output == null || output.getOutput().equals("0")) {
+                                                    if (output_a == null || output_a.getOutput().equals("0")) {
                                                         setCell(getCell(row_allievo, 10), cs, "NO", false, false);
                                                     } else {
                                                         setCell(getCell(row_allievo, 10), cs, "SI", false, false);
@@ -1303,10 +1290,22 @@ public class Excel {
                 }
             }
             db1.closeDB();
+
+            output.add(output_xlsx);
+            output.add(ddr);
+            output.add(sd01);
+            output.add(sd03);
+
+            File zip = new File(filezip);
+
+            if (zipListFiles(output, zip)) {
+                return zip;
+            }
         } catch (Exception ex1) {
             ex1.printStackTrace();
         }
-        return output_xlsx;
+
+        return null;
     }
 
     public static String get_incremental(int index) {
@@ -1335,12 +1334,6 @@ public class Excel {
         } catch (Exception e) {
             return (String.format(Locale.ITALIAN, "%.2f", ing));
         }
-    }
-
-    public static void main(String[] args) {
-
-        //creo i 3 txt
-        prospetto_riepilogo(null);
     }
 
     private static void cleanBeforeMergeOnValidCells(XSSFSheet sheet, CellRangeAddress region, XSSFCellStyle cellStyle) {
