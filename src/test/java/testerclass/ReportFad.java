@@ -1,9 +1,11 @@
+package testerclass;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.refill.testingarea;
+
 
 import static it.refill.exe.Constant.estraiEccezione;
 import it.refill.report.Complessivo;

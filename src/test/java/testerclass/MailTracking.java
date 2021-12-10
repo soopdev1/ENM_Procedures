@@ -1,4 +1,6 @@
-package it.refill.testingarea;
+package testerclass;
+
+
 
 
 import com.mailjet.client.ClientOptions;

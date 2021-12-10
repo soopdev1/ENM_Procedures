@@ -7,7 +7,7 @@ package it.refill.exe;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import static it.refill.exe.Constant.estraiEccezione;
-import it.refill.testingarea.Excel;
+import it.refill.report.Excel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -78,7 +78,7 @@ public class Rendicontazione {
                         }
                     });
 
-                    File zipped = Excel.prospetto_riepilogo(idestrazione, idpr, db1.getPath("output_excel_archive"), db1.getPath("pathTemp"));
+                    File zipped = Excel.prospetto_riepilogo(idestrazione, idpr, db1);
                     if (zipped != null) {
                         String update1 = "UPDATE estrazioni SET path = '" + StringUtils.replace(zipped.getPath(), "\\", "/") + "' WHERE idestrazione=" + idestrazione;
                         try (Statement st1 = db1.getConnection().createStatement()) {
@@ -102,26 +102,11 @@ public class Rendicontazione {
         }
     }
 
-    public static boolean zipListFiles(List<File> files, File targetZipFile) {
-        try {
-            try (OutputStream out = new FileOutputStream(targetZipFile); ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
-                for (int i = 0; i < files.size(); i++) {
-                    File ing = files.get(i);
-                    os.putArchiveEntry(new ZipArchiveEntry(ing.getName()));
-                    copy(new FileInputStream(ing), os);
-                    os.closeArchiveEntry();
-                }
-            }
-            return targetZipFile.length() > 0;
-        } catch (Exception ex) {
-            log.severe(estraiEccezione(ex));
-            return false;
-        }
-    }
+   
     
     
-    public static void main(String[] args) {
-        new Rendicontazione(false, false).generaRendicontazione();
-    }
+//    public static void main(String[] args) {
+//        new Rendicontazione(false, true).generaRendicontazione();
+//    }
 
 }

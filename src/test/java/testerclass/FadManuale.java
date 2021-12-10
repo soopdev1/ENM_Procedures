@@ -1,4 +1,6 @@
-package it.refill.testingarea;
+package testerclass;
+
+
 
 
 import it.refill.exe.DeD_gestione;
@@ -13,7 +15,7 @@ import it.refill.exe.Neet_gestione;
  *
  * @author rcosco
  */
-public class Manualmente {
+public class FadManuale {
 
     public static void main(String[] args) {
 

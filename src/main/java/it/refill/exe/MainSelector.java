@@ -186,10 +186,9 @@ public class MainSelector {
                     break;
                 case 7: 
                     try {
-                    log.info("START RENDICONTAZIONE");
-                    Rendicontazione re = new Rendicontazione(false, true);
-                    re.generaRendicontazione();
-                    log.info("END RENDICONTAZIONE");
+                    log.info("START RENDICONTAZIONE NEET");
+                    new Rendicontazione(false, true).generaRendicontazione();
+                    log.info("END RENDICONTAZIONE NEET");
                 } catch (Exception e) {
                 }
                 break;
@@ -316,10 +315,9 @@ public class MainSelector {
                     break;
                 case 7: 
                     try {
-                    log.info("START RENDICONTAZIONE");
-                    Rendicontazione re = new Rendicontazione(false, false);
-                    re.generaRendicontazione();
-                    log.info("END RENDICONTAZIONE");
+                    log.info("START RENDICONTAZIONE D&D");
+                    new Rendicontazione(false, false).generaRendicontazione();
+                    log.info("END RENDICONTAZIONE D&D");
                 } catch (Exception e) {
                 }
                 break;

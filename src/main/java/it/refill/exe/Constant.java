@@ -64,8 +64,12 @@ import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.io.FileUtils;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
+import static org.apache.commons.io.IOUtils.copy;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.replace;
@@ -128,11 +132,18 @@ public class Constant {
 
     public static final String pathICC = "/home/tomcat/jar/sRGB.icc";
 
-    //VARIABILI MS
+    // VARIABILI MS
     public static final double coeff_faseA = 0.80;
     public static final double coeff_faseB = 40.00;
     public static final double coeff_docfasciaA = 146.25;
     public static final double coeff_docfasciaB = 117.00;
+    public static final String codice_yisu = "MLPS-CLP-00086";
+    public static final String codice_bb = "1375";
+    public static final String contodocentiA = "91018";
+    public static final String contodocentiB = "91019";
+    public static final String contoallievifaseA = "91021";
+    public static final String contoallievifaseB = "95149";
+    
 
     public static Logger createLog(String nameapp, String logpath, boolean neet) {
         try {
@@ -900,6 +911,22 @@ public class Constant {
             es = false;
         }
         return es;
+    }
+    
+     public static boolean zipListFiles(List<File> files, File targetZipFile) {
+        try {
+            try (OutputStream out = new FileOutputStream(targetZipFile); ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
+                for (int i = 0; i < files.size(); i++) {
+                    File ing = files.get(i);
+                    os.putArchiveEntry(new ZipArchiveEntry(ing.getName()));
+                    copy(new FileInputStream(ing), os);
+                    os.closeArchiveEntry();
+                }
+            }
+            return targetZipFile.length() > 0;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
 }
