@@ -1118,7 +1118,7 @@ public class Excel {
                                                                     + separator + nomerend + separator + separator + "l'importo è quota parte della docenza rispetto al numero dei partecipanti_vedasi scheda allegata alla DDR");
                                                             sd01_W.newLine();
 
-                                                            sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                            sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip+".pdf" + separator + "S" + separator + "AL"
                                                                     + separator + separator + separator + indice_dainserire + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
                                                             sd03_W.newLine();
 
@@ -1132,7 +1132,7 @@ public class Excel {
                                                                     + separator + nomerend + separator + separator + "l'importo è quota parte della docenza rispetto al numero dei partecipanti_vedasi scheda allegata alla DDR");
                                                             sd01_W.newLine();
 
-                                                            sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                            sd03_W.write(indice_dainserire + separator + codicefiscale + "_" + cip+".pdf" + separator + "S" + separator + "AL"
                                                                     + separator + separator + separator + indice_dainserire + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
                                                             sd03_W.newLine();
 
@@ -1145,7 +1145,7 @@ public class Excel {
                                                                 + separator + nomerend + separator + separator);
                                                         sd01_W.newLine();
 
-                                                        sd03_W.write(indice_dainserire1 + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                        sd03_W.write(indice_dainserire1 + separator + codicefiscale + "_" + cip+".pdf" + separator + "S" + separator + "AL"
                                                                 + separator + separator + separator + indice_dainserire1 + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
                                                         sd03_W.newLine();
 
@@ -1157,7 +1157,7 @@ public class Excel {
                                                                 + separator + nomerend + separator + separator);
                                                         sd01_W.newLine();
 
-                                                        sd03_W.write(indice_dainserire2 + separator + codicefiscale + "_" + cip + separator + "S" + separator + "AL"
+                                                        sd03_W.write(indice_dainserire2 + separator + codicefiscale + "_" + cip+".pdf" + separator + "S" + separator + "AL"
                                                                 + separator + separator + separator + indice_dainserire2 + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
                                                         sd03_W.newLine();
 
@@ -1258,7 +1258,6 @@ public class Excel {
                         row_totalCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
                         row_totalCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                         row_totalCellStyle.setFont(font_total);
-
                         setCell(getCell(row_total, 0), row_totalCellStyle, "", false, false);
                         setCell(getCell(row_total, 1), row_totalCellStyle, "", false, false);
                         setCell(getCell(row_total, 2), row_totalCellStyle, "", false, false);
@@ -1290,7 +1289,8 @@ public class Excel {
                         sd01_W.close();
                         sd03_W.close();
 
-                        String def = nomerend + separator + codice_yisu + separator + nomerend_cod + separator + new DateTime().toString("dd/MM/yyyy") + separator + start_rend.toString("dd/MM/yyyy")
+                        String def = nomerend + separator + codice_yisu + separator + nomerend_cod + separator 
+                                + new DateTime().toString("dd/MM/yyyy") + separator + start_rend.toString("dd/MM/yyyy")
                                 + separator + end_rend.toString("dd/MM/yyyy") + separator
                                 + getDoubleforTXT(total_rend.get()) + separator
                                 + getDoubleforTXT(total_rend.get()) + separator;
@@ -1301,8 +1301,6 @@ public class Excel {
                     }
                 }
             }
-            db1.closeDB();
-
             output.add(output_xlsx);
             output.add(ddr);
             output.add(sd01);

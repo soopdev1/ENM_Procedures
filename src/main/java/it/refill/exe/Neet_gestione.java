@@ -889,8 +889,6 @@ public class Neet_gestione {
                             }
                         }
 
-                        setCell(getCell(row, 3), String.valueOf(docenti));
-
 //                        String sql2_foglio1 = "SELECT p.stato,COUNT(DISTINCT(p.idprogetti_formativi)) "
 //                                + ",COUNT(DISTINCT(a.idallievi)) FROM progetti_formativi p, allievi a WHERE "
 //                                + "p.idsoggetti_attuatori=" + idsa + " AND a.idprogetti_formativi=p.idprogetti_formativi  "
@@ -993,47 +991,54 @@ public class Neet_gestione {
                             }
                         }
 
-                        setCell(getCell(row, 4), String.valueOf(DAVALIDARE_p));
-                        setCell(getCell(row, 5), String.valueOf(DAVALIDARE_a));
+                        //NUOVI 3 campi
+                        setCell(getCell(row, 3), String.valueOf(FINEATTIVITA_p + DAVALIDAREMODELLO6_p + INATTESADIMAPPATURA_p + INVERIFICA_p + ESITOVERIFICACONCLUSO_p + ESITOVERIFICAINVIATO_p + CONCLUSO_p));
+                        setCell(getCell(row, 4), String.valueOf(FASEA_p + FASEB_p + SOSPESO_p));
+                        setCell(getCell(row, 5), String.valueOf(DAVALIDARE_p + PROGRAMMATO_p + DACONFERMARE_p));
 
-                        setCell(getCell(row, 6), String.valueOf(PROGRAMMATO_p));
-                        setCell(getCell(row, 7), String.valueOf(PROGRAMMATO_a));
+                        setCell(getCell(row, 6), String.valueOf(docenti));
 
-                        setCell(getCell(row, 8), String.valueOf(DACONFERMARE_p));
-                        setCell(getCell(row, 9), String.valueOf(DACONFERMARE_a));
+                        setCell(getCell(row, 7), String.valueOf(DAVALIDARE_p));
+                        setCell(getCell(row, 8), String.valueOf(DAVALIDARE_a));
 
-                        setCell(getCell(row, 10), String.valueOf(FASEA_p));
-                        setCell(getCell(row, 11), String.valueOf(FASEA_a));
+                        setCell(getCell(row, 9), String.valueOf(PROGRAMMATO_p));
+                        setCell(getCell(row, 10), String.valueOf(PROGRAMMATO_a));
 
-                        setCell(getCell(row, 12), String.valueOf(FASEB_p));
-                        setCell(getCell(row, 13), String.valueOf(FASEB_a));
+                        setCell(getCell(row, 11), String.valueOf(DACONFERMARE_p));
+                        setCell(getCell(row, 12), String.valueOf(DACONFERMARE_a));
 
-                        setCell(getCell(row, 14), String.valueOf(SOSPESO_p));
-                        setCell(getCell(row, 15), String.valueOf(SOSPESO_a));
+                        setCell(getCell(row, 13), String.valueOf(FASEA_p));
+                        setCell(getCell(row, 14), String.valueOf(FASEA_a));
 
-                        setCell(getCell(row, 16), String.valueOf(RIGETTATO_p));
-                        setCell(getCell(row, 17), String.valueOf(RIGETTATO_a));
+                        setCell(getCell(row, 15), String.valueOf(FASEB_p));
+                        setCell(getCell(row, 16), String.valueOf(FASEB_a));
 
-                        setCell(getCell(row, 18), String.valueOf(FINEATTIVITA_p));
-                        setCell(getCell(row, 19), String.valueOf(FINEATTIVITA_a));
+                        setCell(getCell(row, 17), String.valueOf(SOSPESO_p));
+                        setCell(getCell(row, 18), String.valueOf(SOSPESO_a));
 
-                        setCell(getCell(row, 20), String.valueOf(DAVALIDAREMODELLO6_p));
-                        setCell(getCell(row, 21), String.valueOf(DAVALIDAREMODELLO6_a));
+                        setCell(getCell(row, 19), String.valueOf(RIGETTATO_p));
+                        setCell(getCell(row, 20), String.valueOf(RIGETTATO_a));
 
-                        setCell(getCell(row, 22), String.valueOf(INATTESADIMAPPATURA_p));
-                        setCell(getCell(row, 23), String.valueOf(INATTESADIMAPPATURA_a));
+                        setCell(getCell(row, 21), String.valueOf(FINEATTIVITA_p));
+                        setCell(getCell(row, 22), String.valueOf(FINEATTIVITA_a));
 
-                        setCell(getCell(row, 24), String.valueOf(INVERIFICA_p));
-                        setCell(getCell(row, 25), String.valueOf(INVERIFICA_a));
+                        setCell(getCell(row, 23), String.valueOf(DAVALIDAREMODELLO6_p));
+                        setCell(getCell(row, 24), String.valueOf(DAVALIDAREMODELLO6_a));
 
-                        setCell(getCell(row, 26), String.valueOf(ESITOVERIFICACONCLUSO_p));
-                        setCell(getCell(row, 27), String.valueOf(ESITOVERIFICACONCLUSO_a));
+                        setCell(getCell(row, 25), String.valueOf(INATTESADIMAPPATURA_p));
+                        setCell(getCell(row, 26), String.valueOf(INATTESADIMAPPATURA_a));
 
-                        setCell(getCell(row, 28), String.valueOf(ESITOVERIFICAINVIATO_p));
-                        setCell(getCell(row, 29), String.valueOf(ESITOVERIFICAINVIATO_a));
+                        setCell(getCell(row, 27), String.valueOf(INVERIFICA_p));
+                        setCell(getCell(row, 28), String.valueOf(INVERIFICA_a));
 
-                        setCell(getCell(row, 30), String.valueOf(CONCLUSO_p));
-                        setCell(getCell(row, 31), String.valueOf(CONCLUSO_a));
+                        setCell(getCell(row, 29), String.valueOf(ESITOVERIFICACONCLUSO_p));
+                        setCell(getCell(row, 30), String.valueOf(ESITOVERIFICACONCLUSO_a));
+
+                        setCell(getCell(row, 31), String.valueOf(ESITOVERIFICAINVIATO_p));
+                        setCell(getCell(row, 32), String.valueOf(ESITOVERIFICAINVIATO_a));
+
+                        setCell(getCell(row, 33), String.valueOf(CONCLUSO_p));
+                        setCell(getCell(row, 34), String.valueOf(CONCLUSO_a));
 
                     }
 
@@ -1042,7 +1047,8 @@ public class Neet_gestione {
                 //FOGLIO 2
                 XSSFSheet sh2 = wb.getSheetAt(1);
 
-                String sql0_foglio2 = "SELECT sa.ragionesociale,sa.piva,co.regione,pf.cip,st.descrizione,pf.start,pf.end,pf.idprogetti_formativi,sa.idsoggetti_attuatori "
+                String sql0_foglio2 = "SELECT sa.ragionesociale,sa.piva,co.regione,pf.cip,st.descrizione,pf.start,"
+                        + "pf.end,pf.idprogetti_formativi,sa.idsoggetti_attuatori,pf.extract "
                         + "FROM progetti_formativi pf, soggetti_attuatori sa, comuni co, stati_progetto st "
                         + "WHERE sa.idsoggetti_attuatori=pf.idsoggetti_attuatori AND co.idcomune=sa.comune "
                         + "AND st.idstati_progetto=pf.stato";
@@ -1063,6 +1069,23 @@ public class Neet_gestione {
                         }
                         setCell(getCell(row, 3), cip);
                         setCell(getCell(row, 4), rs0.getString("st.descrizione").toUpperCase());
+
+                        String rendicontato = "NO";
+                        if (rs0.getInt("pf.extract") != 0) {
+                            switch (rs0.getInt("pf.extract")) {
+                                case 1:
+                                    rendicontato = "SI";
+                                    break;
+                                case 2:
+                                    rendicontato = "IN ATTESA";
+                                    break;
+                                default:
+                                    rendicontato = "NO";
+                            }
+
+                        }
+                        setCell(getCell(row, 5), rendicontato);
+
                         String datainizio = "";
                         if (rs0.getString("pf.start") != null) {
                             datainizio = sdita.format(rs0.getDate("pf.start"));
@@ -1072,8 +1095,8 @@ public class Neet_gestione {
                             datafine = sdita.format(rs0.getDate("pf.end"));
                         }
 
-                        setCell(getCell(row, 5), datainizio);
-                        setCell(getCell(row, 6), datafine);
+                        setCell(getCell(row, 6), datainizio);
+                        setCell(getCell(row, 7), datafine);
 
                         AtomicInteger ALLIEVIISCRITTI = new AtomicInteger(0);
                         AtomicInteger ALLIEVIVALIDATI = new AtomicInteger(0);
@@ -1107,9 +1130,9 @@ public class Neet_gestione {
                             }
                         }
 
-                        setCell(getCell(row, 7), String.valueOf(ALLIEVIISCRITTI.get()));
-                        setCell(getCell(row, 8), String.valueOf(ALLIEVIVALIDATI.get()));
-                        setCell(getCell(row, 9), String.valueOf(ALLIEVIMAGGIORE36.get()));
+                        setCell(getCell(row, 8), String.valueOf(ALLIEVIISCRITTI.get()));
+                        setCell(getCell(row, 9), String.valueOf(ALLIEVIVALIDATI.get()));
+                        setCell(getCell(row, 10), String.valueOf(ALLIEVIMAGGIORE36.get()));
 
                     }
                 }
@@ -1223,7 +1246,7 @@ public class Neet_gestione {
                     + "a.indirizzoresidenza,a.civicoresidenza,a.comune_residenza,a.capresidenza,"
                     + "a.indirizzodomicilio,a.civicodomicilio,a.comune_domicilio,a.capdomicilio,"
                     + "a.sesso,a.cittadinanza,a.iscrizionegg,a.datacpi,a.cpi,a.titolo_studio,a.idcondizione_lavorativa,"
-                    + "a.idcanale,a.motivazione,a.privacy2,a.privacy3,a.id_statopartecipazione,a.idprogetti_formativi FROM allievi a;";
+                    + "a.idcanale,a.motivazione,a.privacy2,a.privacy3,a.id_statopartecipazione,a.idprogetti_formativi,a.data_anpal FROM allievi a;";
 
             String fileout;
             FileOutputStream outputStream;
@@ -1248,7 +1271,8 @@ public class Neet_gestione {
                         int idpr = rs0.getInt("a.idprogetti_formativi");
                         String nome = rs0.getString("a.nome").toUpperCase();
                         String cognome = rs0.getString("a.cognome").toUpperCase();
-
+                        String data_anpal = rs0.getString("a.data_anpal").trim();
+                        
                         String eta = String.valueOf(Years.yearsBetween(new DateTime(rs0.getDate("a.datanascita").getTime()), new DateTime()).getYears());
                         String datanascita = sdita.format(rs0.getDate("a.datanascita"));
 
@@ -1418,8 +1442,8 @@ public class Neet_gestione {
                         String statopr = "";
                         String dataavvio = "";
                         String datachiusura = "";
-//                        String sql10 = "SELECT cip,start,end,stato FROM progetti_formativi WHERE idprogetti_formativi=" + idpr;
-                        String sql10 = "SELECT p.cip,p.start,p.END,s.descrizione FROM progetti_formativi p, stati_progetto s WHERE p.stato=s.idstati_progetto AND idprogetti_formativi=" + idpr;
+                        String assegnazione = "";
+                        String sql10 = "SELECT p.cip,p.start,p.END,s.descrizione,p.assegnazione FROM progetti_formativi p, stati_progetto s WHERE p.stato=s.idstati_progetto AND idprogetti_formativi=" + idpr;
 
                         try (ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
                             if (rs10.next()) {
@@ -1436,6 +1460,9 @@ public class Neet_gestione {
                                 }
                                 if (rs10.getString(4) != null) {
                                     statopr = rs10.getString(4).toUpperCase();
+                                }
+                                if (rs10.getString(5) != null) {
+                                    assegnazione = rs10.getString(5).toUpperCase();
                                 }
                             }
                         }
@@ -1667,12 +1694,15 @@ public class Neet_gestione {
                         setCell(getCell(row, 70), punteggio4_P);
                         setCell(getCell(row, 71), punteggioATTR);
                         setCell(getCell(row, 72), premialita);
-
+                        
+                        setCell(getCell(row, 73), data_anpal);
+                        setCell(getCell(row, 74), assegnazione);
+                        
                         indice.addAndGet(1);
 
                     }
                 }
-                for (int i = 0; i < 73; i++) {
+                for (int i = 0; i < 75; i++) {
                     sh1.autoSizeColumn(i);
                 }
                 fileout = "/mnt/mcn/yisu_neet/estrazioni/Report_allievi_" + new DateTime().toString(timestamp) + ".xlsx";
@@ -1694,4 +1724,5 @@ public class Neet_gestione {
 //        Neet_gestione ne = new Neet_gestione(false);
 //        ne.report_allievi();
 //    }
+    
 }

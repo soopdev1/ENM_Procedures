@@ -137,13 +137,12 @@ public class Constant {
     public static final double coeff_faseB = 40.00;
     public static final double coeff_docfasciaA = 146.25;
     public static final double coeff_docfasciaB = 117.00;
-    public static final String codice_yisu = "MLPS-CLP-00086";
+    public static final String codice_yisu = "MLPS-CLP-00081";
     public static final String codice_bb = "1375";
-    public static final String contodocentiA = "91018";
-    public static final String contodocentiB = "91019";
-    public static final String contoallievifaseA = "91021";
-    public static final String contoallievifaseB = "95149";
-    
+    public static final String contodocentiA = "195149";// "91018";
+    public static final String contodocentiB = "191018";// "91019";
+    public static final String contoallievifaseA = "191020";// "91021";
+    public static final String contoallievifaseB = "191021";// "95149";
 
     public static Logger createLog(String nameapp, String logpath, boolean neet) {
         try {
@@ -912,8 +911,8 @@ public class Constant {
         }
         return es;
     }
-    
-     public static boolean zipListFiles(List<File> files, File targetZipFile) {
+
+    public static boolean zipListFiles(List<File> files, File targetZipFile) {
         try {
             try (OutputStream out = new FileOutputStream(targetZipFile); ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
                 for (int i = 0; i < files.size(); i++) {

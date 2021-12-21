@@ -525,7 +525,7 @@ public class FaseB {
                             String idriuunione = StringUtils.remove(datisa[1], "_") + "_" + cal.getCodiceud() + "_" + cal.getGruppo() + "_" + dtf.parseDateTime(day).toString(patternid);
                             String nudfasea = "GIORNO " + cal.getId() + " - " + cal.getCodiceud();
                             String sql = "SELECT id FROM registro_completo WHERE idprogetti_formativi = " + idpr + " AND data = '" + day + "' AND idriunione = '" + idriuunione + "' AND gruppofaseb = " + cal.getGruppo();
-                            List<Utenti> allievi = db2.list_Allievi_noAccento(idpr);
+                            List<Utenti> allievi = db2.list_Allievi_noAccento(idpr, cal.getGruppo());
                             try {
                                 try (Statement st = db2.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
                                     if (printing) {

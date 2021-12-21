@@ -9,9 +9,6 @@ import com.google.gson.Gson;
 import static it.refill.exe.Constant.estraiEccezione;
 import it.refill.report.Excel;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,10 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import static org.apache.commons.io.IOUtils.copy;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -77,21 +70,20 @@ public class Rendicontazione {
                             log.severe(estraiEccezione(ex));
                         }
                     });
-
-                    File zipped = Excel.prospetto_riepilogo(idestrazione, idpr, db1);
+                    Db_Bando dbz = new Db_Bando(this.host);
+                    File zipped = Excel.prospetto_riepilogo(idestrazione, idpr, dbz);
+                    dbz.closeDB();
                     if (zipped != null) {
                         String update1 = "UPDATE estrazioni SET path = '" + StringUtils.replace(zipped.getPath(), "\\", "/") + "' WHERE idestrazione=" + idestrazione;
                         try (Statement st1 = db1.getConnection().createStatement()) {
                             st1.executeUpdate(update1);
                         }
-
                         try (Statement st2 = db1.getConnection().createStatement()) {
                             for (int i = 0; i < idpr.size(); i++) {
                                 String update2 = "UPDATE progetti_formativi SET extract = 1 WHERE idprogetti_formativi = " + idpr.get(i);
                                 st2.executeUpdate(update2);
                             }
                         }
-
                     }
 
                 }
@@ -102,11 +94,8 @@ public class Rendicontazione {
         }
     }
 
-   
-    
-    
 //    public static void main(String[] args) {
 //        new Rendicontazione(false, true).generaRendicontazione();
 //    }
-
+    
 }
