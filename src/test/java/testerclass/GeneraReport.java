@@ -22,13 +22,13 @@ public class GeneraReport {
     public static void main(String[] args) {
         try {
 
-            boolean neet = true;
+            boolean neet = false;
             boolean testing = false;
-            int idpr = 199;
+            int idpr = 318;
 //            
 //            
             FaseA FA = new FaseA(testing, neet);
-            FaseB FB = new FaseB(testing, neet);
+//            FaseB FB = new FaseB(testing, neet);
 //
             //  FASE A
             List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), false, true, false);

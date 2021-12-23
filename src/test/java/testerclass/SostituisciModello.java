@@ -1,19 +1,13 @@
 package testerclass;
 
-
 import it.refill.exe.Db_Bando;
 import it.refill.exe.DeD_gestione;
 import it.refill.exe.Neet_gestione;
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 /**
  *
  * @author Administrator
@@ -23,8 +17,9 @@ public class SostituisciModello {
     public static void main(String[] args) {
         try {
             //PARAMETRI
-            int idmodello = 36;
-
+            int idmodello = 21;
+            String table = "tipo_documenti_allievi";
+            String idname = "idtipodocumenti_allievi";
             boolean testing = false;
             boolean neet = false;
 
@@ -51,11 +46,11 @@ public class SostituisciModello {
 //                }
 //                db1.closeDB();
 //            }
-
 ////            //UPDATE
-            File pdf = new File("C:\\Users\\Administrator\\Desktop\\da caricare\\DED_Modello_8_Esito_Valutazione.pdf");
-            String update = "UPDATE tipo_documenti SET modello = '" + Base64.encodeBase64String(FileUtils.readFileToByteArray(pdf))
-                    + "' WHERE idtipo_documenti=" + idmodello;
+            File pdf = new File("C:\\Users\\Administrator\\Desktop\\da caricare\\12.2021_Modello_5_2.pdf");
+            String update = "UPDATE " + table + " SET modello = '" 
+                    + Base64.encodeBase64String(FileUtils.readFileToByteArray(pdf))
+                    + "' WHERE " + idname + "=" + idmodello;
             if (neet) {
                 Neet_gestione ne = new Neet_gestione(testing);
                 Db_Bando db1 = new Db_Bando(ne.host);

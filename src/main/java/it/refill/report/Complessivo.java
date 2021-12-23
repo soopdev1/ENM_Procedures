@@ -132,10 +132,17 @@ public class Complessivo {
                     }
 
                     Cell cell0 = new Cell(1, 8);
-                    cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
-                    cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
-                    cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
-                    cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                    if (neet) {
+                        cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
+                        cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
+                        cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
+                        cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                    } else {
+                        cell0.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata").addStyle(bold));
+                        cell0.add(new Paragraph("Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
+                        cell0.add(new Paragraph("(PON SPAO 2014-2020)").addStyle(bold));
+                        cell0.add(new Paragraph("CUP E57F21000000006").addStyle(bold));
+                    }
 
                     cell0.setTextAlignment(TextAlignment.CENTER);
                     table.addCell(cell0);
@@ -359,10 +366,17 @@ public class Complessivo {
                     }
 
                     Cell cell0 = new Cell(1, 8);
-                    cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
-                    cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
-                    cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
-                    cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                    if (neet) {
+                        cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
+                        cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
+                        cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
+                        cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                    } else {
+                        cell0.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata").addStyle(bold));
+                        cell0.add(new Paragraph("Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
+                        cell0.add(new Paragraph("(PON SPAO 2014-2020)").addStyle(bold));
+                        cell0.add(new Paragraph("CUP E57F21000000006").addStyle(bold));
+                    }
 
                     cell0.setTextAlignment(TextAlignment.CENTER);
                     table.addCell(cell0);
