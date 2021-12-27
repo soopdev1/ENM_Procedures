@@ -1128,7 +1128,7 @@ public class Excel {
                                                             indicitxt.addAndGet(1);
                                                             sd01_W.write(indice_dainserire + separator + codicefiscale + separator
                                                                     + codice_yisu + separator + contodocentiB + separator + getDoubleforTXT(tot_ore_docenti_FB.get()) + separator
-                                                                    + getDoubleforTXT(tot_docenti_FB.get()) + separator + "1" + separator + codice_bb + separator
+                                                                    + getDoubleforTXT(quota_parte_totale_FB) + separator + "1" + separator + codice_bb + separator
                                                                     + separator + nomerend + separator + separator + "l'importo è quota parte della docenza rispetto al numero dei partecipanti_vedasi scheda allegata alla DDR");
                                                             sd01_W.newLine();
 

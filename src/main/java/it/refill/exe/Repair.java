@@ -30,12 +30,10 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 public class Repair {
 
     public String host;
-    private boolean test;
-    private static Logger log = Constant.createLog("ProceduraMCN", "/mnt/mcn/test/log/", true);
+    private static final Logger log = Constant.createLog("ProceduraMCN", "/mnt/mcn/test/log/", true);
 
     ////////////////////////////////////////////////////////////////////////////
     public Repair(boolean test, boolean neet) {
-        this.test = test;
         if (neet) {
             this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
             if (test) {
@@ -258,14 +256,21 @@ public class Repair {
                                     while (rs4.next()) {
                                         int tipodoc = rs4.getInt("d.tipo");
                                         String pathdoc = rs4.getString("d.path");
-                                        if (tipodoc == 20) {
-                                            modello5 = pathdoc;
-                                        } else if (tipodoc == 3) {
-                                            modello1 = pathdoc;
-                                        } else if (tipodoc == 4) {
-                                            pattoserv = pathdoc;
-                                        } else if (tipodoc == 11) {
-                                            tesserasanitaria = pathdoc;
+                                        switch (tipodoc) {
+                                            case 20:
+                                                modello5 = pathdoc;
+                                                break;
+                                            case 3:
+                                                modello1 = pathdoc;
+                                                break;
+                                            case 4:
+                                                pattoserv = pathdoc;
+                                                break;
+                                            case 11:
+                                                tesserasanitaria = pathdoc;
+                                                break;
+                                            default:
+                                                break;
                                         }
                                     }
 
