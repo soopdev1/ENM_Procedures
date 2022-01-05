@@ -220,14 +220,25 @@ public class Repair {
                         }
                     }
 
+                    String rettifica = "";
                     String registro = "";
                     //REGISTRO COMPLESSIVO
-                    String sql6 = "SELECT path FROM documenti_progetti d WHERE d.idprogetto=" + pf + " AND d.tipo=33";
-
+                    String sql6 = "SELECT d.path,d.tipo FROM documenti_progetti d WHERE d.idprogetto=" + pf + " AND d.tipo IN (33,38)";
                     try (Statement st6 = db2.getConnection().createStatement();
                             ResultSet rs6 = st6.executeQuery(sql6)) {
-                        if (rs6.next()) {
-                            registro = rs6.getString(1);
+                        while (rs6.next()) {
+                            int tipo = rs6.getInt(2);
+                            switch (tipo) {
+                                case 33:
+                                    registro = rs6.getString(1);
+                                    break;
+                                case 38:
+                                    rettifica = rs6.getString(1);
+                                    break;
+                                default:
+                                    break;
+                            }
+
                         }
                     }
 
@@ -315,6 +326,9 @@ public class Repair {
                                 }
                             }
                         }
+                    }
+                    if (!rettifica.equals("")) {
+                        pathfiledaunire.add(rettifica);
                     }
                     pathfiledaunire.add(registro);
                 } catch (Exception e) {
@@ -454,11 +468,7 @@ public class Repair {
 
     }
 
-    
-    
-    
 //    public static void main(String[] args) {
 //        new Repair(false, true).impostaritiratounder36oreA();
 //    }
-
 }
