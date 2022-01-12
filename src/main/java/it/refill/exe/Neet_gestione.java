@@ -176,7 +176,6 @@ public class Neet_gestione {
                     } else if (fase.endsWith("B")) {
                         int gruppo_faseB = rs1.getInt("lm.gruppo_faseB");
                         sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idprogetti_formativi + " AND gruppo_faseB = " + gruppo_faseB;
-
                     } else {
                         continue;
                     }
@@ -281,13 +280,13 @@ public class Neet_gestione {
                     + " AND mp.id_progettoformativo=" + idprogetti_formativi
                     + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso)"
                     + " AND pf.idprogetti_formativi=f.idprogetti_formativi AND ((pf.stato='ATA' AND ud.fase='Fase A') OR (pf.stato='ATB' AND ud.fase='Fase B'))"
-                    + " AND lm.giorno = '" + dataoggi + "' GROUP BY lm.id_docente";
+                    + " AND lm.giorno = '" + dataoggi + "' GROUP BY lm.id_docente,f.nomestanza";
             if (manual) {
                 sql1 = "SELECT ud.fase,lm.gruppo_faseB,f.nomestanza,ud.codice,lm.id_docente FROM lezioni_modelli lm, modelli_progetti mp, lezione_calendario lc, unita_didattiche ud, fad_multi f"
                         + " WHERE mp.id_modello=lm.id_modelli_progetto AND lc.id_lezionecalendario=lm.id_lezionecalendario AND ud.codice=lc.codice_ud"
                         + " AND mp.id_progettoformativo=" + idprogetti_formativi
                         + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso)"
-                        + " AND lm.giorno = '" + dataoggi + "' GROUP BY lm.id_docente";
+                        + " AND lm.giorno = '" + dataoggi + "' GROUP BY lm.id_docente,f.nomestanza";
             }
             try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
