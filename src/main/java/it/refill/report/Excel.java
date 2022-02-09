@@ -1044,19 +1044,18 @@ public class Excel {
                                                                 + separator + indice_dainserire2 + separator + "CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Resgistri A e B; Output neet");
                                                         sd03_W.newLine();
 
-                                                        
                                                         sd07_W.write(
-                                                                    indice_dainserire2 + separator
-                                                                    + separator
-                                                                    + tipologia_giustificativo + separator
-                                                                    + "Documentazione relativa allo svolgimento del percorso formativo" + separator
-                                                                    + codicefiscale + separator
-                                                                    + data_giustificativo + separator
-                                                                    + getDoubleforTXT(tot_single_B) + separator
-                                                                    + "Documentazione percorso formativo: CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Registri A e B; Output neet"
-                                                            );
-                                                            sd07_W.newLine();
-                                                        
+                                                                indice_dainserire2 + separator
+                                                                + separator
+                                                                + tipologia_giustificativo + separator
+                                                                + "Documentazione relativa allo svolgimento del percorso formativo" + separator
+                                                                + codicefiscale + separator
+                                                                + data_giustificativo + separator
+                                                                + getDoubleforTXT(tot_single_B) + separator
+                                                                + "Documentazione percorso formativo: CV Docente; Doc. accompagnamento Neet; Domanda iscrizione Neet; Patto di servizio o PIP; SAP; Documentazione neet; Registri A e B; Output neet"
+                                                        );
+                                                        sd07_W.newLine();
+
                                                     }
                                                 }
                                             } catch (Exception ex2) {
@@ -2316,9 +2315,11 @@ public class Excel {
         try {
 
             String sql = "SELECT sum(totaleorerendicontabili) as totOre,idutente FROM registro_completo WHERE fase = 'A' AND ruolo like 'ALLIEVO%' "
+                    + " AND idutente IN (SELECT a.idallievi FROM allievi a WHERE a.idprogetti_formativi = ? AND a.id_statopartecipazione='01')"
                     + "AND idprogetti_formativi = ? GROUP BY idutente";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, pf);
+            ps.setInt(2, pf);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 result.put(rs.getLong("idutente"), rs.getLong("totOre"));
