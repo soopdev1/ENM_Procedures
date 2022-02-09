@@ -823,7 +823,14 @@ public class Neet_gestione {
         int out = 0;
         Long hh36 = new Long(129600000);
         try {
-            String sql = "SELECT SUM(r.totaleorerendicontabili) FROM registro_completo r WHERE r.idprogetti_formativi = " + idpr + " AND r.ruolo LIKE 'ALLIEVO%' AND r.fase = 'A' GROUP BY r.idutente";
+            String sql = "SELECT SUM(r.totaleorerendicontabili) "
+                    + " FROM registro_completo r "
+                    + " WHERE r.idprogetti_formativi = " + idpr
+                    + " AND r.ruolo LIKE 'ALLIEVO%' AND r.fase = 'A' "
+                    + " AND r.idutente IN (SELECT a.idallievi FROM allievi a WHERE a.idprogetti_formativi= " + idpr
+                    + " AND a.id_statopartecipazione='01') "
+                    + " GROUP BY r.idutente";
+//            String sql = "SELECT SUM(r.totaleorerendicontabili) FROM registro_completo r WHERE r.idprogetti_formativi = " + idpr + " AND r.ruolo LIKE 'ALLIEVO%' AND r.fase = 'A' GROUP BY r.idutente";
             try (ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
                 while (rs.next()) {
                     if (rs.getLong(1) >= hh36) {
@@ -976,15 +983,15 @@ public class Neet_gestione {
                                     // per i corsi in esito verifica concluso e in esito verifica inviato: gli allievi devono essere quelli verificati e validati da ENM a seguito dei controlli finali    
                                     case "CK":
                                         ESITOVERIFICACONCLUSO_p++;
-                                        ESITOVERIFICACONCLUSO_a += get_allievi_conformi(idpr, db1);
+                                        ESITOVERIFICACONCLUSO_a += get_allievi_accreditati_36orefasea(idpr, db1);
                                         break;
                                     case "EVI":
                                         ESITOVERIFICAINVIATO_p++;
-                                        ESITOVERIFICAINVIATO_a += get_allievi_conformi(idpr, db1);
+                                        ESITOVERIFICAINVIATO_a += get_allievi_accreditati_36orefasea(idpr, db1);
                                         break;
                                     case "CO":
                                         CONCLUSO_p++;
-                                        CONCLUSO_a += get_allievi_conformi(idpr, db1);
+                                        CONCLUSO_a += get_allievi_accreditati_36orefasea(idpr, db1);
                                         break;
                                 }
                             }
@@ -992,52 +999,58 @@ public class Neet_gestione {
 
                         //NUOVI 3 campi
                         setCell(getCell(row, 3), String.valueOf(FINEATTIVITA_p + DAVALIDAREMODELLO6_p + INATTESADIMAPPATURA_p + INVERIFICA_p + ESITOVERIFICACONCLUSO_p + ESITOVERIFICAINVIATO_p + CONCLUSO_p));
-                        setCell(getCell(row, 4), String.valueOf(FASEA_p + FASEB_p + SOSPESO_p));
-                        setCell(getCell(row, 5), String.valueOf(DAVALIDARE_p + PROGRAMMATO_p + DACONFERMARE_p));
+                        setCell(getCell(row, 4), String.valueOf(FINEATTIVITA_a + DAVALIDAREMODELLO6_a + INATTESADIMAPPATURA_a
+                                + INVERIFICA_a + ESITOVERIFICACONCLUSO_a + ESITOVERIFICAINVIATO_a + CONCLUSO_a));
+                        
+                        setCell(getCell(row, 5), String.valueOf(FASEA_p + FASEB_p + SOSPESO_p));
+                        setCell(getCell(row, 6), String.valueOf(FASEA_a + FASEB_a + SOSPESO_a));
+                        
+                        setCell(getCell(row, 7), String.valueOf(DAVALIDARE_p + PROGRAMMATO_p + DACONFERMARE_p));
+                        setCell(getCell(row, 8), String.valueOf(DAVALIDARE_a + PROGRAMMATO_a + DACONFERMARE_a));
 
-                        setCell(getCell(row, 6), String.valueOf(docenti));
+                        setCell(getCell(row, 9), String.valueOf(docenti));
 
-                        setCell(getCell(row, 7), String.valueOf(DAVALIDARE_p));
-                        setCell(getCell(row, 8), String.valueOf(DAVALIDARE_a));
+                        setCell(getCell(row, 10), String.valueOf(DAVALIDARE_p));
+                        setCell(getCell(row, 11), String.valueOf(DAVALIDARE_a));
 
-                        setCell(getCell(row, 9), String.valueOf(PROGRAMMATO_p));
-                        setCell(getCell(row, 10), String.valueOf(PROGRAMMATO_a));
+                        setCell(getCell(row, 12), String.valueOf(PROGRAMMATO_p));
+                        setCell(getCell(row, 13), String.valueOf(PROGRAMMATO_a));
 
-                        setCell(getCell(row, 11), String.valueOf(DACONFERMARE_p));
-                        setCell(getCell(row, 12), String.valueOf(DACONFERMARE_a));
+                        setCell(getCell(row, 14), String.valueOf(DACONFERMARE_p));
+                        setCell(getCell(row, 15), String.valueOf(DACONFERMARE_a));
 
-                        setCell(getCell(row, 13), String.valueOf(FASEA_p));
-                        setCell(getCell(row, 14), String.valueOf(FASEA_a));
+                        setCell(getCell(row, 16), String.valueOf(FASEA_p));
+                        setCell(getCell(row, 17), String.valueOf(FASEA_a));
 
-                        setCell(getCell(row, 15), String.valueOf(FASEB_p));
-                        setCell(getCell(row, 16), String.valueOf(FASEB_a));
+                        setCell(getCell(row, 18), String.valueOf(FASEB_p));
+                        setCell(getCell(row, 19), String.valueOf(FASEB_a));
 
-                        setCell(getCell(row, 17), String.valueOf(SOSPESO_p));
-                        setCell(getCell(row, 18), String.valueOf(SOSPESO_a));
+                        setCell(getCell(row, 20), String.valueOf(SOSPESO_p));
+                        setCell(getCell(row, 21), String.valueOf(SOSPESO_a));
 
-                        setCell(getCell(row, 19), String.valueOf(RIGETTATO_p));
-                        setCell(getCell(row, 20), String.valueOf(RIGETTATO_a));
+                        setCell(getCell(row, 22), String.valueOf(RIGETTATO_p));
+                        setCell(getCell(row, 23), String.valueOf(RIGETTATO_a));
 
-                        setCell(getCell(row, 21), String.valueOf(FINEATTIVITA_p));
-                        setCell(getCell(row, 22), String.valueOf(FINEATTIVITA_a));
+                        setCell(getCell(row, 24), String.valueOf(FINEATTIVITA_p));
+                        setCell(getCell(row, 25), String.valueOf(FINEATTIVITA_a));
 
-                        setCell(getCell(row, 23), String.valueOf(DAVALIDAREMODELLO6_p));
-                        setCell(getCell(row, 24), String.valueOf(DAVALIDAREMODELLO6_a));
+                        setCell(getCell(row, 26), String.valueOf(DAVALIDAREMODELLO6_p));
+                        setCell(getCell(row, 27), String.valueOf(DAVALIDAREMODELLO6_a));
 
-                        setCell(getCell(row, 25), String.valueOf(INATTESADIMAPPATURA_p));
-                        setCell(getCell(row, 26), String.valueOf(INATTESADIMAPPATURA_a));
+                        setCell(getCell(row, 28), String.valueOf(INATTESADIMAPPATURA_p));
+                        setCell(getCell(row, 29), String.valueOf(INATTESADIMAPPATURA_a));
 
-                        setCell(getCell(row, 27), String.valueOf(INVERIFICA_p));
-                        setCell(getCell(row, 28), String.valueOf(INVERIFICA_a));
+                        setCell(getCell(row, 30), String.valueOf(INVERIFICA_p));
+                        setCell(getCell(row, 31), String.valueOf(INVERIFICA_a));
 
-                        setCell(getCell(row, 29), String.valueOf(ESITOVERIFICACONCLUSO_p));
-                        setCell(getCell(row, 30), String.valueOf(ESITOVERIFICACONCLUSO_a));
+                        setCell(getCell(row, 32), String.valueOf(ESITOVERIFICACONCLUSO_p));
+                        setCell(getCell(row, 33), String.valueOf(ESITOVERIFICACONCLUSO_a));
 
-                        setCell(getCell(row, 31), String.valueOf(ESITOVERIFICAINVIATO_p));
-                        setCell(getCell(row, 32), String.valueOf(ESITOVERIFICAINVIATO_a));
+                        setCell(getCell(row, 34), String.valueOf(ESITOVERIFICAINVIATO_p));
+                        setCell(getCell(row, 35), String.valueOf(ESITOVERIFICAINVIATO_a));
 
-                        setCell(getCell(row, 33), String.valueOf(CONCLUSO_p));
-                        setCell(getCell(row, 34), String.valueOf(CONCLUSO_a));
+                        setCell(getCell(row, 36), String.valueOf(CONCLUSO_p));
+                        setCell(getCell(row, 37), String.valueOf(CONCLUSO_a));
 
                     }
 
@@ -1721,7 +1734,7 @@ public class Neet_gestione {
 
 //    public static void main(String[] args) {
 //        Neet_gestione ne = new Neet_gestione(false);
-//        ne.report_allievi();
+//        ne.report_pf();
 //    }
     
 }

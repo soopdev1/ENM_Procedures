@@ -137,13 +137,28 @@ public class Constant {
     public static final double coeff_faseB = 40.00;
     public static final double coeff_docfasciaA = 146.25;
     public static final double coeff_docfasciaB = 117.00;
-    public static final String codice_yisu = "MLPS-CLP-00081";
+    
+    public static final double coeff_ddr_dd = 1.38574578;
+    
+    public static final String codice_yisu_neet = "MLPS-CLP-00081";
+    public static final String codice_yisu_ded = "ANPAL-CLP-00266";
     public static final String codice_bb = "1375";
+    
     public static final String contodocentiA = "195149";// "91018";
     public static final String contodocentiB = "191018";// "91019";
     public static final String contoallievifaseA = "191020";// "91021";
     public static final String contoallievifaseB = "191021";// "95149";
+    
+    public static final String contodocentiA_DD = "UCS_ITA_19";
+    public static final String contodocentiB_DD = "UCS_ITA_20";
+    public static final String contoallievifaseA_DD = "UCS_ITA_22";
+    public static final String contoallievifaseB_DD = "UCS_MICRO_01";
+    public static final String percentuale_attribuzioneDD = "100";
+    public static final String tipologia_costo = "8";
+    public static final String tipologia_giustificativo = "16";
+    public static final String cf_soggetto_DD = "97538720588";
 
+    
     public static Logger createLog(String nameapp, String logpath, boolean neet) {
         try {
             File dir1 = new File(logpath);

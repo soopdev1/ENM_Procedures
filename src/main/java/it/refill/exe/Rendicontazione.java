@@ -7,7 +7,8 @@ package it.refill.exe;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import static it.refill.exe.Constant.estraiEccezione;
-import it.refill.report.Excel;
+import static it.refill.report.Excel.prospetto_riepilogo_ded;
+import static it.refill.report.Excel.prospetto_riepilogo_neet;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +44,7 @@ public class Rendicontazione {
         log.log(Level.INFO, "HOST: {0}", this.host);
     }
 
-    public void generaRendicontazione() {
+    public void generaRendicontazione(boolean neet) {
 
         try {
             Db_Bando db1 = new Db_Bando(this.host);
@@ -70,8 +71,16 @@ public class Rendicontazione {
                             log.severe(estraiEccezione(ex));
                         }
                     });
+
                     Db_Bando dbz = new Db_Bando(this.host);
-                    File zipped = Excel.prospetto_riepilogo(idestrazione, idpr, dbz);
+                    File zipped;
+
+                    if (neet) {
+                        zipped = prospetto_riepilogo_neet(idestrazione, idpr, dbz);
+                    } else {
+                        zipped = prospetto_riepilogo_ded(idestrazione, idpr, dbz);
+                    }
+
                     dbz.closeDB();
                     if (zipped != null) {
                         String update1 = "UPDATE estrazioni SET path = '" + StringUtils.replace(zipped.getPath(), "\\", "/") + "' WHERE idestrazione=" + idestrazione;
@@ -95,7 +104,19 @@ public class Rendicontazione {
     }
 
 //    public static void main(String[] args) {
-//        new Rendicontazione(false, true).generaRendicontazione();
+//        Rendicontazione re = new Rendicontazione(false, false);
+//        
+//        
+//        List<Integer> idpr = new ArrayList<>();
+//        idpr.add(120);
+//        Db_Bando dbz = new Db_Bando(re.host);
+//        File zipped;
+//
+//        zipped = prospetto_riepilogo_ded(1, idpr, dbz);
+//
+//        dbz.closeDB();
+//        
+//        System.out.println(zipped.getPath());
+//        
 //    }
-    
 }

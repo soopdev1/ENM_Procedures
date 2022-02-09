@@ -19,10 +19,9 @@ public class FadManuale {
 
     public static void main(String[] args) {
 
-        int pf = 259;
+        int pf = 346;
         
         DeD_gestione d = new DeD_gestione(false);
-        
         
         d.verifica_stanze(pf);
         d.fad_allievi(pf, true);

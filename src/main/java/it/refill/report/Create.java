@@ -307,6 +307,10 @@ public class Create {
                     db0.getConnection().createStatement().executeUpdate("UPDATE fad_track f SET action = REPLACE(action,'-- Manuela','-- MANUELA CAPUTO') "
                             + "WHERE f.room LIKE 'FADMCN_" + idpr + "%' AND action LIKE'%-- Manuela'");
                     break;
+                case 338:
+                    db0.getConnection().createStatement().executeUpdate("UPDATE fad_track f SET action = REPLACE(action,'IANNO&#39;','IANNO\\'') "
+                            + "WHERE f.room LIKE 'FADMCNDD_" + idpr + "%' AND action LIKE '%IANNO&#39;'");
+                    break;
                 default:
                     break;
             }

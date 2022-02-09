@@ -187,7 +187,7 @@ public class MainSelector {
                 case 7: 
                     try {
                     log.info("START RENDICONTAZIONE NEET");
-                    new Rendicontazione(false, true).generaRendicontazione();
+                    new Rendicontazione(false, true).generaRendicontazione(true);
                     log.info("END RENDICONTAZIONE NEET");
                 } catch (Exception e) {
                 }
@@ -316,7 +316,7 @@ public class MainSelector {
                 case 7: 
                     try {
                     log.info("START RENDICONTAZIONE D&D");
-                    new Rendicontazione(false, false).generaRendicontazione();
+                    new Rendicontazione(false, false).generaRendicontazione(false);
                     log.info("END RENDICONTAZIONE D&D");
                 } catch (Exception e) {
                 }
