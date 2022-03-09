@@ -19,7 +19,7 @@ public class FadManuale {
 
     public static void main(String[] args) {
 
-        int pf = 346;
+        int pf = 537;
         
         DeD_gestione d = new DeD_gestione(false);
         

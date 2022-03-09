@@ -81,28 +81,43 @@ public class Db_Bando {
         String path = "-";
         try {
             String sql = "SELECT url FROM path WHERE id = ?";
-            PreparedStatement ps = this.c.prepareStatement(sql);
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                path = rs.getString(1);
+            try (PreparedStatement ps = this.c.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        path = rs.getString(1);
+                    }
+                }
             }
-            rs.close();
-            ps.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return path;
     }
 
+    public List<Integer> elencoidnuovarendicontazione() {
+        List<Integer> out = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM nuovarend";
+            try (Statement st = this.c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                while (rs.next()) {
+                    out.add(rs.getInt(1));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return out;
+    }
+
     public boolean insertTracking(String idUser, String azione) {
         try {
             String ins = "INSERT INTO tracking (idUser,azione) VALUES (?,?)";
-            PreparedStatement ps = this.c.prepareStatement(ins);
-            ps.setString(1, idUser);
-            ps.setString(2, azione);
-            ps.execute();
-            ps.close();
+            try (PreparedStatement ps = this.c.prepareStatement(ins)) {
+                ps.setString(1, idUser);
+                ps.setString(2, azione);
+                ps.execute();
+            }
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -147,23 +162,24 @@ public class Db_Bando {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return "";
     }
 
     public int countDocumentConvenzioni(String username) {
-        int var = 0;
+        int var1 = 0;
         try {
             String query = "select count(*) from docuserconvenzioni where username='" + username + "'";
             try (PreparedStatement ps = this.c.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    var = rs.getInt(1);
+                    var1 = rs.getInt(1);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return var;
+        return var1;
     }
 
     public String getInvioEmailROMA(String username) {
@@ -201,171 +217,186 @@ public class Db_Bando {
         try {
             ArrayList<Comuni_rc> comuni_rc = query_comuni_rc();
             String sql = "SELECT * FROM " + table + " ORDER BY dataconsegna";
-            PreparedStatement ps = this.c.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            try (PreparedStatement ps = this.c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
 
-                String USERNAME = rs.getString("username");
-                String CODICEDOMANDA = rs.getString("coddomanda");
-                String DATACONSEGNA = formatStringtoStringDateSQL(rs.getString("dataconsegna").split(" ")[0]);
-                String ORACONSEGNA = rs.getString("dataconsegna").split(" ")[1].substring(0, 8);
-                String RAGIONESOCIALE = rs.getString("societa");
-                String PIVA = rs.getString("pivacf");
-                String PEC = rs.getString("pec");
-                String NPROTOCOLLO = rs.getString("protocollo");
+                    String USERNAME = rs.getString("username");
+                    String CODICEDOMANDA = rs.getString("coddomanda");
+                    String DATACONSEGNA = formatStringtoStringDateSQL(rs.getString("dataconsegna").split(" ")[0]);
+                    String ORACONSEGNA = rs.getString("dataconsegna").split(" ")[1].substring(0, 8);
+                    String RAGIONESOCIALE = rs.getString("societa");
+                    String PIVA = rs.getString("pivacf");
+                    String PEC = rs.getString("pec");
+                    String NPROTOCOLLO = rs.getString("protocollo");
 
-                ExcelDomande ex1 = new ExcelDomande();
-                ex1.setUSERNAME(USERNAME);
-                ex1.setCODICEDOMANDA(CODICEDOMANDA);
-                ex1.setDATACONSEGNA(DATACONSEGNA);
-                ex1.setORACONSEGNA(ORACONSEGNA);
-                ex1.setRAGIONESOCIALE(RAGIONESOCIALE);
-                ex1.setRAGIONESOCIALE(RAGIONESOCIALE);
-                ex1.setPIVA(PIVA);
-                ex1.setPEC(PEC);
-                ex1.setNPROTOCOLLO(NPROTOCOLLO);
+                    ExcelDomande ex1 = new ExcelDomande();
+                    ex1.setUSERNAME(USERNAME);
+                    ex1.setCODICEDOMANDA(CODICEDOMANDA);
+                    ex1.setDATACONSEGNA(DATACONSEGNA);
+                    ex1.setORACONSEGNA(ORACONSEGNA);
+                    ex1.setRAGIONESOCIALE(RAGIONESOCIALE);
+                    ex1.setRAGIONESOCIALE(RAGIONESOCIALE);
+                    ex1.setPIVA(PIVA);
+                    ex1.setPEC(PEC);
+                    ex1.setNPROTOCOLLO(NPROTOCOLLO);
 
-                boolean convenzionedainviare = countDocumentConvenzioni(USERNAME) == 3;
-                boolean convenzioneinviataROMA = getInvioEmailROMA(USERNAME).equals("1");
-                boolean convenzionecaricatacontrofirmata = !getConvenzioneROMA(USERNAME).trim().equals("");
+                    boolean convenzionedainviare = countDocumentConvenzioni(USERNAME) == 3;
+                    boolean convenzioneinviataROMA = getInvioEmailROMA(USERNAME).equals("1");
+                    boolean convenzionecaricatacontrofirmata = !getConvenzioneROMA(USERNAME).trim().equals("");
 
-                if (convenzionedainviare) {
-                    if (convenzioneinviataROMA) {
-                        if (convenzionecaricatacontrofirmata) {
-                            ex1.setSTATODOMANDA(formatStatoDomanda("A2"));
+                    if (convenzionedainviare) {
+                        if (convenzioneinviataROMA) {
+                            if (convenzionecaricatacontrofirmata) {
+                                ex1.setSTATODOMANDA(formatStatoDomanda("A2"));
+                            } else {
+                                ex1.setSTATODOMANDA(formatStatoDomanda("A3"));
+                            }
                         } else {
-                            ex1.setSTATODOMANDA(formatStatoDomanda("A3"));
+                            ex1.setSTATODOMANDA(formatStatoDomanda("A1"));
                         }
                     } else {
-                        ex1.setSTATODOMANDA(formatStatoDomanda("A1"));
-                    }
-                } else {
-                    ex1.setSTATODOMANDA(formatStatoDomanda(rs.getString("stato_domanda")));
-                }
-
-                String sql2 = "SELECT * FROM usersvalori WHERE username= '" + USERNAME + "'";
-                PreparedStatement ps2 = this.c.prepareStatement(sql2);
-                ResultSet rs2 = ps2.executeQuery();
-                while (rs2.next()) {
-                    String campo = rs2.getString("campo");
-                    String valore = rs2.getString("valore").toUpperCase().trim();
-                    String valore1 = rs2.getString("valore").toUpperCase().trim();
-
-                    if (campo.equals("sedeindirizzo")) {
-                        ex1.setSEDELEGALEINDIRIZZO(valore.toUpperCase());
-                    } else if (campo.equals("sedecap")) {
-                        ex1.setSEDELEGALECAP(valore.toUpperCase());
-                    } else if (campo.equals("sedecomune")) {
-                        if (!valore.equals("")) {
-                            Comuni_rc c0 = comuni_rc.stream().filter(c1 -> (c1.getId() == parseIntR(valore))).findAny().orElse(null);
-                            if (c0 != null) {
-                                valore1 = c0.getNome();
-                            }
-                        }
-                        ex1.setSEDELEGALECOMUNE(valore1.toUpperCase());
-                        
-                    } else if (campo.equals("sedeprov")) {
-                        if (!valore.equals("")) {
-                            Comuni_rc c0 = comuni_rc.stream().filter(c1 -> c1.getCodiceprovincia().equals(valore)).findAny().orElse(null);
-                            if (c0 != null) {
-                                valore1 = c0.getProvincia();
-                            }
-                        }
-                        ex1.setSEDELEGALEPROVINCIA(valore1.toUpperCase());
-                    } else if (campo.equals("sederegione")) {
-                        if (!valore.equals("")) {
-                            Comuni_rc c0 = comuni_rc.stream().filter(c1 -> c1.getCodiceregione().equals(valore)).findAny().orElse(null);
-                            if (c0 != null) {
-                                valore1 = c0.getRegione();
-                            }
-                        }
-                        ex1.setSEDELEGALEREGIONE(valore1.toUpperCase());
-                    } else if (campo.equals("email")) {
-                        ex1.setEMAIL(valore.toUpperCase());
-                    } else if (campo.equals("cell")) {
-                        ex1.setTELEFONO(valore.toUpperCase());
+                        ex1.setSTATODOMANDA(formatStatoDomanda(rs.getString("stato_domanda")));
                     }
 
-                }
+                    String sql2 = "SELECT * FROM usersvalori WHERE username= '" + USERNAME + "'";
+                    try (PreparedStatement ps2 = this.c.prepareStatement(sql2); ResultSet rs2 = ps2.executeQuery()) {
+                        while (rs2.next()) {
+                            String campo = rs2.getString("campo");
+                            String valore = rs2.getString("valore").toUpperCase().trim();
+                            String valore1 = rs2.getString("valore").toUpperCase().trim();
 
-                HashMap<String, String> allegato_a = getAllegatoA(USERNAME);
-                ex1.setNSEDI(getMapValue(allegato_a, "numaule"));
+                            switch (campo) {
+                                case "sedeindirizzo":
+                                    ex1.setSEDELEGALEINDIRIZZO(valore.toUpperCase());
+                                    break;
+                                case "sedecap":
+                                    ex1.setSEDELEGALECAP(valore.toUpperCase());
+                                    break;
+                                case "sedecomune":
+                                    if (!valore.equals("")) {
+                                        Comuni_rc c0 = comuni_rc.stream().filter(c1 -> (c1.getId() == parseIntR(valore))).findAny().orElse(null);
+                                        if (c0 != null) {
+                                            valore1 = c0.getNome();
+                                        }
+                                    }
+                                    ex1.setSEDELEGALECOMUNE(valore1.toUpperCase());
+                                    break;
+                                case "sedeprov":
+                                    if (!valore.equals("")) {
+                                        Comuni_rc c0 = comuni_rc.stream().filter(c1 -> c1.getCodiceprovincia().equals(valore)).findAny().orElse(null);
+                                        if (c0 != null) {
+                                            valore1 = c0.getProvincia();
+                                        }
+                                    }
+                                    ex1.setSEDELEGALEPROVINCIA(valore1.toUpperCase());
+                                    break;
+                                case "sederegione":
+                                    if (!valore.equals("")) {
+                                        Comuni_rc c0 = comuni_rc.stream().filter(c1 -> c1.getCodiceregione().equals(valore)).findAny().orElse(null);
+                                        if (c0 != null) {
+                                            valore1 = c0.getRegione();
+                                        }
+                                    }
+                                    ex1.setSEDELEGALEREGIONE(valore1.toUpperCase());
+                                    break;
+                                case "email":
+                                    ex1.setEMAIL(valore.toUpperCase());
+                                    break;
+                                case "cell":
+                                    ex1.setTELEFONO(valore.toUpperCase());
+                                    break;
+                                default:
+                                    break;
+                            }
 
-                ex1.setSEDE1INDIRIZZO(getMapValue(allegato_a, "indirizzo1"));
-                ex1.setSEDE1COMUNE(getMapValue(allegato_a, "citta1"));
-                ex1.setSEDE1PROVINCIA(getMapValue(allegato_a, "provincia1"));
-                ex1.setSEDE1REGIONE(getMapValue(allegato_a, "regioneaula1"));
-                ex1.setSEDE1TITOLODISP(getMapValue(allegato_a, "titolo1"));
-                ex1.setSEDE1MQ(getMapValue(allegato_a, "estremi1"));
-
-                ex1.setSEDE2INDIRIZZO(getMapValue(allegato_a, "indirizzo2"));
-                ex1.setSEDE2COMUNE(getMapValue(allegato_a, "citta2"));
-                ex1.setSEDE2PROVINCIA(getMapValue(allegato_a, "provincia2"));
-                ex1.setSEDE2REGIONE(getMapValue(allegato_a, "regioneaula2"));
-                ex1.setSEDE2TITOLODISP(getMapValue(allegato_a, "titolo2"));
-                ex1.setSEDE2MQ(getMapValue(allegato_a, "estremi2"));
-
-                ex1.setSEDE3INDIRIZZO(getMapValue(allegato_a, "indirizzo3"));
-                ex1.setSEDE3COMUNE(getMapValue(allegato_a, "citta3"));
-                ex1.setSEDE3PROVINCIA(getMapValue(allegato_a, "provincia3"));
-                ex1.setSEDE3REGIONE(getMapValue(allegato_a, "regioneaula3"));
-                ex1.setSEDE3TITOLODISP(getMapValue(allegato_a, "titolo3"));
-                ex1.setSEDE3MQ(getMapValue(allegato_a, "estremi3"));
-
-                ex1.setSEDE4INDIRIZZO(getMapValue(allegato_a, "indirizzo4"));
-                ex1.setSEDE4COMUNE(getMapValue(allegato_a, "citta4"));
-                ex1.setSEDE4PROVINCIA(getMapValue(allegato_a, "provincia4"));
-                ex1.setSEDE4REGIONE(getMapValue(allegato_a, "regioneaula4"));
-                ex1.setSEDE4TITOLODISP(getMapValue(allegato_a, "titolo4"));
-                ex1.setSEDE4MQ(getMapValue(allegato_a, "estremi4"));
-
-                ex1.setSEDE5INDIRIZZO(getMapValue(allegato_a, "indirizzo5"));
-                ex1.setSEDE5COMUNE(getMapValue(allegato_a, "citta5"));
-                ex1.setSEDE5PROVINCIA(getMapValue(allegato_a, "provincia5"));
-                ex1.setSEDE5REGIONE(getMapValue(allegato_a, "regioneaula5"));
-                ex1.setSEDE5TITOLODISP(getMapValue(allegato_a, "titolo5"));
-                ex1.setSEDE5MQ(getMapValue(allegato_a, "estremi5"));
-
-                ex1.setNDOCENTI(getMapValue(allegato_a, "numdocenti"));
-
-                String sql3 = "select * from allegato_b where username = '" + USERNAME + "' ORDER BY id";
-
-                PreparedStatement ps3 = this.c.prepareStatement(sql3);
-                ResultSet rs3 = ps3.executeQuery();
-                while (rs3.next()) {
-
-                    if (rs3.getInt("id") == 1) {
-                        ex1.setNOMEDOCENTE1(rs3.getString("nome").toUpperCase());
-                        ex1.setCOGNOMEDOCENTE1(rs3.getString("cognome").toUpperCase());
-                        ex1.setCFDOCENTE1(rs3.getString("cf").toUpperCase());
-                        ex1.setFASCIAPROPOSTADOCENTE1(rs3.getString("fascia").toUpperCase());
-                    } else if (rs3.getInt("id") == 2) {
-                        ex1.setNOMEDOCENTE2(rs3.getString("nome").toUpperCase());
-                        ex1.setCOGNOMEDOCENTE2(rs3.getString("cognome").toUpperCase());
-                        ex1.setCFDOCENTE2(rs3.getString("cf").toUpperCase());
-                        ex1.setFASCIAPROPOSTADOCENTE2(rs3.getString("fascia").toUpperCase());
-                    } else if (rs3.getInt("id") == 3) {
-                        ex1.setNOMEDOCENTE3(rs3.getString("nome").toUpperCase());
-                        ex1.setCOGNOMEDOCENTE3(rs3.getString("cognome").toUpperCase());
-                        ex1.setCFDOCENTE3(rs3.getString("cf").toUpperCase());
-                        ex1.setFASCIAPROPOSTADOCENTE3(rs3.getString("fascia").toUpperCase());
-                    } else if (rs3.getInt("id") == 4) {
-                        ex1.setNOMEDOCENTE4(rs3.getString("nome").toUpperCase());
-                        ex1.setCOGNOMEDOCENTE4(rs3.getString("cognome").toUpperCase());
-                        ex1.setCFDOCENTE4(rs3.getString("cf").toUpperCase());
-                        ex1.setFASCIAPROPOSTADOCENTE4(rs3.getString("fascia").toUpperCase());
-                    } else if (rs3.getInt("id") == 5) {
-                        ex1.setNOMEDOCENTE5(rs3.getString("nome").toUpperCase());
-                        ex1.setCOGNOMEDOCENTE5(rs3.getString("cognome").toUpperCase());
-                        ex1.setCFDOCENTE5(rs3.getString("cf").toUpperCase());
-                        ex1.setFASCIAPROPOSTADOCENTE5(rs3.getString("fascia").toUpperCase());
+                        }
                     }
-                }
 
-                out.add(ex1);
+                    HashMap<String, String> allegato_a = getAllegatoA(USERNAME);
+                    ex1.setNSEDI(getMapValue(allegato_a, "numaule"));
+
+                    ex1.setSEDE1INDIRIZZO(getMapValue(allegato_a, "indirizzo1"));
+                    ex1.setSEDE1COMUNE(getMapValue(allegato_a, "citta1"));
+                    ex1.setSEDE1PROVINCIA(getMapValue(allegato_a, "provincia1"));
+                    ex1.setSEDE1REGIONE(getMapValue(allegato_a, "regioneaula1"));
+                    ex1.setSEDE1TITOLODISP(getMapValue(allegato_a, "titolo1"));
+                    ex1.setSEDE1MQ(getMapValue(allegato_a, "estremi1"));
+
+                    ex1.setSEDE2INDIRIZZO(getMapValue(allegato_a, "indirizzo2"));
+                    ex1.setSEDE2COMUNE(getMapValue(allegato_a, "citta2"));
+                    ex1.setSEDE2PROVINCIA(getMapValue(allegato_a, "provincia2"));
+                    ex1.setSEDE2REGIONE(getMapValue(allegato_a, "regioneaula2"));
+                    ex1.setSEDE2TITOLODISP(getMapValue(allegato_a, "titolo2"));
+                    ex1.setSEDE2MQ(getMapValue(allegato_a, "estremi2"));
+
+                    ex1.setSEDE3INDIRIZZO(getMapValue(allegato_a, "indirizzo3"));
+                    ex1.setSEDE3COMUNE(getMapValue(allegato_a, "citta3"));
+                    ex1.setSEDE3PROVINCIA(getMapValue(allegato_a, "provincia3"));
+                    ex1.setSEDE3REGIONE(getMapValue(allegato_a, "regioneaula3"));
+                    ex1.setSEDE3TITOLODISP(getMapValue(allegato_a, "titolo3"));
+                    ex1.setSEDE3MQ(getMapValue(allegato_a, "estremi3"));
+
+                    ex1.setSEDE4INDIRIZZO(getMapValue(allegato_a, "indirizzo4"));
+                    ex1.setSEDE4COMUNE(getMapValue(allegato_a, "citta4"));
+                    ex1.setSEDE4PROVINCIA(getMapValue(allegato_a, "provincia4"));
+                    ex1.setSEDE4REGIONE(getMapValue(allegato_a, "regioneaula4"));
+                    ex1.setSEDE4TITOLODISP(getMapValue(allegato_a, "titolo4"));
+                    ex1.setSEDE4MQ(getMapValue(allegato_a, "estremi4"));
+
+                    ex1.setSEDE5INDIRIZZO(getMapValue(allegato_a, "indirizzo5"));
+                    ex1.setSEDE5COMUNE(getMapValue(allegato_a, "citta5"));
+                    ex1.setSEDE5PROVINCIA(getMapValue(allegato_a, "provincia5"));
+                    ex1.setSEDE5REGIONE(getMapValue(allegato_a, "regioneaula5"));
+                    ex1.setSEDE5TITOLODISP(getMapValue(allegato_a, "titolo5"));
+                    ex1.setSEDE5MQ(getMapValue(allegato_a, "estremi5"));
+
+                    ex1.setNDOCENTI(getMapValue(allegato_a, "numdocenti"));
+
+                    String sql3 = "select * from allegato_b where username = '" + USERNAME + "' ORDER BY id";
+
+                    try (PreparedStatement ps3 = this.c.prepareStatement(sql3); ResultSet rs3 = ps3.executeQuery()) {
+                        while (rs3.next()) {
+
+                            switch (rs3.getInt("id")) {
+                                case 1:
+                                    ex1.setNOMEDOCENTE1(rs3.getString("nome").toUpperCase());
+                                    ex1.setCOGNOMEDOCENTE1(rs3.getString("cognome").toUpperCase());
+                                    ex1.setCFDOCENTE1(rs3.getString("cf").toUpperCase());
+                                    ex1.setFASCIAPROPOSTADOCENTE1(rs3.getString("fascia").toUpperCase());
+                                    break;
+                                case 2:
+                                    ex1.setNOMEDOCENTE2(rs3.getString("nome").toUpperCase());
+                                    ex1.setCOGNOMEDOCENTE2(rs3.getString("cognome").toUpperCase());
+                                    ex1.setCFDOCENTE2(rs3.getString("cf").toUpperCase());
+                                    ex1.setFASCIAPROPOSTADOCENTE2(rs3.getString("fascia").toUpperCase());
+                                    break;
+                                case 3:
+                                    ex1.setNOMEDOCENTE3(rs3.getString("nome").toUpperCase());
+                                    ex1.setCOGNOMEDOCENTE3(rs3.getString("cognome").toUpperCase());
+                                    ex1.setCFDOCENTE3(rs3.getString("cf").toUpperCase());
+                                    ex1.setFASCIAPROPOSTADOCENTE3(rs3.getString("fascia").toUpperCase());
+                                    break;
+                                case 4:
+                                    ex1.setNOMEDOCENTE4(rs3.getString("nome").toUpperCase());
+                                    ex1.setCOGNOMEDOCENTE4(rs3.getString("cognome").toUpperCase());
+                                    ex1.setCFDOCENTE4(rs3.getString("cf").toUpperCase());
+                                    ex1.setFASCIAPROPOSTADOCENTE4(rs3.getString("fascia").toUpperCase());
+                                    break;
+                                case 5:
+                                    ex1.setNOMEDOCENTE5(rs3.getString("nome").toUpperCase());
+                                    ex1.setCOGNOMEDOCENTE5(rs3.getString("cognome").toUpperCase());
+                                    ex1.setCFDOCENTE5(rs3.getString("cf").toUpperCase());
+                                    ex1.setFASCIAPROPOSTADOCENTE5(rs3.getString("fascia").toUpperCase());
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                    }
+                    out.add(ex1);
+                }
             }
-            rs.close();
-            ps.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -379,6 +410,7 @@ public class Db_Bando {
                 return valore.toUpperCase().trim();
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return "";
 
@@ -455,34 +487,37 @@ public class Db_Bando {
     }
 
     public boolean insertReportExcel(String data, String base64, String timestamp) {
-        try {
-            if (base64 != null) {
 
+        if (base64 != null) {
+            try {
                 String insert = "INSERT INTO excelreport VALUES(?,?,?)";
-                PreparedStatement ps = this.c.prepareStatement(insert);
-                ps.setString(1, data);
-                ps.setString(2, base64);
-                ps.setString(3, timestamp);
-                try {
+                try (PreparedStatement ps = this.c.prepareStatement(insert)) {
+                    ps.setString(1, data);
+                    ps.setString(2, base64);
+                    ps.setString(3, timestamp);
                     ps.executeUpdate();
-                    return true;
-                } catch (Exception e) {
-                    if (e.getMessage().toLowerCase().contains("duplicate")) {
-                        insert = "UPDATE excelreport SET content = ?, aggiornamento = ? WHERE giorno = ?";
-                        ps = this.c.prepareStatement(insert);
-                        ps.setString(1, base64);
-                        ps.setString(2, timestamp);
-                        ps.setString(3, data);
-                        ps.executeUpdate();
-                        return true;
-                    } else {
-                        e.printStackTrace();
+                }
+                return true;
+            } catch (Exception e) {
+                if (e.getMessage().toLowerCase().contains("duplicate")) {
+                    try {
+                        String insert = "UPDATE excelreport SET content = ?, aggiornamento = ? WHERE giorno = ?";
+                        try (PreparedStatement ps1 = this.c.prepareStatement(insert)) {
+                            ps1.setString(1, base64);
+                            ps1.setString(2, timestamp);
+                            ps1.setString(3, data);
+                            ps1.executeUpdate();
+                        }
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
                     }
+                    return true;
+                } else {
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
         return false;
     }
 
@@ -627,9 +662,5 @@ public class Db_Bando {
         }
         return out;
     }
-    
-    
 
 }
-
-

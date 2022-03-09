@@ -1235,15 +1235,19 @@ public class Excel {
             String filezip = pathdest + "/" + nomerend + ".zip";
             String fileing = pathdest + "/TEMPLATE PROSPETTO RIEPILOGO.xlsx";
 
-            File ddr = new File(pathtemp + "/DDR.txt");
+            
             File sd01 = new File(pathtemp + "/SD01.txt");
             File sd03 = new File(pathtemp + "/SD03.txt");
+            File ddr = new File(pathtemp + "/DDR.txt");
+            
+            FileWriter fw01 = new FileWriter(sd01);
+            BufferedWriter sd01_W = new BufferedWriter(fw01);
 
-            BufferedWriter sd01_W = new BufferedWriter(new FileWriter(sd01));
-
-            BufferedWriter sd03_W = new BufferedWriter(new FileWriter(sd03));
-
-            BufferedWriter ddr_W = new BufferedWriter(new FileWriter(ddr));
+            FileWriter fw03 = new FileWriter(sd03);
+            BufferedWriter sd03_W = new BufferedWriter(fw03);
+            
+            FileWriter fwddr = new FileWriter(ddr);
+            BufferedWriter ddr_W = new BufferedWriter(fwddr);
 
             AtomicDouble total_rend = new AtomicDouble(0.0);
             DateTime start_rend = null;
@@ -2190,7 +2194,9 @@ public class Excel {
                         }
 
                         sd01_W.close();
+                        fw01.close();
                         sd03_W.close();
+                        fw03.close();
 
                         String def = nomerend + separator + codice_yisu_neet + separator + nomerend_cod + separator
                                 + new DateTime().toString("dd/MM/yyyy") + separator + start_rend.toString("dd/MM/yyyy")
@@ -2200,6 +2206,7 @@ public class Excel {
 
                         ddr_W.write(def);
                         ddr_W.close();
+                        fwddr.close();
 
                     }
                 }

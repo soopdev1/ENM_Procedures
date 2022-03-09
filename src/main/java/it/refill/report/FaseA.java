@@ -1194,7 +1194,7 @@ public class FaseA {
                                     }
 
                                 });
-                                gestisciorerendicontabili(report, convertHours(cal.getOre()));
+                                gestisciorerendicontabili(report, convertHours(cal.getOre()), idpr, host);
 
                                 report.forEach(r1 -> {
                                     try {

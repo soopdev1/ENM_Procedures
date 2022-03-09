@@ -20,6 +20,7 @@ import static it.refill.exe.Constant.patternSql;
 import static it.refill.exe.Constant.setCell;
 import static it.refill.exe.Constant.timestamp;
 import static it.refill.otp.SendMailJet.sendMail;
+import it.refill.sso.DbSSO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -142,6 +143,7 @@ public class Neet_gestione {
 
     ////////////////////////////////////////////////////////////////////////////
     public void fad_allievi(int idprogetti_formativi, boolean manual) {
+        DbSSO dbs = new DbSSO();
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String mailsender = db1.getPath("mailsender");
@@ -214,15 +216,17 @@ public class Neet_gestione {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','S','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st5.executeUpdate(ins);
+                                        log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins)});
+                                        log.log(Level.INFO, "NUOVE CREDENZIALI NEET ) {0}", nomecognome);
                                     }
-                                    log.log(Level.INFO, "NUOVE CREDENZIALI NEET ) {0}", nomecognome);
                                 } else {
                                     user = rs4.getString(1);
                                     try (Statement st5 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_access SET psw = '" + md5psw + "' WHERE idsoggetto = " + idsoggetto + " AND data = '" + dataoggi + "' AND ud='" + ud + "' AND type = 'S' ";
                                         st5.executeUpdate(upd);
+                                        log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(upd)});
+                                        log.log(Level.INFO, "RECUPERO CREDENZIALI NEET ) {0}", nomecognome);
                                     }
-                                    log.log(Level.INFO, "RECUPERO CREDENZIALI NEET ) {0}", nomecognome);
                                 }
                                 //INVIO MAIL
                                 String sql5 = "SELECT oggetto,testo FROM email WHERE chiave ='fad3.0'";
@@ -265,10 +269,12 @@ public class Neet_gestione {
             log.severe(estraiEccezione(e));
         }
         db1.closeDB();
+        dbs.closeDB();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     public void fad_docenti(int idprogetti_formativi, boolean manual) {
+        DbSSO dbs = new DbSSO();
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String mailsender = db1.getPath("mailsender");
@@ -331,17 +337,18 @@ public class Neet_gestione {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st6.executeUpdate(ins);
+                                        log.log(Level.INFO, "SSO DOCENTE ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins)});
+                                        log.log(Level.INFO, "NUOVE CREDENZIALI DOCENTE ) {0}", nomecognome);
                                     }
-                                    log.log(Level.INFO, "NUOVE CREDENZIALI DOCENTE ) {0}", nomecognome);
                                 } else { //CREDENZIALI GIA presenti
                                     user = rs5.getString(1);
                                     try (Statement st6 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_access SET psw = '" + md5psw + "' WHERE idsoggetto = " + idsoggetto + " AND data = '" + dataoggi + "' AND ud='" + ud
                                                 + "' AND type = 'D' ";
                                         st6.executeUpdate(upd);
+                                        log.log(Level.INFO, "SSO DOCENTE ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(upd)});
+                                        log.log(Level.INFO, "RECUPERO CREDENZIALI DOCENTE ) {0}", nomecognome);
                                     }
-                                    log.log(Level.INFO, "RECUPERO CREDENZIALI DOCENTE ) {0}", nomecognome);
-
                                 }
 
                                 //INVIO MAIL
@@ -382,6 +389,7 @@ public class Neet_gestione {
             log.severe(estraiEccezione(e));
         }
         db1.closeDB();
+        dbs.closeDB();
     }
 
     ////////////////////////////////////////////////////////////////////////////

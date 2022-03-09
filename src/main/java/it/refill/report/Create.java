@@ -116,96 +116,7 @@ public class Create {
         }
     }
 
-//    public static void main(String[] args) {
-//
-//        boolean testing;
-//        try {
-//            testing = args[0].trim().equalsIgnoreCase("test");
-//        } catch (Exception e) {
-//            testing = false;
-//        }
-//
-//        boolean print = false;
-//        boolean save = true;
-//
-//        Create.log.log(Level.INFO, "PRINT: {0}", print);
-//        Create.log.log(Level.INFO, "SAVE: {0}", save);
-//
-//        List<Integer> list_id = new ArrayList<>();
-//
-//        try {
-//            FaseA FA = new FaseA(testing, neet);
-//            Db_Bando db0 = new Db_Bando(FA.getHost());
-////            String sql0 = "SELECT pf.idprogetti_formativi from progetti_formativi pf WHERE stato IN ('ATA','ATB','DVA','DVB')";
-//
-//            String sql0 = "SELECT DISTINCT(mp.id_progettoformativo) "
-//                    + "FROM lezioni_modelli lm, modelli_progetti mp "
-//                    + "WHERE mp.id_modello=lm.id_modelli_progetto "
-//                    + "AND lm.giorno = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-//
-//            try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {
-//                while (rs0.next()) {
-//                    list_id.add(rs0.getInt(1));
-//                }
-//            }
-//            db0.closeDB();
-//
-//            FaseB FB = new FaseB(testing, neet);
-//
-//            list_id.forEach(idpr -> {
-//
-//                //  FASE A
-//                try {
-//                    log.log(Level.INFO, "REPORT FASE A - IDPR {0}", idpr);
-//                    List<Lezione> calendar1 = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), print, save, false);
-//                    FA.registro_aula_FaseA(idpr, FA.getHost(), save, calendar1);
-//                    log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
-//                } catch (Exception e1) {
-//                    log.severe(estraiEccezione(e1));
-//                }
-//                //  FASE B
-//                try {
-//                    log.log(Level.INFO, "REPORT FASE B - IDPR {0}", idpr);
-//                    List<Lezione> calendar2 = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), print, save, false);
-//                    FB.registro_aula_FaseB(idpr, FA.getHost(), save, calendar2);
-//                    log.log(Level.INFO, "COMPLETATO REPORT FASE A - IDPR {0}", idpr);
-//                } catch (Exception e1) {
-//                    log.severe(estraiEccezione(e1));
-//                }
-//
-//            });
-//
-//            List<Integer> list_id_conclusi = new ArrayList<>();
-//
-//            //COMPLESSIVO
-//            Db_Bando dbA0 = new Db_Bando(FA.getHost());
-//            String sqlA0 = "SELECT idprogetti_formativi FROM progetti_formativi WHERE END < CURDATE() "
-//                    + "AND idprogetti_formativi NOT IN (SELECT idprogetto FROM documenti_progetti WHERE tipo=33)";
-//            try (Statement st0 = dbA0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sqlA0)) {
-//                while (rs0.next()) {
-//                    list_id_conclusi.add(rs0.getInt(1));
-//                }
-//            }
-//            dbA0.closeDB();
-//
-//            Complessivo c1 = new Complessivo(FA.getHost());
-//            list_id_conclusi.forEach(idpr -> {
-//                try {
-//                    log.log(Level.INFO, "REPORT COMPLESSIVO - IDPR {0}", idpr);
-//                    List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, c1.getHost(), false, false, false);
-//                    List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, c1.getHost(), false, false, false);
-//                    c1.registro_complessivo(idpr, c1.getHost(), ca, cb, save);
-//                    log.log(Level.INFO, "COMPLETATO REPORT COMPLESSIVO - IDPR {0}", idpr);
-//                } catch (Exception e1) {
-//                    log.severe(estraiEccezione(e1));
-//                }
-//            });
-//        } catch (Exception e) {
-//            log.severe(estraiEccezione(e));
-//        }
-//
-//    }
-    public static void gestisciorerendicontabili(LinkedList<Presenti> report, long ore) {
+    public static void gestisciorerendicontabili(LinkedList<Presenti> report, long ore, int idpr, String host) {
 
         try {
             DateTimeFormatter fmt = forPattern(timestampSQL);
@@ -250,15 +161,18 @@ public class Create {
 
                     });
 
-                    if (millis_rendicontabili.get() >= ore) {
+                    long millischeck = nuova_rendicontazione_ore(millis_rendicontabili.get(), idpr, host);
+                    long millischeck1 = nuova_rendicontazione_ore(cnsmr.getMillistotaleore(), idpr, host);
+
+                    if (millischeck >= ore) {
                         cnsmr.setTotaleorerendicontabili(calcoladurata(ore));
                         cnsmr.setMillistotaleorerendicontabili(ore);
-                    } else if (millis_rendicontabili.get() >= cnsmr.getMillistotaleore()) {
-                        cnsmr.setTotaleorerendicontabili(cnsmr.getTotaleore());
-                        cnsmr.setMillistotaleorerendicontabili(cnsmr.getMillistotaleore());
+                    } else if (millischeck >= millischeck1) {
+                        cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck1));
+                        cnsmr.setMillistotaleorerendicontabili(millischeck1);
                     } else {
-                        cnsmr.setTotaleorerendicontabili(calcoladurata(millis_rendicontabili.get()));
-                        cnsmr.setMillistotaleorerendicontabili(millis_rendicontabili.get());
+                        cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck));
+                        cnsmr.setMillistotaleorerendicontabili(millischeck);
                     }
 
                 });
@@ -268,7 +182,6 @@ public class Create {
                     while (start.isBefore(intervallo1.getEnd())) {
                         for (int i = 0; i < accessi_complessivi.size(); i++) {
                             Interval ac1 = accessi_complessivi.get(i);
-
                             if (ac1.getStart().isBefore(start) || ac1.getStart().isEqual(start)) {
                                 if (ac1.getEnd().isAfter(start) || ac1.getEnd().isEqual(start)) {
                                     millis_rendicontabili_DOCENTE.addAndGet(1000);
@@ -280,20 +193,38 @@ public class Create {
                     }
                 });
 
-                if (millis_rendicontabili_DOCENTE.get() >= ore) {
+                long millischeck = nuova_rendicontazione_ore(millis_rendicontabili_DOCENTE.get(), idpr, host);
+                long millischeck1 = nuova_rendicontazione_ore(docente.getMillistotaleore(), idpr, host);
+
+                if (millischeck >= ore) {
                     docente.setTotaleorerendicontabili(calcoladurata(ore));
                     docente.setMillistotaleorerendicontabili(ore);
-                } else if (millis_rendicontabili_DOCENTE.get() >= docente.getMillistotaleore()) {
-                    docente.setTotaleorerendicontabili(docente.getTotaleore());
-                    docente.setMillistotaleorerendicontabili(docente.getMillistotaleore());
+                } else if (millischeck >= millischeck1) {
+                    docente.setTotaleorerendicontabili(calcoladurata(millischeck1));
+                    docente.setMillistotaleorerendicontabili(millischeck1);
                 } else {
-                    docente.setTotaleorerendicontabili(calcoladurata(millis_rendicontabili_DOCENTE.get()));
-                    docente.setMillistotaleorerendicontabili(millis_rendicontabili_DOCENTE.get());
+                    docente.setTotaleorerendicontabili(calcoladurata(millischeck));
+                    docente.setMillistotaleorerendicontabili(millischeck);
                 }
             }
         } catch (Exception e) {
             log.severe(estraiEccezione(e));
         }
+    }
+
+    public static long nuova_rendicontazione_ore(long millis, int idpr, String host) {
+        try {
+            Db_Bando db0 = new Db_Bando(host);
+            List<Integer> listpr = db0.elencoidnuovarendicontazione();
+            db0.closeDB();
+            if (listpr.contains(idpr)) {
+                long real = millis / 1800000;
+                return real * 1800000;
+            }
+        } catch (Exception e1) {
+            log.severe(estraiEccezione(e1));
+        }
+        return millis;
     }
 
     public static void manage(Db_Bando db0, int idpr) {
