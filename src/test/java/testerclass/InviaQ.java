@@ -27,7 +27,7 @@ public class InviaQ {
 
 //    public static void main(String[] args) {
 //
-//        String host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod";
+//        String host = conf.getString("db.host") + ":3306/enm_gestione_dd_prod";
 //
 //        String[] dest = {
 //            "claudiacarella4@gmail.com",

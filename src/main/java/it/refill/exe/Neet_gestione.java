@@ -9,6 +9,7 @@ import com.google.common.base.Splitter;
 import static it.refill.exe.Constant.bando_SE;
 import static it.refill.exe.Constant.bando_SUD;
 import static it.refill.exe.Constant.calcoladurata;
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.estraiEccezione;
 import static it.refill.exe.Constant.formatStatoDocente;
 import static it.refill.exe.Constant.getCell;
@@ -56,10 +57,10 @@ public class Neet_gestione {
 
     ////////////////////////////////////////////////////////////////////////////
     public Neet_gestione(boolean test) {
-        this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
+        this.host = conf.getString("db.host") + ":3306/enm_gestione_neet_prod";
         this.test = test;
         if (test) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_neet";
         }
         log.log(Level.INFO, "HOST: {0}", this.host);
     }
@@ -174,10 +175,10 @@ public class Neet_gestione {
                     String ud = rs1.getString("ud.codice");
                     String sql3;
                     if (fase.endsWith("A")) {
-                        sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idprogetti_formativi;
+                        sql3 = "SELECT idallievi,email,nome,cognome,codicefiscale FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idprogetti_formativi;
                     } else if (fase.endsWith("B")) {
                         int gruppo_faseB = rs1.getInt("lm.gruppo_faseB");
-                        sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idprogetti_formativi + " AND gruppo_faseB = " + gruppo_faseB;
+                        sql3 = "SELECT idallievi,email,nome,cognome,codicefiscale FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idprogetti_formativi + " AND gruppo_faseB = " + gruppo_faseB;
                     } else {
                         continue;
                     }
@@ -197,6 +198,7 @@ public class Neet_gestione {
                     String orainvito = StringUtils.removeEnd(orainvitosb.toString(), "<br>");
                     try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
+                            String codicefiscale = rs3.getString("codicefiscale").toUpperCase();
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
                             int idsoggetto = rs3.getInt("idallievi");
                             String email = rs3.getString("email").toLowerCase();
@@ -216,7 +218,10 @@ public class Neet_gestione {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','S','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st5.executeUpdate(ins);
-                                        log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins)});
+                                        
+                                        String ins_SSO = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
+                                                + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + codicefiscale + "')";
+                                        log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins_SSO)});
                                         log.log(Level.INFO, "NUOVE CREDENZIALI NEET ) {0}", nomecognome);
                                     }
                                 } else {
@@ -315,9 +320,10 @@ public class Neet_gestione {
                     }
                     String orainvito = StringUtils.removeEnd(orainvitosb.toString(), "<br>");
 
-                    String sql4 = "SELECT iddocenti,email,nome,cognome FROM docenti WHERE iddocenti = " + id_docente;
+                    String sql4 = "SELECT iddocenti,email,nome,cognome,codicefiscale FROM docenti WHERE iddocenti = " + id_docente;
                     try (Statement st4 = db1.getConnection().createStatement(); ResultSet rs4 = st4.executeQuery(sql4)) {
                         if (rs4.next()) {
+                            String codicefiscale = rs4.getString("codicefiscale").toUpperCase();
                             String nomecognome = rs4.getString("nome").toUpperCase() + " " + rs4.getString("cognome").toUpperCase();
                             int idsoggetto = rs4.getInt("iddocenti");
                             String email = rs4.getString("email").toLowerCase();
@@ -337,7 +343,9 @@ public class Neet_gestione {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st6.executeUpdate(ins);
-                                        log.log(Level.INFO, "SSO DOCENTE ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins)});
+                                        String ins_SSO = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
+                                                + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + codicefiscale + "')";
+                                        log.log(Level.INFO, "SSO DOCENTE ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins_SSO)});
                                         log.log(Level.INFO, "NUOVE CREDENZIALI DOCENTE ) {0}", nomecognome);
                                     }
                                 } else { //CREDENZIALI GIA presenti
@@ -1180,9 +1188,9 @@ public class Neet_gestione {
 
     public void report_docenti() {
         try {
-            String hostneet = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet_prod";
+            String hostneet = conf.getString("db.host") + ":3306/enm_neet_prod";
             if (test) {
-                hostneet = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet";
+                hostneet = conf.getString("db.host") + ":3306/enm_neet";
             }
             SimpleDateFormat sdita = new SimpleDateFormat("dd/MM/yyyy");
             Db_Bando db1 = new Db_Bando(this.host);

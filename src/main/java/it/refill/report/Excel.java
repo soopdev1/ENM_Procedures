@@ -906,7 +906,7 @@ public class Excel {
                                                                     + tipologia_costo + separator
                                                                     + cf_soggetto_DD + separator
                                                                     + "3" + separator
-                                                                    + "3" + separator
+                                                                    + "1" + separator
                                                                     + separator
                                                                     + nomerend + separator
                                                                     + separator

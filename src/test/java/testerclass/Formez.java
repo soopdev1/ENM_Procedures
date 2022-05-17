@@ -31,7 +31,7 @@ package testerclass;
 // */
 //public class Formez {
 //
-//    private static String host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet";
+//    private static String host = conf.getString("db.host") + ":3306/enm_gestione_neet";
 //
 //    private static Logger log = Constant.createLog("FormezFadTest", "/mnt/mcn/test/log/");
 //

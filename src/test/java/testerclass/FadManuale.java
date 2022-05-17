@@ -19,11 +19,11 @@ public class FadManuale {
 
     public static void main(String[] args) {
 
-        int pf = 537;
+        int pf = 539;
         
         DeD_gestione d = new DeD_gestione(false);
-        
-        d.verifica_stanze(pf);
+//        
+//        d.verifica_stanze(pf);
         d.fad_allievi(pf, true);
         d.fad_docenti(pf, true);
         d.fad_ospiti(pf, true);

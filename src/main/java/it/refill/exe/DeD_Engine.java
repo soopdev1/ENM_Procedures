@@ -5,6 +5,7 @@
  */
 package it.refill.exe;
 
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.estraiEccezione;
 import static it.refill.exe.Constant.formatStringtoStringDate;
 import static it.refill.exe.Constant.getCell;
@@ -44,11 +45,10 @@ public class DeD_Engine {
     public String host;
 
     public DeD_Engine(boolean test) {
-        this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_dd_prod";
+        this.host = conf.getString("db.host") + ":3306/enm_dd_prod";
         if (test) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_dd";
+            this.host = conf.getString("db.host") + ":3306/enm_dd";
         }
-//        System.out.println("HOST: " + this.host);
     }
 
     public void crea_report(boolean test) {
@@ -68,7 +68,7 @@ public class DeD_Engine {
             String sq1;
             String sq2;
             File output;
-            try (InputStream is = new ByteArrayInputStream(decodeBase64(contentb64)); XSSFWorkbook wb = new XSSFWorkbook(is)) {
+            try ( InputStream is = new ByteArrayInputStream(decodeBase64(contentb64));  XSSFWorkbook wb = new XSSFWorkbook(is)) {
                 XSSFSheet foglio1 = wb.getSheet("ELENCO DOMANDE INVIATE");
                 XSSFSheet foglio2 = wb.getSheet("SCHEDA_SINT_SA");
                 AtomicInteger indice = new AtomicInteger(1);
@@ -193,7 +193,7 @@ public class DeD_Engine {
                 sq1 = dt1.toString(patternSql);
                 sq2 = dt1.toString(timestampSQL);
                 output = new File(pathtemp + "Domande_consegnate_" + ts + ".xlsx");
-                try (FileOutputStream fos = new FileOutputStream(output)) {
+                try ( FileOutputStream fos = new FileOutputStream(output)) {
                     wb.write(fos);
                 }
             }
@@ -215,15 +215,15 @@ public class DeD_Engine {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT a.username FROM bando_dd_mcn a WHERE a.stato_domanda = 'A' AND a.dataupconvenzionefinale = '-'";
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1);) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1);) {
                 while (rs1.next()) {
                     String sql2 = "SELECT timestamp FROM convenzioniroma WHERE username = '" + rs1.getString("a.username") + "' ORDER BY timestamp DESC LIMIT 1";
-                    try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2);) {
+                    try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2);) {
                         if (rs2.next()) {
                             String data = formatStringtoStringDate(rs2.getString(1), timestampSQL, patternITA, true);
                             if (!data.equals("DATA ERRATA")) {
                                 String upd = "UPDATE bando_dd_mcn SET dataupconvenzionefinale = ? where username = ?";
-                                try (PreparedStatement ps1 = db1.getConnection().prepareStatement(upd)) {
+                                try ( PreparedStatement ps1 = db1.getConnection().prepareStatement(upd)) {
                                     ps1.setString(1, data);
                                     ps1.setString(2, rs1.getString("a.username"));
                                     ps1.executeUpdate();
@@ -247,7 +247,7 @@ public class DeD_Engine {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT * FROM domandecomplete WHERE stato = '1' AND id NOT IN (SELECT DISTINCT(coddomanda) FROM bando_dd_mcn) GROUP BY id";
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
                     Domande d1 = new Domande();
                     d1.setCodicedomanda(rs1.getString("id"));
@@ -255,7 +255,7 @@ public class DeD_Engine {
                     d1.setStato(rs1.getString("stato"));
                     boolean ok = false;
                     String sql2 = "SELECT * FROM usersvalori WHERE username= '" + rs1.getString("username") + "'";
-                    try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                    try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
                         while (rs2.next()) {
                             ok = true;
                             String nomecampo = rs2.getString("campo");
@@ -317,7 +317,7 @@ public class DeD_Engine {
                                 + "?,?,?,?,?,?,?,?,?,?," //10
                                 + "?,?,?,?,?,?,?,?,?"
                                 + ")";
-                        try (PreparedStatement ps1 = db1.getConnection().prepareStatement(insert)) {
+                        try ( PreparedStatement ps1 = db1.getConnection().prepareStatement(insert)) {
                             ps1.setString(1, bando);
                             ps1.setString(2, rs1.getString("username"));
                             ps1.setString(3, d1.getNome());
@@ -354,12 +354,12 @@ public class DeD_Engine {
         Db_Bando db1 = new Db_Bando(this.host);
         try {
             String sql1 = "SELECT username FROM bando_dd_mcn a WHERE stato_domanda = 'A' AND decreto <> '-'";
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
                     Domande d1 = new Domande();
                     boolean ok = false;
                     String sql2 = "SELECT * FROM usersvalori WHERE username= '" + rs1.getString("username") + "'";
-                    try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                    try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
                         while (rs2.next()) {
                             ok = true;
                             String nomecampo = rs2.getString("campo");
@@ -402,7 +402,7 @@ public class DeD_Engine {
                     }
                     if (ok) {
                         String insert = "UPDATE bando_dd_mcn SET sedecomune = ?,sedecap = ?,cellulare = ?,data = ?,mail = ?,sedeindirizzo = ?,docric = ?,scadenzadoc = ?,caricasoc = ?, accreditato = ?  where username = ?";
-                        try (PreparedStatement ps1 = db1.getConnection().prepareStatement(insert)) {
+                        try ( PreparedStatement ps1 = db1.getConnection().prepareStatement(insert)) {
                             ps1.setString(1, d1.getSedeComune());
                             ps1.setString(2, d1.getSedeCap());
                             ps1.setString(3, d1.getCellulare());
@@ -435,7 +435,7 @@ public class DeD_Engine {
             AtomicInteger count_dc0;
             AtomicInteger count_dc1;
             AtomicInteger count_dc2;
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 count_dc0 = new AtomicInteger(0);
                 count_dc1 = new AtomicInteger(0);
                 count_dc2 = new AtomicInteger(0);
@@ -455,7 +455,7 @@ public class DeD_Engine {
             String upd0 = "UPDATE reportistica SET valore = '" + count_dc0.get() + "' WHERE codice = 'dc0'";
             String upd1 = "UPDATE reportistica SET valore = '" + count_dc1.get() + "' WHERE codice = 'dc1'";
             String upd2 = "UPDATE reportistica SET valore = '" + count_dc2.get() + "' WHERE codice = 'dc2'";
-            try (Statement st2 = db1.getConnection().createStatement()) {
+            try ( Statement st2 = db1.getConnection().createStatement()) {
                 st2.executeUpdate(upd0);
                 st2.executeUpdate(upd1);
                 st2.executeUpdate(upd2);
@@ -468,7 +468,5 @@ public class DeD_Engine {
     }
 
     private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/", false);
-
-    
 
 }

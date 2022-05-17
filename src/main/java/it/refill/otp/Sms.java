@@ -34,7 +34,6 @@ public class Sms {
         try {
             String skebbyuser = db1.getPath("skebbyuser");
             String skebbyPwd = db1.getPath("skebbyPwd");
-
             String[] authKeys = login(skebbyuser, skebbyPwd);
             SendSMSRequest sendSMS = new SendSMSRequest();
             sendSMS.setMessage(msg);

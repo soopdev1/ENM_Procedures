@@ -6,6 +6,7 @@
 package it.refill.exe;
 
 import static it.refill.exe.Constant.checkPDF;
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.estraiEccezione;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,14 +36,14 @@ public class Repair {
     ////////////////////////////////////////////////////////////////////////////
     public Repair(boolean test, boolean neet) {
         if (neet) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_neet_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_neet";
             }
         } else {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_dd_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_dd";
             }
         }
         log.log(Level.INFO, "HOST: {0}", this.host);

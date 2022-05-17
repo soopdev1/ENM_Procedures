@@ -43,10 +43,10 @@ public class RSS_gestione {
 //    public static void main(String[] args) {
 //        boolean print = false;
 //        boolean neet = true;
-//        Db_Bando db1 = new Db_Bando("clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod");
+//        Db_Bando db1 = new Db_Bando(conf.getString("db.host") + ":3306/enm_gestione_neet_prod");
 //        if (!neet) {
 //            db1.closeDB();
-//            db1 = new Db_Bando("clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod");
+//            db1 = new Db_Bando(conf.getString("db.host") + ":3306/enm_gestione_dd_prod");
 //        }
 //        String pathtemp = db1.getPath("pathTemp");
 //        createDir(pathtemp);

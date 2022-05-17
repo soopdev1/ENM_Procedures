@@ -5,6 +5,7 @@
  */
 package it.refill.exe;
 
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.createDir;
 import static it.refill.exe.Constant.estraiEccezione;
 import static it.refill.exe.Constant.formatStringtoStringDate;
@@ -47,11 +48,10 @@ public class Neet_Engine {
     public String host;
 
     public Neet_Engine(boolean test) {
-        this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet_prod";
+        this.host = conf.getString("db.host") + ":3306/enm_neet_prod";
         if (test) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet";
+            this.host = conf.getString("db.host") + ":3306/enm_neet";
         }
-        System.out.println("HOST: " + this.host);
     }
 
     public void crea_report() {
@@ -452,4 +452,9 @@ public class Neet_Engine {
 
     private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/",true);
 
+    
+    
+    public static void main(String[] args) {
+         new Neet_Engine(false).crea_report();
+    }
 }

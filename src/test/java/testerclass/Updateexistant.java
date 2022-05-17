@@ -3,6 +3,7 @@ package testerclass;
 
 
 
+import static it.refill.exe.Constant.conf;
 import it.refill.exe.Db_Bando;
 import it.refill.exe.Domande;
 import static it.refill.exe.Neet_Engine.bando;
@@ -24,9 +25,9 @@ public class Updateexistant {
     public String host;
 
     public Updateexistant(boolean test) {
-        this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet_prod";
+        this.host = conf.getString("db.host") + ":3306/enm_neet_prod";
         if (test) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_neet";
+            this.host = conf.getString("db.host") + ":3306/enm_neet";
         }
         System.out.println("HOST: " + this.host);
     }

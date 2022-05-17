@@ -31,6 +31,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import it.refill.exe.Constant;
 import static it.refill.exe.Constant.calcoladurata;
 import static it.refill.exe.Constant.checkPDF;
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.convertHours;
 import static it.refill.exe.Constant.convertPDFA;
 import static it.refill.exe.Constant.convertTS_Italy;
@@ -79,14 +80,14 @@ public class FaseA {
 
     public FaseA(boolean test, boolean neet) {
         if (neet) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_neet_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_neet";
             }
         } else {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_dd_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_dd";
             }
         }
         Create.log.log(Level.INFO, "HOST: {0}", this.host);

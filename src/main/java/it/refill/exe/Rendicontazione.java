@@ -6,6 +6,7 @@ package it.refill.exe;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import static it.refill.exe.Constant.conf;
 import static it.refill.exe.Constant.estraiEccezione;
 import static it.refill.report.Excel.prospetto_riepilogo_ded;
 import static it.refill.report.Excel.prospetto_riepilogo_neet;
@@ -31,14 +32,14 @@ public class Rendicontazione {
     ////////////////////////////////////////////////////////////////////////////
     public Rendicontazione(boolean test, boolean neet) {
         if (neet) {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_neet_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_neet";
             }
         } else {
-            this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod";
+            this.host = conf.getString("db.host") + ":3306/enm_gestione_dd_prod";
             if (test) {
-                this.host = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd";
+                this.host = conf.getString("db.host") + ":3306/enm_gestione_dd";
             }
         }
         log.log(Level.INFO, "HOST: {0}", this.host);

@@ -4,6 +4,7 @@
  */
 package testerclass;
 
+import static it.refill.exe.Constant.conf;
 import it.refill.exe.Db_Bando;
 import java.io.File;
 import java.nio.file.Files;
@@ -23,8 +24,8 @@ public class UpdateQuest {
             String field = "surveyout";
             File txt = new File("C:\\Users\\Administrator\\Desktop\\da caricare\\ded_out.txt");
 
-            String host_DED = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_dd_prod";
-//            String host_NEET = "clustermicrocredito.cluster-c6m6yfqeypv3.eu-south-1.rds.amazonaws.com:3306/enm_gestione_neet_prod";
+            String host_DED = conf.getString("db.host") + ":3306/enm_gestione_dd_prod";
+//            String host_NEET = conf.getString("db.host") + ":3306/enm_gestione_neet_prod";
 
             Db_Bando db0 = new Db_Bando(host_DED);
             try (Stream<String> stream = Files.lines(Paths.get(txt.getPath()))) {

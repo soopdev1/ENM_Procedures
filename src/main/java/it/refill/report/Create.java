@@ -120,93 +120,103 @@ public class Create {
 
         try {
             DateTimeFormatter fmt = forPattern(timestampSQL);
-            Presenti docente = report.stream().filter(pr1 -> pr1.getRuolo().equalsIgnoreCase("DOCENTE")).findAny().orElse(null);
             List<Presenti> allievi = report.stream().filter(pr1 -> !pr1.getRuolo().equalsIgnoreCase("DOCENTE")).collect(Collectors.toList());
+//            List<Presenti> docenti = report.stream().filter(pr1 -> pr1.getRuolo().equalsIgnoreCase("DOCENTE")).collect(Collectors.toList());
 
-            if (docente != null && !allievi.isEmpty()) {
-                List<Interval> accessi_docente = new ArrayList<>();
-                List<Interval> accessi_complessivi = new ArrayList<>();
-                List<String> login_docente = Splitter.on("\n").splitToList(docente.getOradilogin());
-                List<String> logout_docente = Splitter.on("\n").splitToList(docente.getOradilogout());
-                for (int x = 0; x < login_docente.size(); x++) {
-                    DateTime start1 = fmt.parseDateTime("2021-01-01 " + login_docente.get(x));
-                    DateTime end1 = fmt.parseDateTime("2021-01-01 " + logout_docente.get(x));
-                    if (end1.isAfter(start1)) {
-                        accessi_docente.add(new Interval(start1, end1));
-                    }
-                }
+//            if (docenti.size() == 1) {
 
-                AtomicLong millis_rendicontabili_DOCENTE = new AtomicLong(0L);
+                Presenti docente = report.stream().filter(pr1 -> pr1.getRuolo().equalsIgnoreCase("DOCENTE")).findAny().orElse(null);
 
-                allievi.forEach(cnsmr -> {
-                    AtomicLong millis_rendicontabili = new AtomicLong(0L);
-                    List<Interval> accessi = new ArrayList<>();
-                    List<String> login = Splitter.on("\n").splitToList(cnsmr.getOradilogin());
-                    List<String> logout = Splitter.on("\n").splitToList(cnsmr.getOradilogout());
-
-                    for (int x = 0; x < login.size(); x++) {
-                        DateTime start2 = fmt.parseDateTime("2021-01-01 " + login.get(x));
-                        DateTime end2 = fmt.parseDateTime("2021-01-01 " + logout.get(x));
-                        if (end2.isAfter(start2)) {
-                            accessi.add(new Interval(start2, end2));
-                            accessi_complessivi.add(new Interval(start2, end2));
+                if (docente != null && !allievi.isEmpty()) {
+                    List<Interval> accessi_docente = new ArrayList<>();
+                    List<Interval> accessi_complessivi = new ArrayList<>();
+                    List<String> login_docente = Splitter.on("\n").splitToList(docente.getOradilogin());
+                    List<String> logout_docente = Splitter.on("\n").splitToList(docente.getOradilogout());
+                    for (int x = 0; x < login_docente.size(); x++) {
+                        DateTime start1 = fmt.parseDateTime("2021-01-01 " + login_docente.get(x));
+                        DateTime end1 = fmt.parseDateTime("2021-01-01 " + logout_docente.get(x));
+                        if (end1.isAfter(start1)) {
+                            accessi_docente.add(new Interval(start1, end1));
                         }
                     }
-                    accessi.forEach(intervallo2 -> {
-                        accessi_docente.forEach(intervallo1 -> {
-                            if (intervallo2.overlaps(intervallo1)) {
-                                millis_rendicontabili.addAndGet(intervallo2.overlap(intervallo1).toDurationMillis());
+
+                    AtomicLong millis_rendicontabili_DOCENTE = new AtomicLong(0L);
+
+                    allievi.forEach(cnsmr -> {
+                        AtomicLong millis_rendicontabili = new AtomicLong(0L);
+                        List<Interval> accessi = new ArrayList<>();
+                        List<String> login = Splitter.on("\n").splitToList(cnsmr.getOradilogin());
+                        List<String> logout = Splitter.on("\n").splitToList(cnsmr.getOradilogout());
+
+                        for (int x = 0; x < login.size(); x++) {
+                            DateTime start2 = fmt.parseDateTime("2021-01-01 " + login.get(x));
+                            DateTime end2 = fmt.parseDateTime("2021-01-01 " + logout.get(x));
+                            if (end2.isAfter(start2)) {
+                                accessi.add(new Interval(start2, end2));
+                                accessi_complessivi.add(new Interval(start2, end2));
                             }
+                        }
+                        accessi.forEach(intervallo2 -> {
+                            accessi_docente.forEach(intervallo1 -> {
+                                if (intervallo2.overlaps(intervallo1)) {
+                                    millis_rendicontabili.addAndGet(intervallo2.overlap(intervallo1).toDurationMillis());
+                                }
+                            });
+
                         });
+
+                        long millischeck = nuova_rendicontazione_ore(millis_rendicontabili.get(), idpr, host);
+                        long millischeck1 = nuova_rendicontazione_ore(cnsmr.getMillistotaleore(), idpr, host);
+
+                        if (millischeck >= ore) {
+                            cnsmr.setTotaleorerendicontabili(calcoladurata(ore));
+                            cnsmr.setMillistotaleorerendicontabili(ore);
+                        } else if (millischeck >= millischeck1) {
+                            cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck1));
+                            cnsmr.setMillistotaleorerendicontabili(millischeck1);
+                        } else {
+                            cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck));
+                            cnsmr.setMillistotaleorerendicontabili(millischeck);
+                        }
 
                     });
 
-                    long millischeck = nuova_rendicontazione_ore(millis_rendicontabili.get(), idpr, host);
-                    long millischeck1 = nuova_rendicontazione_ore(cnsmr.getMillistotaleore(), idpr, host);
-
-                    if (millischeck >= ore) {
-                        cnsmr.setTotaleorerendicontabili(calcoladurata(ore));
-                        cnsmr.setMillistotaleorerendicontabili(ore);
-                    } else if (millischeck >= millischeck1) {
-                        cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck1));
-                        cnsmr.setMillistotaleorerendicontabili(millischeck1);
-                    } else {
-                        cnsmr.setTotaleorerendicontabili(calcoladurata(millischeck));
-                        cnsmr.setMillistotaleorerendicontabili(millischeck);
-                    }
-
-                });
-
-                accessi_docente.forEach(intervallo1 -> {
-                    DateTime start = intervallo1.getStart();
-                    while (start.isBefore(intervallo1.getEnd())) {
-                        for (int i = 0; i < accessi_complessivi.size(); i++) {
-                            Interval ac1 = accessi_complessivi.get(i);
-                            if (ac1.getStart().isBefore(start) || ac1.getStart().isEqual(start)) {
-                                if (ac1.getEnd().isAfter(start) || ac1.getEnd().isEqual(start)) {
-                                    millis_rendicontabili_DOCENTE.addAndGet(1000);
-                                    break;
+                    accessi_docente.forEach(intervallo1 -> {
+                        DateTime start = intervallo1.getStart();
+                        while (start.isBefore(intervallo1.getEnd())) {
+                            for (int i = 0; i < accessi_complessivi.size(); i++) {
+                                Interval ac1 = accessi_complessivi.get(i);
+                                if (ac1.getStart().isBefore(start) || ac1.getStart().isEqual(start)) {
+                                    if (ac1.getEnd().isAfter(start) || ac1.getEnd().isEqual(start)) {
+                                        millis_rendicontabili_DOCENTE.addAndGet(1000);
+                                        break;
+                                    }
                                 }
                             }
+                            start = start.plusSeconds(1);
                         }
-                        start = start.plusSeconds(1);
+                    });
+
+                    long millischeck = nuova_rendicontazione_ore(millis_rendicontabili_DOCENTE.get(), idpr, host);
+                    long millischeck1 = nuova_rendicontazione_ore(docente.getMillistotaleore(), idpr, host);
+
+                    if (millischeck >= ore) {
+                        docente.setTotaleorerendicontabili(calcoladurata(ore));
+                        docente.setMillistotaleorerendicontabili(ore);
+                    } else if (millischeck >= millischeck1) {
+                        docente.setTotaleorerendicontabili(calcoladurata(millischeck1));
+                        docente.setMillistotaleorerendicontabili(millischeck1);
+                    } else {
+                        docente.setTotaleorerendicontabili(calcoladurata(millischeck));
+                        docente.setMillistotaleorerendicontabili(millischeck);
                     }
-                });
-
-                long millischeck = nuova_rendicontazione_ore(millis_rendicontabili_DOCENTE.get(), idpr, host);
-                long millischeck1 = nuova_rendicontazione_ore(docente.getMillistotaleore(), idpr, host);
-
-                if (millischeck >= ore) {
-                    docente.setTotaleorerendicontabili(calcoladurata(ore));
-                    docente.setMillistotaleorerendicontabili(ore);
-                } else if (millischeck >= millischeck1) {
-                    docente.setTotaleorerendicontabili(calcoladurata(millischeck1));
-                    docente.setMillistotaleorerendicontabili(millischeck1);
-                } else {
-                    docente.setTotaleorerendicontabili(calcoladurata(millischeck));
-                    docente.setMillistotaleorerendicontabili(millischeck);
                 }
-            }
+//            } else {
+//                
+//                
+//                
+//                
+//            }
         } catch (Exception e) {
             log.severe(estraiEccezione(e));
         }
@@ -241,6 +251,10 @@ public class Create {
                 case 338:
                     db0.getConnection().createStatement().executeUpdate("UPDATE fad_track f SET action = REPLACE(action,'IANNO&#39;','IANNO\\'') "
                             + "WHERE f.room LIKE 'FADMCNDD_" + idpr + "%' AND action LIKE '%IANNO&#39;'");
+                    break;
+                case 678:
+                    db0.getConnection().createStatement().executeUpdate("UPDATE fad_track f SET action = REPLACE(action,'CARA&#39;','CARA\\'') "
+                            + "WHERE f.room LIKE 'FADMCNDD_" + idpr + "%' AND action LIKE '%CARA&#39;'");
                     break;
                 default:
                     break;
