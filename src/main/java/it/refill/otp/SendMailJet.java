@@ -52,7 +52,7 @@ public class SendMailJet {
         String filename = "";
         String content_type = "";
         String b64 = "";
-
+       
         String mailjet_api = dbb.getPath("mailjet_api");
         String mailjet_secret = dbb.getPath("mailjet_secret");
         String mailjet_name = dbb.getPath("mailjet_name");

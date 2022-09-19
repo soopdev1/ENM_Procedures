@@ -26,7 +26,7 @@ public class Db_OTP {
         
         String driver = "com.mysql.cj.jdbc.Driver";
         String user = conf.getString("db.user");
-        String password = conf.getString("db.password");
+        String password = conf.getString("db.pass");
         String host = conf.getString("db.host") + ":3306/enm_otp";
         
         if (test) {

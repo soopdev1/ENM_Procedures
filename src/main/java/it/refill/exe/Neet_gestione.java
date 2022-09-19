@@ -75,12 +75,12 @@ public class Neet_gestione {
                     + " AND mp.id_progettoformativo=" + idprogetti_formativi
                     + " AND pf.idprogetti_formativi=mp.id_progettoformativo AND ((pf.stato='ATA' AND ud.fase='Fase A') OR (pf.stato='ATB' AND ud.fase='Fase B'))"
                     + " AND lm.giorno = '" + dataoggi + "' ORDER BY lm.gruppo_faseB,lm.orario_start";
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
                     String fase = rs1.getString("ud.fase");
                     if (fase.endsWith("A")) {
                         String sql2 = "SELECT nomestanza,stato FROM fad_multi WHERE idprogetti_formativi = " + idprogetti_formativi + " AND numerocorso = 1";
-                        try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                        try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
                             String nomestanza = startroom + idprogetti_formativi + "_A1";
                             if (test) {
                                 nomestanza = "TESTING_" + nomestanza;
@@ -90,13 +90,13 @@ public class Neet_gestione {
                                 String stato = rs2.getString("stato");
                                 if (stato.equals("0")) {
                                     //UPDATE ATTIVA
-                                    try (Statement st3 = db1.getConnection().createStatement()) {
+                                    try ( Statement st3 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_multi SET stato = '1' WHERE nomestanza = '" + nomestanza + "'";
                                         st3.executeUpdate(upd);
                                     }
                                 }
                             } else { //INSERISCO
-                                try (Statement st3 = db1.getConnection().createStatement()) {
+                                try ( Statement st3 = db1.getConnection().createStatement()) {
                                     String ins = "INSERT INTO fad_multi VALUES ('" + nomestanza + "'," + idprogetti_formativi + ",'1','" + new DateTime().toString("yyyy-MM-dd HH:mm:ss") + "','1')";
                                     st3.executeUpdate(ins);
                                 }
@@ -108,7 +108,7 @@ public class Neet_gestione {
 
                         String sql2 = "SELECT nomestanza,stato FROM fad_multi WHERE idprogetti_formativi = " + idprogetti_formativi + " AND numerocorso = " + gruppo_faseB;
 
-                        try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                        try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
 
                             String nomestanza = startroom + idprogetti_formativi + "_B" + gruppo_faseB;
                             if (test) {
@@ -119,13 +119,13 @@ public class Neet_gestione {
                                 String stato = rs2.getString("stato");
                                 if (stato.equals("0")) {
                                     //UPDATE ATTIVA
-                                    try (Statement st3 = db1.getConnection().createStatement()) {
+                                    try ( Statement st3 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_multi SET stato = '1' WHERE nomestanza = '" + nomestanza + "'";
                                         st3.executeUpdate(upd);
                                     }
                                 }
                             } else { //INSERISCO
-                                try (Statement st3 = db1.getConnection().createStatement()) {
+                                try ( Statement st3 = db1.getConnection().createStatement()) {
                                     String ins = "INSERT INTO fad_multi VALUES ('" + nomestanza + "'," + idprogetti_formativi + ",'" + gruppo_faseB + "','" + new DateTime().toString("yyyy-MM-dd HH:mm:ss") + "','1')";
                                     st3.executeUpdate(ins);
                                 }
@@ -166,7 +166,7 @@ public class Neet_gestione {
                         + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.nomestanza";
             }
 
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
 
                 while (rs1.next()) {
 
@@ -190,13 +190,13 @@ public class Neet_gestione {
                             + " AND f.nomestanza = '" + nomestanza + "'"
                             + " AND lm.giorno = '" + dataoggi + "' ORDER BY lm.orario_start";
                     StringBuilder orainvitosb = new StringBuilder("");
-                    try (Statement st1A = db1.getConnection().createStatement(); ResultSet rs1A = st1A.executeQuery(sql1A)) {
+                    try ( Statement st1A = db1.getConnection().createStatement();  ResultSet rs1A = st1A.executeQuery(sql1A)) {
                         while (rs1A.next()) {
                             orainvitosb.append(StringUtils.substring(rs1A.getString(1), 0, 5)).append("-").append(StringUtils.substring(rs1A.getString(2), 0, 5)).append("<br>");
                         }
                     }
                     String orainvito = StringUtils.removeEnd(orainvitosb.toString(), "<br>");
-                    try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
+                    try ( Statement st3 = db1.getConnection().createStatement();  ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
                             String codicefiscale = rs3.getString("codicefiscale").toUpperCase();
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
@@ -209,24 +209,24 @@ public class Neet_gestione {
                                     + "AND data ='" + dataoggi + "' "
                                     + "AND ud ='" + ud + "' "
                                     + "AND room = '" + nomestanza + "'";
-                            try (Statement st4 = db1.getConnection().createStatement(); ResultSet rs4 = st4.executeQuery(sql4)) {
+                            try ( Statement st4 = db1.getConnection().createStatement();  ResultSet rs4 = st4.executeQuery(sql4)) {
                                 String user = RandomStringUtils.randomAlphabetic(8);
                                 String psw = RandomStringUtils.randomAlphanumeric(6);
                                 String md5psw = DigestUtils.md5Hex(psw);
                                 if (!rs4.next()) {
-                                    try (Statement st5 = db1.getConnection().createStatement()) {
+                                    try ( Statement st5 = db1.getConnection().createStatement()) {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','S','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st5.executeUpdate(ins);
-                                        
+
                                         String ins_SSO = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
-                                                + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + codicefiscale + "')";
+                                                + "','S','" + nomestanza + "','" + user + "','" + md5psw + "','" + codicefiscale + "')";
                                         log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(ins_SSO)});
                                         log.log(Level.INFO, "NUOVE CREDENZIALI NEET ) {0}", nomecognome);
                                     }
                                 } else {
                                     user = rs4.getString(1);
-                                    try (Statement st5 = db1.getConnection().createStatement()) {
+                                    try ( Statement st5 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_access SET psw = '" + md5psw + "' WHERE idsoggetto = " + idsoggetto + " AND data = '" + dataoggi + "' AND ud='" + ud + "' AND type = 'S' ";
                                         st5.executeUpdate(upd);
                                         log.log(Level.INFO, "SSO ALLIEVO ) {0} : {1}", new Object[]{nomecognome, dbs.executequery(upd)});
@@ -235,8 +235,7 @@ public class Neet_gestione {
                                 }
                                 //INVIO MAIL
                                 String sql5 = "SELECT oggetto,testo FROM email WHERE chiave ='fad3.0'";
-                                try (Statement st5 = db1.getConnection().createStatement();
-                                        ResultSet rs5 = st5.executeQuery(sql5)) {
+                                try ( Statement st5 = db1.getConnection().createStatement();  ResultSet rs5 = st5.executeQuery(sql5)) {
                                     if (rs5.next()) {
                                         String emailtesto = rs5.getString(2);
                                         String emailoggetto = rs5.getString(1);
@@ -299,7 +298,7 @@ public class Neet_gestione {
                         + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso)"
                         + " AND lm.giorno = '" + dataoggi + "' GROUP BY lm.id_docente,f.nomestanza";
             }
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
 
                     int id_docente = rs1.getInt("lm.id_docente");
@@ -313,7 +312,7 @@ public class Neet_gestione {
                             + " AND f.nomestanza = '" + nomestanza + "'"
                             + " AND lm.giorno = '" + dataoggi + "' AND lm.id_docente = " + id_docente + " ORDER BY lm.orario_start";
                     StringBuilder orainvitosb = new StringBuilder("");
-                    try (Statement st1A = db1.getConnection().createStatement(); ResultSet rs1A = st1A.executeQuery(sql1A)) {
+                    try ( Statement st1A = db1.getConnection().createStatement();  ResultSet rs1A = st1A.executeQuery(sql1A)) {
                         while (rs1A.next()) {
                             orainvitosb.append(StringUtils.substring(rs1A.getString(1), 0, 5)).append("-").append(StringUtils.substring(rs1A.getString(2), 0, 5)).append("<br>");
                         }
@@ -321,7 +320,7 @@ public class Neet_gestione {
                     String orainvito = StringUtils.removeEnd(orainvitosb.toString(), "<br>");
 
                     String sql4 = "SELECT iddocenti,email,nome,cognome,codicefiscale FROM docenti WHERE iddocenti = " + id_docente;
-                    try (Statement st4 = db1.getConnection().createStatement(); ResultSet rs4 = st4.executeQuery(sql4)) {
+                    try ( Statement st4 = db1.getConnection().createStatement();  ResultSet rs4 = st4.executeQuery(sql4)) {
                         if (rs4.next()) {
                             String codicefiscale = rs4.getString("codicefiscale").toUpperCase();
                             String nomecognome = rs4.getString("nome").toUpperCase() + " " + rs4.getString("cognome").toUpperCase();
@@ -332,14 +331,14 @@ public class Neet_gestione {
                                     + "AND idsoggetto = " + idsoggetto + " "
                                     + "AND data ='" + dataoggi + "' "
                                     + "AND room = '" + nomestanza + "'";
-                            try (Statement st5 = db1.getConnection().createStatement(); ResultSet rs5 = st5.executeQuery(sql5)) {
+                            try ( Statement st5 = db1.getConnection().createStatement();  ResultSet rs5 = st5.executeQuery(sql5)) {
                                 String user = RandomStringUtils.randomAlphabetic(8);
                                 String psw = RandomStringUtils.randomAlphanumeric(6);
                                 String md5psw = DigestUtils.md5Hex(psw);
 
                                 if (!rs5.next()) {
                                     //CREO CREDENZIALI
-                                    try (Statement st6 = db1.getConnection().createStatement()) {
+                                    try ( Statement st6 = db1.getConnection().createStatement()) {
                                         String ins = "INSERT INTO fad_access VALUES (" + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','D','" + nomestanza + "','" + user + "','" + md5psw + "','" + ud + "')";
                                         st6.executeUpdate(ins);
@@ -350,7 +349,7 @@ public class Neet_gestione {
                                     }
                                 } else { //CREDENZIALI GIA presenti
                                     user = rs5.getString(1);
-                                    try (Statement st6 = db1.getConnection().createStatement()) {
+                                    try ( Statement st6 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_access SET psw = '" + md5psw + "' WHERE idsoggetto = " + idsoggetto + " AND data = '" + dataoggi + "' AND ud='" + ud
                                                 + "' AND type = 'D' ";
                                         st6.executeUpdate(upd);
@@ -361,7 +360,7 @@ public class Neet_gestione {
 
                                 //INVIO MAIL
                                 String sql6 = "SELECT oggetto,testo FROM email WHERE chiave ='fad3.0_DOCENTE'";
-                                try (Statement st6 = db1.getConnection().createStatement(); ResultSet rs6 = st6.executeQuery(sql6)) {
+                                try ( Statement st6 = db1.getConnection().createStatement();  ResultSet rs6 = st6.executeQuery(sql6)) {
                                     if (rs6.next()) {
                                         String emailtesto = rs6.getString(2);
                                         String emailoggetto = rs6.getString(1);
@@ -421,7 +420,7 @@ public class Neet_gestione {
                         + " AND f.idprogetti_formativi=mp.id_progettoformativo AND (lm.gruppo_faseB = 0 OR lm.gruppo_faseB=f.numerocorso) "
                         + " AND lm.giorno = '" + dataoggi + "' GROUP BY f.nomestanza";
             }
-            try (Statement st1 = db1.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db1.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 while (rs1.next()) {
 
                     String nomestanza = rs1.getString("f.nomestanza");
@@ -434,7 +433,7 @@ public class Neet_gestione {
                             + " AND f.nomestanza = '" + nomestanza + "'"
                             + " AND lm.giorno = '" + dataoggi + "' ORDER BY lm.orario_start";
                     StringBuilder orainvitosb = new StringBuilder("");
-                    try (Statement st1A = db1.getConnection().createStatement(); ResultSet rs1A = st1A.executeQuery(sql1A)) {
+                    try ( Statement st1A = db1.getConnection().createStatement();  ResultSet rs1A = st1A.executeQuery(sql1A)) {
                         while (rs1A.next()) {
                             orainvitosb.append(StringUtils.substring(rs1A.getString(1), 0, 5)).append("-").append(StringUtils.substring(rs1A.getString(2), 0, 5)).append("<br>");
                         }
@@ -442,7 +441,7 @@ public class Neet_gestione {
                     String orainvito = StringUtils.removeEnd(orainvitosb.toString(), "<br>");
 
                     String sql4O = "SELECT id_staff, nome, cognome, email FROM staff_modelli WHERE id_progettoformativo = " + idprogetti_formativi;
-                    try (Statement st4 = db1.getConnection().createStatement(); ResultSet rs4 = st4.executeQuery(sql4O)) {
+                    try ( Statement st4 = db1.getConnection().createStatement();  ResultSet rs4 = st4.executeQuery(sql4O)) {
                         while (rs4.next()) {
                             String nomecognome = rs4.getString("nome").toUpperCase() + " " + rs4.getString("cognome").toUpperCase();
                             int idsoggetto = rs4.getInt("id_staff");
@@ -452,13 +451,13 @@ public class Neet_gestione {
                                     + "AND idsoggetto = " + idsoggetto + " "
                                     + "AND data ='" + dataoggi + "' "
                                     + "AND room = '" + nomestanza + "'";
-                            try (Statement st5 = db1.getConnection().createStatement(); ResultSet rs5 = st5.executeQuery(sql5)) {
+                            try ( Statement st5 = db1.getConnection().createStatement();  ResultSet rs5 = st5.executeQuery(sql5)) {
                                 String user = RandomStringUtils.randomAlphabetic(8);
                                 String psw = RandomStringUtils.randomAlphanumeric(6);
                                 String md5psw = DigestUtils.md5Hex(psw);
                                 if (!rs5.next()) {
                                     //CREO CREDENZIALI
-                                    try (Statement st6 = db1.getConnection().createStatement()) {
+                                    try ( Statement st6 = db1.getConnection().createStatement()) {
                                         String ins = "INSERT INTO fad_access VALUES ("
                                                 + idprogetti_formativi + "," + idsoggetto + ",'" + dataoggi
                                                 + "','O','" + nomestanza + "','" + user + "','"
@@ -469,7 +468,7 @@ public class Neet_gestione {
                                     log.log(Level.INFO, "NUOVE CREDENZIALI OSPITE ) {0}", nomecognome);
                                 } else { //CREDENZIALI GIA presenti
                                     user = rs5.getString(1);
-                                    try (Statement st6 = db1.getConnection().createStatement()) {
+                                    try ( Statement st6 = db1.getConnection().createStatement()) {
                                         String upd = "UPDATE fad_access SET psw = '"
                                                 + md5psw + "' WHERE idsoggetto = "
                                                 + idsoggetto + " AND data = '"
@@ -480,7 +479,7 @@ public class Neet_gestione {
                                 }
                                 //INVIO MAIL
                                 String sql6 = "SELECT oggetto,testo FROM email WHERE chiave ='fad3.0'";
-                                try (Statement st6 = db1.getConnection().createStatement(); ResultSet rs6 = st6.executeQuery(sql6)) {
+                                try ( Statement st6 = db1.getConnection().createStatement();  ResultSet rs6 = st6.executeQuery(sql6)) {
                                     if (rs6.next()) {
                                         String emailtesto = rs6.getString(2);
                                         String emailoggetto = rs6.getString(1);
@@ -527,8 +526,7 @@ public class Neet_gestione {
             String sql0 = "SELECT idprogetti_formativi FROM progetti_formativi "
                     + "WHERE CURDATE()>=start AND CURDATE()<=end "
                     + "AND (stato='ATA' OR stato = 'ATB')";
-            try (Statement st0 = db1.getConnection().createStatement();
-                    ResultSet rs0 = st0.executeQuery(sql0)) {
+            try ( Statement st0 = db1.getConnection().createStatement();  ResultSet rs0 = st0.executeQuery(sql0)) {
                 while (rs0.next()) {
                     elenco.add(rs0.getInt("idprogetti_formativi"));
                 }
@@ -583,7 +581,7 @@ public class Neet_gestione {
                     + "AND CURDATE() > DATE_ADD(giorno, INTERVAL 5 DAY) "
                     + "AND CURDATE() < DATE_ADD(giorno, INTERVAL 8 DAY) "
                     + "AND ud.fase = 'Fase A'";
-            try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {
+            try ( Statement st0 = db0.getConnection().createStatement();  ResultSet rs0 = st0.executeQuery(sql0)) {
                 while (rs0.next()) {
                     lista_id.add(rs0.getString(1));
                 }
@@ -592,7 +590,7 @@ public class Neet_gestione {
             StringBuilder emailoggetto = new StringBuilder("");
             StringBuilder testomail = new StringBuilder("");
             String sql1 = "SELECT oggetto,testo FROM email WHERE chiave ='questionario2'";
-            try (Statement st1 = db0.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db0.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 if (rs1.next()) {
                     emailoggetto.append(rs1.getString(1));
                     testomail.append(rs1.getString(2));
@@ -610,13 +608,13 @@ public class Neet_gestione {
                     String sql2 = "SELECT sum(totaleorerendicontabili),idutente "
                             + "FROM registro_completo WHERE fase = 'A' AND ruolo = 'ALLIEVO NEET' "
                             + "AND idprogetti_formativi = " + idpr + " GROUP BY idutente";
-                    try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                    try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
                         while (rs2.next()) {
                             String iduser = rs2.getString(2);
                             long millis = rs2.getLong(1);
                             if (millis >= 129600000) {
                                 String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idallievi = " + iduser + " AND idprogetti_formativi = " + idpr;
-                                try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
+                                try ( Statement st3 = db1.getConnection().createStatement();  ResultSet rs3 = st3.executeQuery(sql3)) {
                                     while (rs3.next()) {
                                         String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
                                         String emailtesto = testomail.toString();
@@ -665,7 +663,7 @@ public class Neet_gestione {
                     + "AND giorno = CURDATE() "
                     + "AND lc.id_lezionecalendario=lm.id_lezionecalendario AND ud.codice=lc.codice_ud "
                     + "AND ud.fase = 'Fase A' AND lc.lezione < 3";
-            try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {
+            try ( Statement st0 = db0.getConnection().createStatement();  ResultSet rs0 = st0.executeQuery(sql0)) {
                 while (rs0.next()) {
                     lista_id.add(rs0.getString(1));
                 }
@@ -676,7 +674,7 @@ public class Neet_gestione {
             StringBuilder emailoggetto = new StringBuilder("");
             StringBuilder testomail = new StringBuilder("");
             String sql1 = "SELECT oggetto,testo FROM email WHERE chiave ='questionario1'";
-            try (Statement st1 = db0.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db0.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 if (rs1.next()) {
                     emailoggetto.append(rs1.getString(1));
                     testomail.append(rs1.getString(2));
@@ -692,7 +690,7 @@ public class Neet_gestione {
                 try {
                     //ELENCO ALLIEVI
                     String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idpr;
-                    try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
+                    try ( Statement st3 = db1.getConnection().createStatement();  ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
                             String emailtesto = testomail.toString();
@@ -735,7 +733,7 @@ public class Neet_gestione {
                     = "SELECT mp.id_progettoformativo,lm.id_docente, DATE_ADD(CURDATE(), INTERVAL " + day + " DAY) AS datainvito FROM lezioni_modelli lm, modelli_progetti mp, lezione_calendario lc, unita_didattiche ud "
                     + "WHERE mp.id_modello=lm.id_modelli_progetto AND lc.id_lezionecalendario=lm.id_lezionecalendario "
                     + "AND ud.codice=lc.codice_ud AND ud.fase = 'Fase A' AND lm.giorno = DATE_ADD(CURDATE(), INTERVAL " + day + " DAY) AND lc.lezione = 1 GROUP BY mp.id_progettoformativo,lm.id_docente";
-            try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {
+            try ( Statement st0 = db0.getConnection().createStatement();  ResultSet rs0 = st0.executeQuery(sql0)) {
                 int i = 0;
                 while (rs0.next()) {
                     if (i == 0) {
@@ -749,7 +747,7 @@ public class Neet_gestione {
             StringBuilder emailoggetto = new StringBuilder("");
             StringBuilder testomail = new StringBuilder("");
             String sql1 = "SELECT oggetto,testo FROM email WHERE chiave ='fad3.0_avviso'";
-            try (Statement st1 = db0.getConnection().createStatement(); ResultSet rs1 = st1.executeQuery(sql1)) {
+            try ( Statement st1 = db0.getConnection().createStatement();  ResultSet rs1 = st1.executeQuery(sql1)) {
                 if (rs1.next()) {
                     emailoggetto.append(rs1.getString(1));
                     testomail.append(rs1.getString(2));
@@ -770,7 +768,7 @@ public class Neet_gestione {
                 try {
                     //EMAIL SA
                     String sql2 = "SELECT email from soggetti_attuatori sa, progetti_formativi pf WHERE sa.idsoggetti_attuatori=pf.idsoggetti_attuatori AND pf.idprogetti_formativi = " + idpr;
-                    try (Statement st2 = db1.getConnection().createStatement(); ResultSet rs2 = st2.executeQuery(sql2)) {
+                    try ( Statement st2 = db1.getConnection().createStatement();  ResultSet rs2 = st2.executeQuery(sql2)) {
                         if (rs2.next()) {
                             mailsa = rs2.getString(1);
                         }
@@ -778,7 +776,7 @@ public class Neet_gestione {
 
                     //ELENCO ALLIEVI
                     String sql3 = "SELECT idallievi,email,nome,cognome FROM allievi WHERE id_statopartecipazione='01' AND idprogetti_formativi = " + idpr;
-                    try (Statement st3 = db1.getConnection().createStatement(); ResultSet rs3 = st3.executeQuery(sql3)) {
+                    try ( Statement st3 = db1.getConnection().createStatement();  ResultSet rs3 = st3.executeQuery(sql3)) {
                         while (rs3.next()) {
                             String nomecognome = rs3.getString("nome").toUpperCase() + " " + rs3.getString("cognome").toUpperCase();
                             String emailtesto = testomail.toString();
@@ -794,7 +792,7 @@ public class Neet_gestione {
                         }
                     }
                     String sql4 = "SELECT iddocenti,email,nome,cognome FROM docenti WHERE iddocenti = " + id_docente;
-                    try (Statement st4 = db1.getConnection().createStatement(); ResultSet rs4 = st4.executeQuery(sql4)) {
+                    try ( Statement st4 = db1.getConnection().createStatement();  ResultSet rs4 = st4.executeQuery(sql4)) {
                         while (rs4.next()) {
                             String nomecognome = rs4.getString("nome").toUpperCase() + " " + rs4.getString("cognome").toUpperCase();
                             String emailtesto = testomail.toString();
@@ -823,7 +821,7 @@ public class Neet_gestione {
         int out = 0;
         try {
             String sql = "SELECT c.tot_output_conformi FROM progetti_formativi p , checklist_finale c WHERE p.id_checklist_finale=c.id AND p.idprogetti_formativi = " + idpr;
-            try (ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
+            try ( ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
                 if (rs.next()) {
                     out = rs.getInt(1);
                 }
@@ -847,7 +845,7 @@ public class Neet_gestione {
                     + " AND a.id_statopartecipazione='01') "
                     + " GROUP BY r.idutente";
 //            String sql = "SELECT SUM(r.totaleorerendicontabili) FROM registro_completo r WHERE r.idprogetti_formativi = " + idpr + " AND r.ruolo LIKE 'ALLIEVO%' AND r.fase = 'A' GROUP BY r.idutente";
-            try (ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
+            try ( ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
                 while (rs.next()) {
                     if (rs.getLong(1) >= hh36) {
                         out++;
@@ -866,7 +864,7 @@ public class Neet_gestione {
         int out = 0;
         try {
             String sql = "SELECT COUNT(a.idallievi) FROM allievi a WHERE a.id_statopartecipazione='01' AND a.idprogetti_formativi=" + idpr;
-            try (ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
+            try ( ResultSet rs = db1.getConnection().createStatement().executeQuery(sql)) {
                 if (rs.next()) {
                     out = rs.getInt(1);
                 }
@@ -886,7 +884,7 @@ public class Neet_gestione {
             Db_Bando db1 = new Db_Bando(this.host);
             String fileout;
             FileOutputStream outputStream;
-            try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE_PROGETTI.xlsx")))) {
+            try ( XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE_PROGETTI.xlsx")))) {
 
                 //FOGLIO 1
                 XSSFSheet sh1 = wb.getSheetAt(0);
@@ -894,7 +892,7 @@ public class Neet_gestione {
                 String sql0_foglio1 = "SELECT sa.ragionesociale,sa.piva,co.regione,sa.idsoggetti_attuatori FROM soggetti_attuatori sa, comuni co "
                         + "WHERE co.idcomune=sa.comune";
                 AtomicInteger indice1 = new AtomicInteger(2);
-                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0_foglio1)) {
+                try ( ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0_foglio1)) {
                     while (rs0.next()) {
                         int idsa = rs0.getInt("sa.idsoggetti_attuatori");
                         XSSFRow row = getRow(sh1, indice1.get());
@@ -905,7 +903,7 @@ public class Neet_gestione {
 
                         int docenti = 0;
                         String sql1_foglio1 = "SELECT COUNT(iddocenti) FROM docenti d WHERE stato='A' AND d.idsoggetti_attuatori=" + idsa;
-                        try (ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1_foglio1)) {
+                        try ( ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1_foglio1)) {
                             if (rs1.next()) {
                                 docenti = rs1.getInt(1);
                             }
@@ -932,7 +930,7 @@ public class Neet_gestione {
                         int ESITOVERIFICAINVIATO_p = 0, ESITOVERIFICAINVIATO_a = 0;
                         int CONCLUSO_p = 0, CONCLUSO_a = 0;
 
-                        try (ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2_foglio1)) {
+                        try ( ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2_foglio1)) {
 
                             while (rs2.next()) {
                                 String stato = rs2.getString("p.stato");
@@ -1017,10 +1015,10 @@ public class Neet_gestione {
                         setCell(getCell(row, 3), String.valueOf(FINEATTIVITA_p + DAVALIDAREMODELLO6_p + INATTESADIMAPPATURA_p + INVERIFICA_p + ESITOVERIFICACONCLUSO_p + ESITOVERIFICAINVIATO_p + CONCLUSO_p));
                         setCell(getCell(row, 4), String.valueOf(FINEATTIVITA_a + DAVALIDAREMODELLO6_a + INATTESADIMAPPATURA_a
                                 + INVERIFICA_a + ESITOVERIFICACONCLUSO_a + ESITOVERIFICAINVIATO_a + CONCLUSO_a));
-                        
+
                         setCell(getCell(row, 5), String.valueOf(FASEA_p + FASEB_p + SOSPESO_p));
                         setCell(getCell(row, 6), String.valueOf(FASEA_a + FASEB_a + SOSPESO_a));
-                        
+
                         setCell(getCell(row, 7), String.valueOf(DAVALIDARE_p + PROGRAMMATO_p + DACONFERMARE_p));
                         setCell(getCell(row, 8), String.valueOf(DAVALIDARE_a + PROGRAMMATO_a + DACONFERMARE_a));
 
@@ -1082,7 +1080,7 @@ public class Neet_gestione {
                         + "AND st.idstati_progetto=pf.stato";
 
                 AtomicInteger indice2 = new AtomicInteger(1);
-                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0_foglio2)) {
+                try ( ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0_foglio2)) {
                     while (rs0.next()) {
                         int idsa = rs0.getInt("sa.idsoggetti_attuatori");
                         XSSFRow row = getRow(sh2, indice2.get());
@@ -1133,7 +1131,7 @@ public class Neet_gestione {
                         int idpr = rs0.getInt("pf.idprogetti_formativi");
                         String sql1_foglio2 = "SELECT a.idallievi,a.id_statopartecipazione FROM allievi a WHERE a.idprogetti_formativi=" + idpr;
 
-                        try (ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1_foglio2)) {
+                        try ( ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1_foglio2)) {
                             while (rs1.next()) {
                                 int idallievo = rs1.getInt("a.idallievi");
                                 String statoallievo = rs1.getString("a.id_statopartecipazione");
@@ -1145,7 +1143,7 @@ public class Neet_gestione {
                                             + "WHERE idutente = " + idallievo + " AND idprogetti_formativi = " + idpr + " AND idsoggetti_attuatori = " + idsa
                                             + " AND ruolo LIKE 'ALLIEVO%' AND fase = 'A'";
 
-                                    try (ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
+                                    try ( ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
                                         while (rs11.next()) {
                                             of.addAndGet(rs11.getLong("totaleorerendicontabili"));
                                         }
@@ -1198,10 +1196,10 @@ public class Neet_gestione {
             String sql0 = "SELECT s.ragionesociale,s.piva,s.protocollo,d.nome,d.cognome,d.codicefiscale,d.fascia,d.stato,d.tipo_inserimento,d.datawebinair,d.motivo FROM docenti d, soggetti_attuatori s WHERE d.idsoggetti_attuatori=s.idsoggetti_attuatori";
             String fileout;
             FileOutputStream outputStream;
-            try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE DOCENTI.xlsx")))) {
+            try ( XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE DOCENTI.xlsx")))) {
                 XSSFSheet sh1 = wb.getSheetAt(0);
                 AtomicInteger indice = new AtomicInteger(1);
-                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
+                try ( ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
                     while (rs0.next()) {
                         XSSFRow row = getRow(sh1, indice.get());
                         setCell(getCell(row, 0), rs0.getString("s.ragionesociale").toUpperCase());
@@ -1224,7 +1222,7 @@ public class Neet_gestione {
                             String sql2 = "SELECT CONCAT('F',fascia) "
                                     + " FROM allegato_b a , bando_neet_mcn b WHERE a.username=b.username "
                                     + " AND b.protocollo = '" + rs0.getString("s.protocollo") + "' AND a.cf = '" + rs0.getString("d.codicefiscale") + "'";
-                            try (ResultSet rs2 = db2.getConnection().createStatement().executeQuery(sql2)) {
+                            try ( ResultSet rs2 = db2.getConnection().createStatement().executeQuery(sql2)) {
                                 if (rs2.next()) {
                                     setCell(getCell(row, 6), rs2.getString(1));
                                 } else {
@@ -1278,19 +1276,19 @@ public class Neet_gestione {
 
             String fileout;
             FileOutputStream outputStream;
-            try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE ALLIEVI.xlsx")))) {
+            try ( XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(new File("/mnt/mcn/yisu_neet/estrazioni/TEMPLATE ALLIEVI.xlsx")))) {
                 XSSFSheet sh1 = wb.getSheetAt(0);
                 AtomicInteger indice = new AtomicInteger(1);
                 HashMap<Integer, String> lista_istat = new HashMap<>();
 //                HashMap<String, String> lista_cittadinanza = new HashMap<>();
-                try (ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
+                try ( ResultSet rs0 = db1.getConnection().createStatement().executeQuery(sql0)) {
                     while (rs0.next()) {
                         int idallievo = rs0.getInt("a.idallievi");
                         int idsa = rs0.getInt("a.idsoggetto_attuatore");
                         String sa = "";
 
                         String sql01 = "SELECT ragionesociale FROM soggetti_attuatori WHERE idsoggetti_attuatori = " + idsa;
-                        try (ResultSet rs01 = db1.getConnection().createStatement().executeQuery(sql01)) {
+                        try ( ResultSet rs01 = db1.getConnection().createStatement().executeQuery(sql01)) {
                             if (rs01.next()) {
                                 sa = rs01.getString(1).toUpperCase();
                             }
@@ -1300,7 +1298,7 @@ public class Neet_gestione {
                         String nome = rs0.getString("a.nome").toUpperCase();
                         String cognome = rs0.getString("a.cognome").toUpperCase();
                         String data_anpal = rs0.getString("a.data_anpal").trim();
-                        
+
                         String eta = String.valueOf(Years.yearsBetween(new DateTime(rs0.getDate("a.datanascita").getTime()), new DateTime()).getYears());
                         String datanascita = sdita.format(rs0.getDate("a.datanascita"));
 
@@ -1309,7 +1307,7 @@ public class Neet_gestione {
                             statonascita = "ITALIA";
                         } else {
                             String sql1 = "SELECT nome FROM nazioni_rc WHERE codicefiscale = '" + statonascita + "'";
-                            try (ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1)) {
+                            try ( ResultSet rs1 = db1.getConnection().createStatement().executeQuery(sql1)) {
                                 if (rs1.next()) {
                                     statonascita = rs1.getString(1).toUpperCase();
                                 }
@@ -1329,7 +1327,7 @@ public class Neet_gestione {
                         String codice_istat_domicilio = "";
 
                         String sql2 = "SELECT nome,idcomune,nome_provincia,regione FROM comuni WHERE idcomune IN (" + rs0.getInt("a.comune_nascita") + "," + rs0.getInt("a.comune_residenza") + "," + rs0.getInt("a.comune_domicilio") + ")";
-                        try (ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2)) {
+                        try ( ResultSet rs2 = db1.getConnection().createStatement().executeQuery(sql2)) {
                             while (rs2.next()) {
                                 if (rs2.getInt(2) == rs0.getInt("a.comune_nascita")) {
                                     comune_nascita = rs2.getString(1).toUpperCase();
@@ -1342,7 +1340,7 @@ public class Neet_gestione {
 
                                     if (lista_istat.get(rs2.getInt(2)) == null) {
                                         String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
-                                        try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
+                                        try ( ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
                                             if (rs2A.next()) {
                                                 codice_istat_residenza = rs2A.getString(1);
                                                 lista_istat.put(rs2.getInt(2), rs2A.getString(1));
@@ -1359,7 +1357,7 @@ public class Neet_gestione {
 
                                     if (lista_istat.get(rs2.getInt(2)) == null) {
                                         String sql2A = "SELECT t.COD_ISTAT FROM comuni c, TC16 t WHERE c.nome=t.DESCRIZIONE_COMUNE AND c.regione=t.DESCRIZIONE_REGIONE AND c.cittadinanza=0 AND c.idcomune =" + rs2.getInt(2);
-                                        try (ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
+                                        try ( ResultSet rs2A = db1.getConnection().createStatement().executeQuery(sql2A)) {
                                             if (rs2A.next()) {
                                                 codice_istat_domicilio = rs2A.getString(1);
                                                 lista_istat.put(rs2.getInt(2), rs2A.getString(1));
@@ -1404,7 +1402,7 @@ public class Neet_gestione {
                         String istat_cittadinanza = rs0.getString("a.cittadinanza").toUpperCase();
 
                         String sql3 = "SELECT nome,istat FROM nazioni_rc WHERE idnazione = " + cittadinanza;
-                        try (ResultSet rs3 = db1.getConnection().createStatement().executeQuery(sql3)) {
+                        try ( ResultSet rs3 = db1.getConnection().createStatement().executeQuery(sql3)) {
                             if (rs3.next()) {
                                 cittadinanza = rs3.getString(1).toUpperCase();
                                 istat_cittadinanza = rs3.getString(2).toUpperCase();
@@ -1416,7 +1414,7 @@ public class Neet_gestione {
                         String cpi = rs0.getString("a.cpi");
                         String cpi_provincia = "";
                         String sql4 = "SELECT descrizione,provincia FROM cpi WHERE codice = '" + cpi + "'";
-                        try (ResultSet rs4 = db1.getConnection().createStatement().executeQuery(sql4)) {
+                        try ( ResultSet rs4 = db1.getConnection().createStatement().executeQuery(sql4)) {
                             if (rs4.next()) {
                                 cpi = rs4.getString(1).toUpperCase();
                                 cpi_provincia = rs4.getString(2).toUpperCase();
@@ -1425,14 +1423,14 @@ public class Neet_gestione {
 
                         String titolo_studio = rs0.getString("a.titolo_studio");
                         String sql5 = "SELECT descrizione FROM titoli_studio WHERE codice = '" + titolo_studio + "'";
-                        try (ResultSet rs5 = db1.getConnection().createStatement().executeQuery(sql5)) {
+                        try ( ResultSet rs5 = db1.getConnection().createStatement().executeQuery(sql5)) {
                             if (rs5.next()) {
                                 titolo_studio = rs5.getString(1).toUpperCase();
                             }
                         }
                         String condizione_lavorativa = rs0.getString("a.idcondizione_lavorativa");
                         String sql6 = "SELECT descrizione FROM condizione_lavorativa WHERE idcondizione_lavorativa = '" + condizione_lavorativa + "'";
-                        try (ResultSet rs6 = db1.getConnection().createStatement().executeQuery(sql6)) {
+                        try ( ResultSet rs6 = db1.getConnection().createStatement().executeQuery(sql6)) {
                             if (rs6.next()) {
                                 condizione_lavorativa = rs6.getString(1).toUpperCase();
                             }
@@ -1440,7 +1438,7 @@ public class Neet_gestione {
 
                         String canale = rs0.getString("a.idcanale");
                         String sql7 = "SELECT descrizione FROM canale WHERE idcanale = '" + canale + "'";
-                        try (ResultSet rs7 = db1.getConnection().createStatement().executeQuery(sql7)) {
+                        try ( ResultSet rs7 = db1.getConnection().createStatement().executeQuery(sql7)) {
                             if (rs7.next()) {
                                 canale = rs7.getString(1).toUpperCase();
                             }
@@ -1448,7 +1446,7 @@ public class Neet_gestione {
 
                         String motivazione = rs0.getString("a.motivazione");
                         String sql8 = "SELECT descrizione FROM motivazione WHERE idmotivazione = '" + motivazione + "'";
-                        try (ResultSet rs8 = db1.getConnection().createStatement().executeQuery(sql8)) {
+                        try ( ResultSet rs8 = db1.getConnection().createStatement().executeQuery(sql8)) {
                             if (rs8.next()) {
                                 motivazione = rs8.getString(1).toUpperCase();
                             }
@@ -1460,7 +1458,7 @@ public class Neet_gestione {
 
                         String statopartecipazione = rs0.getString("a.id_statopartecipazione");
                         String sql9 = "SELECT descrizione FROM stato_partecipazione WHERE codice = '" + statopartecipazione + "'";
-                        try (ResultSet rs9 = db1.getConnection().createStatement().executeQuery(sql9)) {
+                        try ( ResultSet rs9 = db1.getConnection().createStatement().executeQuery(sql9)) {
                             if (rs9.next()) {
                                 statopartecipazione = rs9.getString(1).toUpperCase();
                             }
@@ -1473,7 +1471,7 @@ public class Neet_gestione {
                         String assegnazione = "";
                         String sql10 = "SELECT p.cip,p.start,p.END,s.descrizione,p.assegnazione FROM progetti_formativi p, stati_progetto s WHERE p.stato=s.idstati_progetto AND idprogetti_formativi=" + idpr;
 
-                        try (ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
+                        try ( ResultSet rs10 = db1.getConnection().createStatement().executeQuery(sql10)) {
                             if (rs10.next()) {
                                 if (rs10.getString(1) != null) {
                                     cip = rs10.getString(1).toUpperCase();
@@ -1500,7 +1498,7 @@ public class Neet_gestione {
                                 + "WHERE idutente = " + idallievo + " AND idprogetti_formativi = " + idpr + " AND idsoggetti_attuatori = " + idsa
                                 + " AND ruolo = 'ALLIEVO NEET' ORDER BY data";
 
-                        try (ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
+                        try ( ResultSet rs11 = db1.getConnection().createStatement().executeQuery(sql11)) {
                             while (rs11.next()) {
 //                            datachiusura = sdita.format(rs11.getDate("data"));
                                 of.addAndGet(rs11.getLong("totaleorerendicontabili"));
@@ -1509,6 +1507,7 @@ public class Neet_gestione {
 
                         String orefrequenza = calcoladurata(of.get());
 
+                        String domandaammissionepresente = "NO";
                         String formagiuridica = "";
                         String sedeindividuata = "";
                         String dispocolloquio = "";
@@ -1538,109 +1537,116 @@ public class Neet_gestione {
                         String premialita = "";
 
                         String sql13 = "SELECT * FROM maschera_m5 where allievo = " + idallievo + " AND progetto_formativo=" + idpr;
-                        try (ResultSet rs13 = db1.getConnection().createStatement().executeQuery(sql13)) {
+                        try ( ResultSet rs13 = db1.getConnection().createStatement().executeQuery(sql13)) {
                             if (rs13.next()) {
-                                String sql13A = "SELECT descrizione FROM formagiuridica WHERE idformagiuridica=" + rs13.getInt("forma_giuridica");
-                                try (ResultSet rs13A = db1.getConnection().createStatement().executeQuery(sql13A)) {
-                                    if (rs13A.next()) {
-                                        formagiuridica = rs13A.getString(1).toUpperCase();
-                                    }
-                                }
 
-                                if (rs13.getInt("sede") == 1) {
-                                    sedeindividuata = "SI";
-                                } else {
-                                    sedeindividuata = "NO";
-                                }
+                                if (rs13.getInt("domanda_ammissione_presente") == 1) {
+                                    domandaammissionepresente = "SI";
 
-                                if (rs13.getInt("colloquio") == 1) {
-                                    dispocolloquio = "SI";
-                                } else {
-                                    dispocolloquio = "NO";
-                                }
-
-                                ideaimpresa = rs13.getString("idea_impresa").toUpperCase();
-                                ateco = rs13.getString("ateco").toUpperCase();
-
-                                String sql13B = "SELECT nome,regione FROM comuni WHERE idcomune = " + rs13.getString("comune_localizzazione");
-
-                                try (ResultSet rs13B = db1.getConnection().createStatement().executeQuery(sql13B)) {
-                                    if (rs13B.next()) {
-                                        comunelocalizzazione = rs13B.getString(1).toUpperCase();
-                                        regionelocalizzazione = rs13B.getString(2).toUpperCase();
-                                    }
-                                }
-
-                                motivazioneatti = rs13.getString("motivazione").toUpperCase();
-                                fabbisognofinanz = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("fabbisogno_finanziario"));
-                                finanzrich = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("finanziamento_richiesto_agevolazione"));
-
-                                if (rs13.getInt("bando_se") == 1) {
-                                    bandose = "SI";
-                                    if (rs13.getString("bando_se_opzione") != null) {
-                                        if (bando_SE().get(rs13.getInt("bando_se_opzione")) != null) {
-                                            tipomc = bando_SE().get(rs13.getInt("bando_se_opzione")).toUpperCase();
+                                    String sql13A = "SELECT descrizione FROM formagiuridica WHERE idformagiuridica=" + rs13.getInt("forma_giuridica");
+                                    try ( ResultSet rs13A = db1.getConnection().createStatement().executeQuery(sql13A)) {
+                                        if (rs13A.next()) {
+                                            formagiuridica = rs13A.getString(1).toUpperCase();
                                         }
                                     }
-                                } else if (rs13.getInt("bando_sud") == 1) {
-                                    bandorestosud = "SI";
-                                    if (rs13.getString("bando_sud_opzione") != null) {
 
-                                        String bandosudOpzione = rs13.getString("bando_sud_opzione");
-                                        List<String> bandosudOpzioneValori = Splitter.on(";").splitToList(bandosudOpzione);
-                                        for (int x = 0; x < bandosudOpzioneValori.size(); x++) {
-                                            if (bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())) != null) {
-                                                motivazrestosud += bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())).toUpperCase() + "; ";
+                                    if (rs13.getInt("sede") == 1) {
+                                        sedeindividuata = "SI";
+                                    } else {
+                                        sedeindividuata = "NO";
+                                    }
+
+                                    if (rs13.getInt("colloquio") == 1) {
+                                        dispocolloquio = "SI";
+                                    } else {
+                                        dispocolloquio = "NO";
+                                    }
+
+                                    ideaimpresa = rs13.getString("idea_impresa").toUpperCase();
+                                    ateco = rs13.getString("ateco").toUpperCase();
+
+                                    String sql13B = "SELECT nome,regione FROM comuni WHERE idcomune = " + rs13.getString("comune_localizzazione");
+
+                                    try ( ResultSet rs13B = db1.getConnection().createStatement().executeQuery(sql13B)) {
+                                        if (rs13B.next()) {
+                                            comunelocalizzazione = rs13B.getString(1).toUpperCase();
+                                            regionelocalizzazione = rs13B.getString(2).toUpperCase();
+                                        }
+                                    }
+
+                                    motivazioneatti = rs13.getString("motivazione").toUpperCase();
+                                    fabbisognofinanz = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("fabbisogno_finanziario"));
+                                    finanzrich = Constant.roundDoubleAndFormatCurrency(rs13.getDouble("finanziamento_richiesto_agevolazione"));
+                                    if (rs13.getInt("bando_se") == 1) {
+                                        bandose = "SI";
+                                        if (rs13.getString("bando_se_opzione") != null) {
+                                            if (bando_SE().get(rs13.getInt("bando_se_opzione")) != null) {
+                                                tipomc = bando_SE().get(rs13.getInt("bando_se_opzione")).toUpperCase();
+                                            }
+                                        }
+                                    } else if (rs13.getInt("bando_sud") == 1) {
+                                        bandorestosud = "SI";
+                                        if (rs13.getString("bando_sud_opzione") != null) {
+
+                                            String bandosudOpzione = rs13.getString("bando_sud_opzione");
+                                            List<String> bandosudOpzioneValori = Splitter.on(";").splitToList(bandosudOpzione);
+                                            for (int x = 0; x < bandosudOpzioneValori.size(); x++) {
+                                                if (bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())) != null) {
+                                                    motivazrestosud += bando_SUD().get(parseIntR(bandosudOpzioneValori.get(x).trim())).toUpperCase() + "; ";
+                                                }
+                                            }
+                                        }
+                                    } else if (rs13.getInt("bando_reg") == 1) {
+                                        bandoreg = "SI";
+                                        nomebandoreg = rs13.getString("bando_reg_nome");
+                                    } else if (rs13.getInt("no_agevolazione") == 1) {
+                                        if (rs13.getString("no_agevolazione_opzione") != null) {
+                                            if (no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")) != null) {
+                                                motivnobando = no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")).toUpperCase();
                                             }
                                         }
                                     }
-                                } else if (rs13.getInt("bando_reg") == 1) {
-                                    bandoreg = "SI";
-                                    nomebandoreg = rs13.getString("bando_reg_nome");
-                                } else if (rs13.getInt("no_agevolazione") == 1) {
-                                    if (rs13.getString("no_agevolazione_opzione") != null) {
-                                        if (no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")) != null) {
-                                            motivnobando = no_agenvolazione().get(rs13.getInt("no_agevolazione_opzione")).toUpperCase();
+                                    try {
+                                        List<String> riepilogopunteggi = Splitter.on(";").splitToList(rs13.getString("tabella_valutazionefinale_val"));
+                                        for (String compl : riepilogopunteggi) {
+                                            List<String> valoriinterni = Splitter.on("=").splitToList(compl);
+                                            switch (valoriinterni.get(0)) {
+                                                case "1":
+                                                    punteggio1 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                    punteggio1_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                    break;
+                                                case "2":
+                                                    punteggio2 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                    punteggio2_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                    break;
+                                                case "3":
+                                                    punteggio3 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                    punteggio3_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                    break;
+                                                case "4":
+                                                    punteggio4 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
+                                                    punteggio4_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
-                                    }
-                                }
 
-                                try {
-                                    List<String> riepilogopunteggi = Splitter.on(";").splitToList(rs13.getString("tabella_valutazionefinale_val"));
-                                    for (String compl : riepilogopunteggi) {
-                                        List<String> valoriinterni = Splitter.on("=").splitToList(compl);
-                                        switch (valoriinterni.get(0)) {
-                                            case "1":
-                                                punteggio1 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                                punteggio1_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                                break;
-                                            case "2":
-                                                punteggio2 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                                punteggio2_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                                break;
-                                            case "3":
-                                                punteggio3 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                                punteggio3_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                                break;
-                                            case "4":
-                                                punteggio4 = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(1)).doubleValue());
-                                                punteggio4_P = Constant.roundDoubleAndFormat(new BigDecimal(valoriinterni.get(2)).doubleValue());
-                                                break;
-                                            default:
-                                                break;
+                                        punteggioATTR = Constant.roundDoubleAndFormat(rs13.getDouble("tabella_valutazionefinale_punteggio"));
+
+                                        if (rs13.getInt("tabella_premialita") == 1) {
+                                            premialita = "SI";
+                                        } else {
+                                            premialita = "NO";
                                         }
+
+                                    } catch (Exception e) {
+
                                     }
 
-                                    punteggioATTR = Constant.roundDoubleAndFormat(rs13.getDouble("tabella_valutazionefinale_punteggio"));
-
-                                    if (rs13.getInt("tabella_premialita") == 1) {
-                                        premialita = "SI";
-                                    } else {
-                                        premialita = "NO";
-                                    }
-
-                                } catch (Exception e) {
-
+                                } else {
+                                    domandaammissionepresente = "NO";
+                                    premialita = "NO";
                                 }
 
                             }
@@ -1695,37 +1701,41 @@ public class Neet_gestione {
                         setCell(getCell(row, 43), dataavvio);
                         setCell(getCell(row, 44), datachiusura);
                         setCell(getCell(row, 45), orefrequenza);
-                        setCell(getCell(row, 46), formagiuridica);
-                        setCell(getCell(row, 47), sedeindividuata);
-                        setCell(getCell(row, 48), dispocolloquio);
-                        setCell(getCell(row, 49), ideaimpresa);
-                        setCell(getCell(row, 50), ateco);
-                        setCell(getCell(row, 51), comunelocalizzazione);
-                        setCell(getCell(row, 52), regionelocalizzazione);
-                        setCell(getCell(row, 53), motivazioneatti);
-                        setCell(getCell(row, 54), fabbisognofinanz);
-                        setCell(getCell(row, 55), finanzrich);
-                        setCell(getCell(row, 56), bandose);
-                        setCell(getCell(row, 57), tipomc);
-                        setCell(getCell(row, 58), bandorestosud);
-                        setCell(getCell(row, 59), motivazrestosud.trim());
-                        setCell(getCell(row, 60), bandoreg);
-                        setCell(getCell(row, 61), nomebandoreg);
-                        setCell(getCell(row, 62), motivnobando);
-                        setCell(getCell(row, 63), punteggio1);
-                        setCell(getCell(row, 64), punteggio1_P);
-                        setCell(getCell(row, 65), punteggio2);
-                        setCell(getCell(row, 66), punteggio2_P);
-                        setCell(getCell(row, 67), punteggio3);
-                        setCell(getCell(row, 68), punteggio3_P);
-                        setCell(getCell(row, 69), punteggio4);
-                        setCell(getCell(row, 70), punteggio4_P);
-                        setCell(getCell(row, 71), punteggioATTR);
-                        setCell(getCell(row, 72), premialita);
+
                         
-                        setCell(getCell(row, 73), data_anpal);
-                        setCell(getCell(row, 74), assegnazione);
+                        setCell(getCell(row, 46), domandaammissionepresente);
                         
+                        setCell(getCell(row, 47), formagiuridica);
+                        setCell(getCell(row, 48), sedeindividuata);
+                        setCell(getCell(row, 49), dispocolloquio);
+                        setCell(getCell(row, 50), ideaimpresa);
+                        setCell(getCell(row, 51), ateco);
+                        setCell(getCell(row, 52), comunelocalizzazione);
+                        setCell(getCell(row, 53), regionelocalizzazione);
+                        setCell(getCell(row, 54), motivazioneatti);
+                        setCell(getCell(row, 55), fabbisognofinanz);
+                        setCell(getCell(row, 56), finanzrich);
+                        setCell(getCell(row, 57), bandose);
+                        setCell(getCell(row, 58), tipomc);
+                        setCell(getCell(row, 59), bandorestosud);
+                        setCell(getCell(row, 60), motivazrestosud.trim());
+                        setCell(getCell(row, 61), bandoreg);
+                        setCell(getCell(row, 62), nomebandoreg);
+                        setCell(getCell(row, 63), motivnobando);
+                        setCell(getCell(row, 64), punteggio1);
+                        setCell(getCell(row, 65), punteggio1_P);
+                        setCell(getCell(row, 66), punteggio2);
+                        setCell(getCell(row, 67), punteggio2_P);
+                        setCell(getCell(row, 68), punteggio3);
+                        setCell(getCell(row, 69), punteggio3_P);
+                        setCell(getCell(row, 70), punteggio4);
+                        setCell(getCell(row, 71), punteggio4_P);
+                        setCell(getCell(row, 72), punteggioATTR);
+                        setCell(getCell(row, 73), premialita);
+
+                        setCell(getCell(row, 74), data_anpal);
+                        setCell(getCell(row, 75), assegnazione);
+
                         indice.addAndGet(1);
 
                     }
@@ -1750,7 +1760,6 @@ public class Neet_gestione {
 
 //    public static void main(String[] args) {
 //        Neet_gestione ne = new Neet_gestione(false);
-//        ne.report_pf();
+//        ne.report_allievi();
 //    }
-    
 }

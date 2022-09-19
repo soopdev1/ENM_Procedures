@@ -22,23 +22,21 @@ public class GeneraReport {
     public static void main(String[] args) {
         try {
 
-            boolean neet = false;
+            boolean neet = true;
             boolean testing = false;
-            int idpr = 678;
+            int idpr = 544;
             
 //            
             FaseA FA = new FaseA(testing, neet);
             FaseB FB = new FaseB(testing, neet);
 //
-//            //  FASE A
+////          //  FASE A
             List<Lezione> ca = FA.calcolaegeneraregistrofasea(idpr, FA.getHost(), false, true, false);
-            FA.registro_aula_FaseA(idpr, FA.getHost(), false, false, neet);
-
-//            //  FASE B
+//            FA.registro_aula_FaseA(idpr, FA.getHost(), false, false, neet);
+//          //  FASE B
             List<Lezione> cb = FB.calcolaegeneraregistrofaseb(idpr, FA.getHost(), false, true, false);
-            FB.registro_aula_FaseB(idpr, FA.getHost(), false, cb, neet);
-////////            
-//////////            //  COMPLESSIVO
+//            FB.registro_aula_FaseB(idpr, FA.getHost(), false, cb, neet);
+//          //  COMPLESSIVO
             Complessivo c1 = new Complessivo(FA.getHost());
             c1.registro_complessivo(idpr, c1.getHost(), ca, cb, false, neet);
 

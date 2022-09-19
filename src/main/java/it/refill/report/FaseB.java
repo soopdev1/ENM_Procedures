@@ -425,6 +425,7 @@ public class FaseB {
             List<Utenti> docenti_corretti = db0.list_Docenti(idpr);
 
             List<Utenti> allievi_corretti = db0.list_Allievi(idpr);
+            
             String sql0 = "SELECT nomestanza FROM fad_multi WHERE idprogetti_formativi=" + idpr;
             try (Statement st0 = db0.getConnection().createStatement(); ResultSet rs0 = st0.executeQuery(sql0)) {    //STANZA
                 if (printing) {

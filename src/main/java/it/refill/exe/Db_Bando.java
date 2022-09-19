@@ -563,8 +563,8 @@ public class Db_Bando {
             try ( Statement st = this.c.createStatement();  ResultSet rs = st.executeQuery(sql)) {
                 while (rs.next()) {
                     Utenti u = new Utenti(rs.getInt("idallievi"),
-                            stripAccents(rs.getString("cognome").toUpperCase().trim()),
-                            stripAccents(rs.getString("nome").toUpperCase().trim()),
+                            stripAccents(rs.getString("cognome").toUpperCase()).trim(),
+                            stripAccents(rs.getString("nome").toUpperCase()).trim(),
                             rs.getString("codicefiscale").toUpperCase(), "ALLIEVO NEET",
                             rs.getString("email").toLowerCase());
                     out.add(u);
@@ -583,8 +583,8 @@ public class Db_Bando {
             try ( Statement st = this.c.createStatement();  ResultSet rs = st.executeQuery(sql)) {
                 while (rs.next()) {
                     Utenti u = new Utenti(rs.getInt("idallievi"),
-                            stripAccents(rs.getString("cognome").toUpperCase().trim()),
-                            stripAccents(rs.getString("nome").toUpperCase().trim()),
+                            stripAccents(rs.getString("cognome").toUpperCase()).trim(),
+                            stripAccents(rs.getString("nome").toUpperCase()).trim(),
                             rs.getString("codicefiscale").toUpperCase(), "ALLIEVO NEET",
                             rs.getString("email").toLowerCase());
                     out.add(u);

@@ -454,7 +454,7 @@ public class Neet_Engine {
 
     
     
-    public static void main(String[] args) {
-         new Neet_Engine(false).crea_report();
-    }
+//    public static void main(String[] args) {
+//         new Neet_Engine(false).crea_report();
+//    }
 }

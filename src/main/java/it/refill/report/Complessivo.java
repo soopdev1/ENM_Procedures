@@ -7,6 +7,7 @@ package it.refill.report;
 
 import com.itextpdf.barcodes.BarcodeQRCode;
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
@@ -21,6 +22,7 @@ import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.AreaBreakType;
@@ -55,6 +57,9 @@ import org.joda.time.DateTime;
  * @author rcosco
  */
 public class Complessivo {
+
+    private static final String loghineet = "/mnt/mcn/yisu_neet/loghineet_DEF.jpg";
+    private static final String loghided = "/mnt/mcn/yisu_ded/loghided_DEF.jpg";
 
     public String host;
 
@@ -102,7 +107,7 @@ public class Complessivo {
                     String day = cal.getGiorno();
                     String sql = "SELECT * FROM registro_completo WHERE idprogetti_formativi = " + idpr + " AND data = '" + day
                             + "' AND fase='A' ORDER BY ruolo DESC,cognome ASC,nome ASC";
-                    try (Statement st = db1.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    try ( Statement st = db1.getConnection().createStatement();  ResultSet rs = st.executeQuery(sql)) {
                         while (rs.next()) {
                             Registro_completo rc = new Registro_completo(
                                     rs.getInt(1),
@@ -131,21 +136,29 @@ public class Complessivo {
                         }
                     }
 
-                    Cell cell0 = new Cell(1, 8);
                     if (neet) {
-                        cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
-                        cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
-                        cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
-                        cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                        Cell cell0A = new Cell(1, 8);
+                        cell0A.add(new Image(ImageDataFactory.create(loghineet)).setAutoScale(true));
+                        cell0A.setTextAlignment(TextAlignment.CENTER);
+                        cell0A.setBorder(Border.NO_BORDER);
+                        table.addCell(cell0A);
+                        Cell cell0B = new Cell(1, 8);
+                        cell0B.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa - Edizione 2021/2022").addStyle(bold));
+                        cell0B.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020) - CUP E51G21000000006").addStyle(bold));
+                        cell0B.setTextAlignment(TextAlignment.CENTER);
+                        table.addCell(cell0B);
                     } else {
-                        cell0.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata").addStyle(bold));
-                        cell0.add(new Paragraph("Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
-                        cell0.add(new Paragraph("(PON SPAO 2014-2020)").addStyle(bold));
-                        cell0.add(new Paragraph("CUP E57F21000000006").addStyle(bold));
+                        Cell cell0A = new Cell(1, 8);
+                        cell0A.add(new Image(ImageDataFactory.create(loghided)).setAutoScale(true));
+                        cell0A.setTextAlignment(TextAlignment.CENTER);
+                        cell0A.setBorder(Border.NO_BORDER);
+                        table.addCell(cell0A);
+                        Cell cell0B = new Cell(1, 8);
+                        cell0B.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata - Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
+                        cell0B.add(new Paragraph("(PON SPAO 2014-2020) - CUP E57F21000000006").addStyle(bold));
+                        cell0B.setTextAlignment(TextAlignment.CENTER);
+                        table.addCell(cell0B);
                     }
-
-                    cell0.setTextAlignment(TextAlignment.CENTER);
-                    table.addCell(cell0);
 
                     Cell cell = new Cell(1, 8);
                     cell.add(new Paragraph(" ").addStyle(normal));
@@ -336,7 +349,7 @@ public class Complessivo {
                     String day = cal.getGiorno();
                     String sql = "SELECT * FROM registro_completo WHERE idprogetti_formativi = " + idpr + " AND data = '" + day
                             + "' AND fase='B' AND gruppofaseb = '" + cal.getGruppo() + "' ORDER BY ruolo DESC,cognome ASC,nome ASC";
-                    try (Statement st = db1.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    try ( Statement st = db1.getConnection().createStatement();  ResultSet rs = st.executeQuery(sql)) {
                         while (rs.next()) {
                             Registro_completo rc = new Registro_completo(
                                     rs.getInt(1),
@@ -365,21 +378,29 @@ public class Complessivo {
                         }
                     }
 
-                    Cell cell0 = new Cell(1, 8);
                     if (neet) {
-                        cell0.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa").addStyle(bold));
-                        cell0.add(new Paragraph("Edizione 2021/2022").addStyle(bold));
-                        cell0.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020)").addStyle(bold));
-                        cell0.add(new Paragraph("CUP E51G21000000006").addStyle(bold));
+                        Cell cell0A = new Cell(1, 8);
+                        cell0A.add(new Image(ImageDataFactory.create(loghineet)).setAutoScale(true));
+                        cell0A.setTextAlignment(TextAlignment.CENTER);
+                        cell0A.setBorder(Border.NO_BORDER);
+                        table.addCell(cell0A);
+                        Cell cell0B = new Cell(1, 8);
+                        cell0B.add(new Paragraph("YES I START UP – Formazione per l'Avvio d'Impresa - Edizione 2021/2022").addStyle(bold));
+                        cell0B.add(new Paragraph("Misura 7.1 (PON IOG 2014-2020) - CUP E51G21000000006").addStyle(bold));
+                        cell0B.setTextAlignment(TextAlignment.CENTER);
+                        table.addCell(cell0B);
                     } else {
-                        cell0.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata").addStyle(bold));
-                        cell0.add(new Paragraph("Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
-                        cell0.add(new Paragraph("(PON SPAO 2014-2020)").addStyle(bold));
-                        cell0.add(new Paragraph("CUP E57F21000000006").addStyle(bold));
+                        Cell cell0A = new Cell(1, 8);
+                        cell0A.add(new Image(ImageDataFactory.create(loghided)).setAutoScale(true));
+                        cell0A.setTextAlignment(TextAlignment.CENTER);
+                        cell0A.setBorder(Border.NO_BORDER);
+                        table.addCell(cell0A);
+                        Cell cell0B = new Cell(1, 8);
+                        cell0B.add(new Paragraph("YES I START UP - Donne e Disoccupati di lunga durata - Progetto Integrato per l'autoimprenditorialità 2021/2022").addStyle(bold));
+                        cell0B.add(new Paragraph("(PON SPAO 2014-2020) - CUP E57F21000000006").addStyle(bold));
+                        cell0B.setTextAlignment(TextAlignment.CENTER);
+                        table.addCell(cell0B);
                     }
-
-                    cell0.setTextAlignment(TextAlignment.CENTER);
-                    table.addCell(cell0);
 
                     Cell cell = new Cell(1, 8);
                     cell.add(new Paragraph(" ").addStyle(normal));
@@ -583,15 +604,15 @@ public class Complessivo {
                         if (save) {
                             Db_Bando db3 = new Db_Bando(host);
                             String sql = "SELECT iddocumenti_progetti FROM documenti_progetti WHERE idprogetto = " + idpr + " AND tipo = 33";
-                            try (Statement st = db3.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                            try ( Statement st = db3.getConnection().createStatement();  ResultSet rs = st.executeQuery(sql)) {
                                 if (rs.next()) {
-                                    try (Statement st1 = db3.getConnection().createStatement()) {
+                                    try ( Statement st1 = db3.getConnection().createStatement()) {
                                         String upd = "UPDATE documenti_progetti SET path = '" + pdf_final.getPath() + "' WHERE iddocumenti_progetti = " + rs.getInt(1);
                                         st1.executeUpdate(upd);
                                     }
                                 } else {
                                     String ins = "INSERT INTO documenti_progetti (path,idprogetto,tipo) VALUES (?,?,?)";
-                                    try (PreparedStatement ps1 = db3.getConnection().prepareStatement(ins)) {
+                                    try ( PreparedStatement ps1 = db3.getConnection().prepareStatement(ins)) {
                                         ps1.setString(1, pdf_final.getPath());
                                         ps1.setInt(2, idpr);
                                         ps1.setInt(3, 33);
@@ -623,7 +644,7 @@ public class Complessivo {
         Db_Bando db = new Db_Bando(host);
         try {
             String sql = "SELECT * FROM documenti_progetti WHERE idprogetto = " + idpr + " AND tipo IN (29,32) AND deleted=0 ORDER BY tipo";
-            try (Statement st = db.getConnection().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            try ( Statement st = db.getConnection().createStatement();  ResultSet rs = st.executeQuery(sql)) {
                 while (rs.next()) {
                     String path = rs.getString("path");
                     File t1 = new File(path);

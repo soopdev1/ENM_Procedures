@@ -5,6 +5,7 @@
 package it.refill.exe;
 
 import static it.refill.exe.Constant.estraiEccezione;
+import it.refill.otp.Sms;
 import it.refill.report.Create;
 import java.util.logging.Logger;
 
@@ -13,11 +14,11 @@ import java.util.logging.Logger;
  * @author Administrator
  */
 public class MainSelector {
-
+    
     private static final Logger log = Constant.createLog("Procedura", "/mnt/mcn/test/log/", true);
-
+    
     public static void main(String[] args) {
-
+        
         try {
             System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
             java.util.logging.Logger.getLogger("org.apache.pdfbox").setLevel(java.util.logging.Level.SEVERE);
@@ -43,21 +44,21 @@ public class MainSelector {
         } catch (Exception e) {
             testing = false;
         }
-
+        
         int select_action;
         try {
             select_action = Integer.parseInt(args[1].trim());
         } catch (Exception e) {
             select_action = 0;
         }
-
+        
         boolean neet;
         try {
             neet = args[2].trim().equals("true");
         } catch (Exception e) {
             neet = false;
         }
-
+        
         if (neet) { //NEET
             Neet_gestione ne = new Neet_gestione(testing);
             switch (select_action) {
@@ -102,12 +103,12 @@ public class MainSelector {
                     try {
                         ne.report_allievi();
                     } catch (Exception e) {
-
+                        
                     }
                     try {
                         ne.report_pf();
                     } catch (Exception e) {
-
+                        
                     }
                     log.warning("GENERAZIONE FILE REPORT... FINE");
                     break;
@@ -118,7 +119,7 @@ public class MainSelector {
                 case 5:
                     log.warning("ACCREDITAMENTO NEET");
                     Neet_Engine accreditamento = new Neet_Engine(testing);
-
+                    
                     try {
                         log.info("START ELENCO DOMANDE");
                         accreditamento.elenco_domande_fase1();
@@ -126,7 +127,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START UPDATE DOMANDE");
                         accreditamento.update_domande_fase1();
@@ -134,7 +135,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START AGGIORNA DATA CONVENZIONE");
                         accreditamento.aggiorna_dataconvenzione_fase1();
@@ -142,7 +143,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START AGGIORNA REPORTISTICA");
                         accreditamento.aggiorna_reportistica();
@@ -161,27 +162,27 @@ public class MainSelector {
                 case 6:
                     log.warning("REPAIR NEET");
                     Repair neetr = new Repair(testing, true);
-
+                    
                     try {
                         neetr.imposta_progetti_finettivita();
                     } catch (Exception e) {
                     }
-
+                    
                     try {
                         neetr.impostaritiratounder36oreA();
                     } catch (Exception e) {
-
+                        
                     }
-
+                    
                     try {
                         neetr.copiadocumentidocenti();
                     } catch (Exception e) {
-
+                        
                     }
                     try {
                         neetr.crea_pdf_unico_ANPAL(true);
                     } catch (Exception e) {
-
+                        
                     }
                     break;
                 case 7: 
@@ -189,6 +190,15 @@ public class MainSelector {
                     log.info("START RENDICONTAZIONE NEET");
                     new Rendicontazione(false, true).generaRendicontazione(true);
                     log.info("END RENDICONTAZIONE NEET");
+                } catch (Exception e) {
+                }
+                break;
+                
+                case 8: //COUNT SMS 
+                    try {
+                    log.info("START CONTEGGIO SMS SKEBBY IERI");
+                    Sms.countSMS_yesterday(ne);
+                    log.info("END CONTEGGIO SMS SKEBBY IERI");
                 } catch (Exception e) {
                 }
                 break;
@@ -253,7 +263,7 @@ public class MainSelector {
                 case 5:
                     log.warning("ACCREDITAMENTO D&D");
                     DeD_Engine accreditamento = new DeD_Engine(testing);
-
+                    
                     try {
                         log.info("START ELENCO DOMANDE");
                         accreditamento.elenco_domande_fase1();
@@ -261,7 +271,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START UPDATE DOMANDE");
                         accreditamento.update_domande_fase1();
@@ -269,7 +279,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START AGGIORNA DATA CONVENZIONE");
                         accreditamento.aggiorna_dataconvenzione_fase1();
@@ -277,7 +287,7 @@ public class MainSelector {
                     } catch (Exception e) {
                         log.severe(estraiEccezione(e));
                     }
-
+                    
                     try {
                         log.info("START AGGIORNA REPORTISTICA");
                         accreditamento.aggiorna_reportistica();
@@ -324,8 +334,8 @@ public class MainSelector {
                 default:
                     break;
             }
-
+            
         }
-
+        
     }
 }
