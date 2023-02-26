@@ -5,7 +5,7 @@
 package it.refill.exe;
 
 import static it.refill.exe.Constant.estraiEccezione;
-import it.refill.otp.Sms;
+//import it.refill.otp.Sms;
 import it.refill.report.Create;
 import java.util.logging.Logger;
 
@@ -194,14 +194,14 @@ public class MainSelector {
                 }
                 break;
                 
-                case 8: //COUNT SMS 
-                    try {
-                    log.info("START CONTEGGIO SMS SKEBBY IERI");
-                    Sms.countSMS_yesterday(ne);
-                    log.info("END CONTEGGIO SMS SKEBBY IERI");
-                } catch (Exception e) {
-                }
-                break;
+//                case 8: //COUNT SMS 
+//                    try {
+//                    log.info("START CONTEGGIO SMS SKEBBY IERI");
+//                    Sms.countSMS_yesterday(ne);
+//                    log.info("END CONTEGGIO SMS SKEBBY IERI");
+//                } catch (Exception e) {
+//                }
+//                break;
                 default:
                     break;
             }

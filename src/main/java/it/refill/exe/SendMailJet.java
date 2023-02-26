@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.refill.otp;
+package it.refill.exe;
 
 /**
  *
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -142,10 +143,10 @@ public class SendMailJet {
 
         try {
             response = client.post(request);
-            log.info("MAIL TO " + dest.toList() + " : " + response.getStatus() + " -- " + response.getData());
+            log.log(Level.INFO, "MAIL TO {0} : {1} -- {2}", new Object[]{dest.toList(), response.getStatus(), response.getData()});
             return response.getStatus() == 200;
         } catch (Exception ex) {
-            log.severe("MAIL ERROR: " + Constant.estraiEccezione(ex));
+            log.log(Level.SEVERE, "MAIL ERROR: {0}", Constant.estraiEccezione(ex));
             return false;
         }
     }

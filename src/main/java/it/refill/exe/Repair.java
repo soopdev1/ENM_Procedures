@@ -471,7 +471,7 @@ public class Repair {
 
     }
 
-    public static void main(String[] args) {
-        new Repair(false, false).crea_pdf_unico_ANPAL(false);
-    }
+//    public static void main(String[] args) {
+//        new Repair(false, false).crea_pdf_unico_ANPAL(false);
+//    }
 }

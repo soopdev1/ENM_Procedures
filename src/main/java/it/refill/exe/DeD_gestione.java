@@ -20,7 +20,7 @@ import static it.refill.exe.Constant.patternITA;
 import static it.refill.exe.Constant.patternSql;
 import static it.refill.exe.Constant.setCell;
 import static it.refill.exe.Constant.timestamp;
-import static it.refill.otp.SendMailJet.sendMail;
+import static it.refill.exe.SendMailJet.sendMail;
 import it.refill.sso.DbSSO;
 import java.io.File;
 import java.io.FileInputStream;

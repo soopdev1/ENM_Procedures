@@ -9,7 +9,7 @@ package testerclass;
 
 import it.refill.exe.Constant;
 import it.refill.exe.Db_Bando;
-import static it.refill.otp.SendMailJet.sendMail;
+import static it.refill.exe.SendMailJet.sendMail;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.logging.Level;
