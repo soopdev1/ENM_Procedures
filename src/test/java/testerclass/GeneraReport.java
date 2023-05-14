@@ -20,9 +20,9 @@ public class GeneraReport {
     public static void main(String[] args) {
         try {
 
-            boolean neet = true;
+            boolean neet = false;
             boolean testing = false;
-            int idpr = 858;
+            int idpr = 309;
 
 //            
             FaseA FA = new FaseA(testing, neet);

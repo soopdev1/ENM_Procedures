@@ -140,7 +140,7 @@ public class Repair {
                 log.severe(estraiEccezione(e));
             }
             db1.closeDB();
-            Long hh36 = new Long(129600000);
+            Long hh36 = Long.valueOf(129600000);
             elenco.forEach(pf -> {
 //                System.out.println("it.refill.exe.Repair.crea_pdf_unico_ANPAL() " + pf);
                 List<String> pathfiledaunire = new LinkedList<>();
