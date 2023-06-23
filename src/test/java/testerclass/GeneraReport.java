@@ -22,9 +22,8 @@ public class GeneraReport {
 
             boolean neet = false;
             boolean testing = false;
-            int idpr = 309;
+            int idpr = 430;
 
-//            
             FaseA FA = new FaseA(testing, neet);
             FaseB FB = new FaseB(testing, neet);
 
