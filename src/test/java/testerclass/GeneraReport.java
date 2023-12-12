@@ -1,9 +1,9 @@
 package testerclass;
 
-import it.refill.report.Complessivo;
-import it.refill.report.FaseA;
-import it.refill.report.FaseB;
-import it.refill.report.Lezione;
+import rc.so.report.Complessivo;
+import rc.so.report.FaseA;
+import rc.so.report.FaseB;
+import rc.so.report.Lezione;
 import java.util.List;
 
 /*

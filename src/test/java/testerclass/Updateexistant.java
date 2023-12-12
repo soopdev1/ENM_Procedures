@@ -3,10 +3,10 @@ package testerclass;
 
 
 
-import static it.refill.exe.Constant.conf;
-import it.refill.exe.Db_Bando;
-import it.refill.exe.Domande;
-import static it.refill.exe.Neet_Engine.bando;
+import static rc.so.exe.Constant.conf;
+import rc.so.exe.Db_Bando;
+import rc.so.exe.Domande;
+import static rc.so.exe.Neet_Engine.bando;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;

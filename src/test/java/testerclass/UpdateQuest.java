@@ -4,8 +4,8 @@
  */
 package testerclass;
 
-import static it.refill.exe.Constant.conf;
-import it.refill.exe.Db_Bando;
+import static rc.so.exe.Constant.conf;
+import rc.so.exe.Db_Bando;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;

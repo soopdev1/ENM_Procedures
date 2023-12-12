@@ -1,8 +1,8 @@
 package testerclass;
 
-import it.refill.exe.Db_Bando;
-import it.refill.exe.DeD_gestione;
-import it.refill.exe.Neet_gestione;
+import rc.so.exe.Db_Bando;
+import rc.so.exe.DeD_gestione;
+import rc.so.exe.Neet_gestione;
 import java.io.File;
 import java.sql.Statement;
 import org.apache.commons.codec.binary.Base64;

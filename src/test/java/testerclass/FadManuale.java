@@ -3,8 +3,8 @@ package testerclass;
 
 
 
-import it.refill.exe.DeD_gestione;
-import it.refill.exe.Neet_gestione;
+import rc.so.exe.DeD_gestione;
+import rc.so.exe.Neet_gestione;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

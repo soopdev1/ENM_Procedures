@@ -7,12 +7,12 @@ package testerclass;
  */
 
 
-import static it.refill.exe.Constant.estraiEccezione;
-import it.refill.report.Complessivo;
-import static it.refill.report.Create.log;
-import it.refill.report.FaseA;
-import it.refill.report.FaseB;
-import it.refill.report.Lezione;
+import static rc.so.exe.Constant.estraiEccezione;
+import rc.so.report.Complessivo;
+import static rc.so.report.Create.log;
+import rc.so.report.FaseA;
+import rc.so.report.FaseB;
+import rc.so.report.Lezione;
 import java.util.List;
 import java.util.logging.Level;
 

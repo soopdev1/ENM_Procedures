@@ -7,9 +7,9 @@ package testerclass;
  */
 
 
-import it.refill.exe.Constant;
-import it.refill.exe.Db_Bando;
-import static it.refill.exe.SendMailJet.sendMail;
+import rc.so.exe.Constant;
+import rc.so.exe.Db_Bando;
+import static rc.so.exe.SendMailJet.sendMail;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
  */
 public class InviaQ {
 
-    private static final Logger log = Constant.createLog("ProceduraSendQ", "/mnt/mcn/test/log/",true);
+    private static final Logger log = Constant.createLog("ProceduraSendQ", "/mnt/mcn/test/log/");
 
 //    public static void main(String[] args) {
 //
