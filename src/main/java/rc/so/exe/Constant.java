@@ -917,7 +917,8 @@ public class Constant {
 
     public static boolean zipListFiles(List<File> files, File targetZipFile) {
         try {
-            try (OutputStream out = new FileOutputStream(targetZipFile); ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
+            try (OutputStream out = new FileOutputStream(targetZipFile); 
+                    ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
                 for (int i = 0; i < files.size(); i++) {
                     File ing = files.get(i);
                     os.putArchiveEntry(new ZipArchiveEntry(ing.getName()));
